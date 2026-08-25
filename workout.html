@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Gym Assistant | Workout</title>
+
+    <link rel="stylesheet" href="workout.css">
+
+</head>
+
+<body>
+
+    <!-- =========================
+         NAVBAR
+    ========================== -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+            GYM<span>ASSISTANT</span>
+        </div>
+
+        <div class="navLinks">
+
+            <a href="home.html">
+                Home
+            </a>
+
+            <a href="workout.html" class="active">
+                Workout
+            </a>
+
+            <a href="nutrition.html">
+                Nutrition
+            </a>
+
+            <a href="progress.html">
+                Progress
+            </a>
+
+        </div>
+
+        <div class="navActions">
+
+            <button
+                class="profileButton"
+                id="profileButton"
+                type="button"
+            >
+                Profile
+            </button>
+
+            <button
+                class="logoutButton"
+                id="logoutButton"
+                type="button"
+            >
+                Logout
+            </button>
+
+        </div>
+
+    </nav>
+
+
+    <!-- =========================
+         MAIN
+    ========================== -->
+
+    <main class="workoutContainer">
+
+
+        <!-- =========================
+             HEADER
+        ========================== -->
+
+        <section class="workoutHeader">
+
+            <div>
+
+                <p class="smallHeading">
+                    YOUR TRAINING PLAN
+                </p>
+
+                <h1>
+                    Let's get stronger,
+                    <span id="usernameDisplay">
+                        User
+                    </span>
+                </h1>
+
+                <p class="headerDescription">
+                    Follow your recommended plan or
+                    create a workout routine that fits
+                    you.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             PLAN SWITCHER
+        ========================== -->
+
+        <section class="planSwitcher">
+
+            <div>
+
+                <span class="planStatusLabel">
+                    CURRENT PLAN
+                </span>
+
+                <h2 id="currentPlanTitle">
+                    Recommended Plan
+                </h2>
+
+                <p id="currentPlanDescription">
+                    A workout plan generated according
+                    to your fitness profile.
+                </p>
+
+            </div>
+
+            <div class="planActions">
+
+                <button
+                    id="customPlanButton"
+                    class="primaryButton"
+                    type="button"
+                >
+                    Create Custom Plan
+                </button>
+
+                <button
+                    id="recommendedPlanButton"
+                    class="secondaryButton hidden"
+                    type="button"
+                >
+                    Switch to Recommended
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             PLAN SUMMARY
+        ========================== -->
+
+        <section class="summarySection">
+
+            <div class="summaryCard">
+
+                <p>
+                    FITNESS GOAL
+                </p>
+
+                <h2 id="goalValue">
+                    --
+                </h2>
+
+            </div>
+
+
+            <div class="summaryCard">
+
+                <p>
+                    EXPERIENCE
+                </p>
+
+                <h2 id="experienceValue">
+                    --
+                </h2>
+
+            </div>
+
+
+            <div class="summaryCard">
+
+                <p>
+                    ACTIVITY LEVEL
+                </p>
+
+                <h2 id="activityValue">
+                    --
+                </h2>
+
+            </div>
+
+
+            <div class="summaryCard">
+
+                <p>
+                    TRAINING DAYS
+                </p>
+
+                <h2>
+
+                    <span id="trainingDays">
+                        --
+                    </span>
+
+                    <small>
+                        days / week
+                    </small>
+
+                </h2>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             TODAY
+        ========================== -->
+
+        <section class="todaySection">
+
+            <div class="sectionHeader">
+
+                <div>
+
+                    <p class="sectionLabel">
+                        TODAY
+                    </p>
+
+                    <h2 id="todayWorkoutTitle">
+                        Your Workout
+                    </h2>
+
+                </div>
+
+                <div class="workoutBadge">
+
+                    <span id="todayWorkoutDay">
+                        DAY 1
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="exerciseList"
+                id="exerciseList"
+            ></div>
+
+        </section>
+
+
+        <!-- =========================
+             WEEKLY SCHEDULE
+        ========================== -->
+
+        <section class="scheduleSection">
+
+            <div class="sectionHeader">
+
+                <div>
+
+                    <p class="sectionLabel">
+                        YOUR WEEK
+                    </p>
+
+                    <h2>
+                        Weekly Schedule
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="scheduleGrid"
+                id="scheduleGrid"
+            ></div>
+
+        </section>
+
+
+        <!-- =========================
+             WORKOUT ACTION
+        ========================== -->
+
+        <section class="workoutAction">
+
+            <div>
+
+                <p class="sectionLabel">
+                    READY?
+                </p>
+
+                <h2>
+                    Complete today's workout
+                </h2>
+
+                <p>
+                    Mark each exercise as completed
+                    as you finish it.
+                </p>
+
+            </div>
+
+
+            <div class="progressBox">
+
+                <span>
+                    TODAY'S PROGRESS
+                </span>
+
+                <strong id="progressText">
+                    0%
+                </strong>
+
+                <div class="progressBar">
+
+                    <div
+                        class="progressFill"
+                        id="progressFill"
+                    ></div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             CUSTOM PLAN EDITOR
+        ========================== -->
+
+        <section
+            class="customEditor hidden"
+            id="customEditor"
+        >
+
+            <div class="editorHeader">
+
+                <div>
+
+                    <p class="sectionLabel">
+                        CUSTOM WORKOUT
+                    </p>
+
+                    <h2>
+                        Build Your Weekly Plan
+                    </h2>
+
+                    <p>
+                        Create your own workout for
+                        every day of the week.
+                    </p>
+
+                </div>
+
+                <button
+                    class="closeEditorButton"
+                    id="closeEditorButton"
+                    type="button"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <div
+                class="customDays"
+                id="customDays"
+            ></div>
+
+
+            <div class="editorActions">
+
+                <button
+                    class="saveCustomButton"
+                    id="saveCustomButton"
+                    type="button"
+                >
+                    Save Custom Plan
+                </button>
+
+                <button
+                    class="cancelButton"
+                    id="cancelButton"
+                    type="button"
+                >
+                    Cancel
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             CUSTOM PLAN MANAGEMENT
+        ========================== -->
+
+        <section
+            class="customManage hidden"
+            id="customManage"
+        >
+
+            <p>
+                You have a saved custom workout plan.
+            </p>
+
+            <button
+                id="editCustomButton"
+                class="secondaryButton"
+                type="button"
+            >
+                Edit Custom Plan
+            </button>
+
+            <button
+                id="deleteCustomButton"
+                class="dangerButton"
+                type="button"
+            >
+                Delete Custom Plan
+            </button>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================
+         FOOTER
+    ========================== -->
+
+    <footer class="footer">
+
+        <p>
+            GYM ASSISTANT
+        </p>
+
+        <span>
+            Build consistency. Build strength.
+        </span>
+
+    </footer>
+
+
+    <script src="workout.js"></script>
+
+</body>
+
+</html>

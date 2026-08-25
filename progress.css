@@ -1,0 +1,838 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+
+/* =========================
+   RESET
+========================= */
+
+* {
+
+    box-sizing: border-box;
+
+    margin: 0;
+
+    padding: 0;
+}
+
+
+body {
+
+    font-family: 'Inter', sans-serif;
+
+    background: #050505;
+
+    color: white;
+
+    min-height: 100vh;
+}
+
+
+/* =========================
+   NAVBAR
+========================= */
+
+.navbar {
+
+    width: 100%;
+
+    min-height: 72px;
+
+    padding: 0 6%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 30px;
+
+    background: rgba(5, 5, 5, 0.92);
+
+    border-bottom:
+        1px solid
+        rgba(255, 35, 35, 0.25);
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 100;
+
+    backdrop-filter: blur(12px);
+}
+
+
+.logo {
+
+    font-size: 20px;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+
+    white-space: nowrap;
+}
+
+
+.logo span {
+
+    color: #ff2020;
+
+    margin-left: 4px;
+}
+
+
+/* =========================
+   NAV LINKS
+========================= */
+
+.navLinks {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 30px;
+}
+
+
+.navLinks a {
+
+    color: #888;
+
+    text-decoration: none;
+
+    font-size: 14px;
+
+    font-weight: 500;
+
+    transition: 0.25s ease;
+}
+
+
+.navLinks a:hover {
+
+    color: white;
+}
+
+
+.navLinks a.active {
+
+    color: #ff2525;
+}
+
+
+/* =========================
+   NAV ACTIONS
+========================= */
+
+.navActions {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+.profileButton,
+.logoutButton {
+
+    padding: 9px 15px;
+
+    border-radius: 8px;
+
+    font-family: inherit;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.25s ease;
+}
+
+
+.profileButton {
+
+    background: #111;
+
+    border: 1px solid #333;
+
+    color: white;
+}
+
+
+.profileButton:hover {
+
+    border-color: #ff2525;
+
+    color: #ff2525;
+}
+
+
+.logoutButton {
+
+    background: transparent;
+
+    border:
+        1px solid
+        rgba(255, 40, 40, 0.45);
+
+    color: #ff3333;
+}
+
+
+.logoutButton:hover {
+
+    background: #ff2020;
+
+    color: white;
+
+    border-color: #ff2020;
+}
+
+
+/* =========================
+   MAIN
+========================= */
+
+.progressContainer {
+
+    width: 90%;
+
+    max-width: 1200px;
+
+    margin: auto;
+
+    padding: 60px 0 80px;
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.progressHeader {
+
+    padding: 45px;
+
+    border-radius: 22px;
+
+    background:
+
+        radial-gradient(
+            circle at 90% 20%,
+            rgba(255, 20, 20, 0.25),
+            transparent 35%
+        ),
+
+        linear-gradient(
+            135deg,
+            #160000,
+            #090909 55%,
+            #0e0000
+        );
+
+    border:
+        1px solid
+        rgba(255, 35, 35, 0.25);
+
+    box-shadow:
+        0 25px 70px
+        rgba(0, 0, 0, 0.7);
+}
+
+
+.smallHeading,
+.sectionLabel {
+
+    color: #ff2929;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
+}
+
+
+.progressHeader h1 {
+
+    margin-top: 12px;
+
+    font-size:
+        clamp(32px, 5vw, 48px);
+
+    line-height: 1.1;
+
+    font-weight: 800;
+}
+
+
+.progressHeader h1 span {
+
+    color: #ff2424;
+}
+
+
+.headerDescription {
+
+    max-width: 650px;
+
+    margin-top: 18px;
+
+    color: #999;
+
+    font-size: 14px;
+
+    line-height: 1.7;
+}
+
+
+/* =========================
+   SUMMARY
+========================= */
+
+.summarySection {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 18px;
+
+    margin-top: 22px;
+}
+
+
+.summaryCard {
+
+    padding: 25px;
+
+    background: #0c0c0c;
+
+    border:
+        1px solid #242424;
+
+    border-radius: 16px;
+
+    transition: 0.25s ease;
+}
+
+
+.summaryCard:hover {
+
+    transform: translateY(-3px);
+
+    border-color:
+        rgba(255, 35, 35, 0.4);
+}
+
+
+.summaryCard p {
+
+    color: #666;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.3px;
+}
+
+
+.summaryCard h2 {
+
+    margin-top: 12px;
+
+    font-size: 28px;
+
+    font-weight: 800;
+}
+
+
+.summaryCard small {
+
+    color: #666;
+
+    font-size: 11px;
+
+    font-weight: 500;
+}
+
+
+/* =========================
+   SECTIONS
+========================= */
+
+.addProgressSection,
+.historySection,
+.noteSection {
+
+    margin-top: 50px;
+}
+
+
+.sectionHeader h2 {
+
+    margin-top: 8px;
+
+    font-size: 26px;
+}
+
+
+/* =========================
+   FORM
+========================= */
+
+.progressFormCard {
+
+    margin-top: 20px;
+
+    padding: 28px;
+
+    background: #0b0b0b;
+
+    border:
+        1px solid #242424;
+
+    border-radius: 16px;
+}
+
+
+#progressForm {
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr 1fr auto;
+
+    align-items: end;
+
+    gap: 15px;
+}
+
+
+.inputGroup {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+
+.inputGroup label {
+
+    color: #888;
+
+    font-size: 11px;
+
+    font-weight: 600;
+}
+
+
+.inputGroup input {
+
+    width: 100%;
+
+    padding: 12px 13px;
+
+    background: #111;
+
+    border:
+        1px solid #333;
+
+    border-radius: 8px;
+
+    color: white;
+
+    font-family: inherit;
+
+    font-size: 13px;
+
+    outline: none;
+
+    transition: 0.25s ease;
+}
+
+
+.inputGroup input:focus {
+
+    border-color: #ff2525;
+
+    box-shadow:
+        0 0 0 2px
+        rgba(255, 30, 30, 0.08);
+}
+
+
+.inputGroup input::placeholder {
+
+    color: #555;
+}
+
+
+.saveButton {
+
+    padding: 12px 20px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ff2222,
+            #c40000
+        );
+
+    color: white;
+
+    font-family: inherit;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.25s ease;
+}
+
+
+.saveButton:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 25px
+        rgba(255, 0, 0, 0.3);
+}
+
+
+.formMessage {
+
+    margin-top: 14px;
+
+    color: #777;
+
+    font-size: 12px;
+}
+
+
+/* =========================
+   TABLE
+========================= */
+
+.historyCard {
+
+    margin-top: 20px;
+
+    padding: 5px;
+
+    overflow: hidden;
+
+    background: #0b0b0b;
+
+    border:
+        1px solid #242424;
+
+    border-radius: 16px;
+}
+
+
+.tableWrapper {
+
+    width: 100%;
+
+    overflow-x: auto;
+}
+
+
+table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    min-width: 650px;
+}
+
+
+thead {
+
+    background: #111;
+}
+
+
+th {
+
+    padding: 15px;
+
+    text-align: left;
+
+    color: #666;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.2px;
+}
+
+
+td {
+
+    padding: 16px 15px;
+
+    border-top:
+        1px solid #1e1e1e;
+
+    color: #aaa;
+
+    font-size: 12px;
+}
+
+
+tbody tr {
+
+    transition: 0.2s ease;
+}
+
+
+tbody tr:hover {
+
+    background: #101010;
+}
+
+
+.changePositive {
+
+    color: #ff4040;
+
+    font-weight: 600;
+}
+
+
+.changeNegative {
+
+    color: #72d572;
+
+    font-weight: 600;
+}
+
+
+.deleteButton {
+
+    padding: 6px 10px;
+
+    background: transparent;
+
+    border:
+        1px solid
+        rgba(255, 40, 40, 0.3);
+
+    border-radius: 6px;
+
+    color: #ff4444;
+
+    font-family: inherit;
+
+    font-size: 10px;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+
+.deleteButton:hover {
+
+    background: #ff2222;
+
+    color: white;
+
+    border-color: #ff2222;
+}
+
+
+.emptyMessage {
+
+    padding: 30px;
+
+    text-align: center;
+
+    color: #555;
+
+    font-size: 12px;
+}
+
+
+/* =========================
+   NOTE
+========================= */
+
+.noteCard {
+
+    padding: 28px;
+
+    border-radius: 16px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #111,
+            #080808
+        );
+
+    border:
+        1px solid
+        rgba(255, 40, 40, 0.3);
+}
+
+
+.noteCard h2 {
+
+    margin-top: 9px;
+
+    font-size: 23px;
+}
+
+
+.noteCard p:last-child {
+
+    max-width: 700px;
+
+    margin-top: 10px;
+
+    color: #777;
+
+    font-size: 12px;
+
+    line-height: 1.7;
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+.footer {
+
+    padding: 30px;
+
+    text-align: center;
+
+    border-top:
+        1px solid
+        rgba(255, 35, 35, 0.15);
+
+    color: #444;
+
+    font-size: 12px;
+}
+
+
+.footer p {
+
+    color: #777;
+
+    font-weight: 700;
+
+    letter-spacing: 1px;
+}
+
+
+.footer span {
+
+    display: block;
+
+    margin-top: 6px;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1000px) {
+
+    .summarySection {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+
+    #progressForm {
+
+        grid-template-columns:
+            1fr 1fr;
+    }
+
+}
+
+
+@media (max-width: 900px) {
+
+    .navLinks {
+
+        display: none;
+    }
+
+}
+
+
+@media (max-width: 650px) {
+
+    .navbar {
+
+        padding: 0 20px;
+    }
+
+
+    .profileButton {
+
+        display: none;
+    }
+
+
+    .progressContainer {
+
+        width: 92%;
+
+        padding-top: 35px;
+    }
+
+
+    .progressHeader {
+
+        padding: 30px 24px;
+    }
+
+
+    .summarySection {
+
+        grid-template-columns: 1fr;
+    }
+
+
+    #progressForm {
+
+        grid-template-columns: 1fr;
+    }
+
+
+    .saveButton {
+
+        width: 100%;
+    }
+}

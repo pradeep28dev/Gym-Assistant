@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Gym Assistant | Login</title>
+
+    <link
+        rel="stylesheet"
+        href="index.css"
+    >
+
+</head>
+
+
+<body>
+
+    <div
+        id="loginpage"
+        class="logincontainer"
+    >
+
+        <div class="loginCard">
+
+            <!-- =========================
+                 WEBSITE BRANDING
+            ========================== -->
+
+            <div class="brand">
+
+                <h2>
+                    GYM <span>ASSISTANT</span>
+                </h2>
+
+                <p>
+                    Train Smart. Get Stronger.
+                </p>
+
+            </div>
+
+
+            <!-- =========================
+                 LOGIN HEADING
+            ========================== -->
+
+            <h1>
+                Sign in to Continue
+            </h1>
+
+
+            <!-- =========================
+                 LOGIN FORM
+            ========================== -->
+
+            <form
+                id="loginForm"
+                class="loginform"
+            >
+
+                <!-- USERNAME -->
+
+                <div class="username">
+
+                    <label for="username">
+                        User Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="username"
+                        placeholder="Enter the User Name"
+                    >
+
+                </div>
+
+
+                <!-- PASSWORD -->
+
+                <div class="password">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+
+                    <div class="passwordWrapper">
+
+                        <input
+                            type="password"
+                            id="password"
+                            placeholder="Enter The Password"
+                        >
+
+
+                        <button
+                            type="button"
+                            class="eyeButton"
+                            id="passwordEye"
+                            aria-label="Show password"
+                        >
+
+                            <i
+                                data-lucide="eye"
+                                class="eyeIcon"
+                            ></i>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- LOGIN BUTTON -->
+
+                <button
+                    type="submit"
+                    class="loginButton"
+                >
+                    Sign In
+                </button>
+
+
+                <!-- SIGN UP -->
+
+                <p class="signup-text">
+
+                    Don't have an account?
+
+                    <a href="signup.html">
+                        Sign Up
+                    </a>
+
+                </p>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         LUCIDE ICON LIBRARY
+    ========================== -->
+
+    <script
+        src="https://unpkg.com/lucide@latest"
+    ></script>
+
+
+    <!-- =========================
+         LOGIN JAVASCRIPT
+    ========================== -->
+
+    <script src="index.js"></script>
+
+</body>
+
+</html>

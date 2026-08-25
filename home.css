@@ -1,0 +1,722 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+
+/* =========================
+   RESET
+========================= */
+
+* {
+    box-sizing: border-box;
+
+    margin: 0;
+    padding: 0;
+}
+
+
+body {
+    font-family: 'Inter', sans-serif;
+
+    background: #050505;
+
+    color: white;
+
+    min-height: 100vh;
+}
+
+
+/* =========================
+   NAVBAR
+========================= */
+
+.navbar {
+
+    width: 100%;
+
+    min-height: 72px;
+
+    padding: 0 6%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 30px;
+
+    background: rgba(5, 5, 5, 0.92);
+
+    border-bottom: 1px solid rgba(255, 35, 35, 0.25);
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 100;
+
+    backdrop-filter: blur(12px);
+}
+
+
+/* =========================
+   LOGO
+========================= */
+
+.logo {
+
+    font-size: 20px;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+
+    white-space: nowrap;
+}
+
+.logo span {
+
+    color: #ff2020;
+
+    margin-left: 4px;
+}
+
+
+/* =========================
+   NAV LINKS
+========================= */
+
+.navLinks {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 30px;
+}
+
+.navLinks a {
+
+    color: #888;
+
+    text-decoration: none;
+
+    font-size: 14px;
+
+    font-weight: 500;
+
+    transition: 0.25s ease;
+}
+
+.navLinks a:hover {
+
+    color: white;
+}
+
+.navLinks a.active {
+
+    color: #ff2525;
+}
+
+
+/* =========================
+   NAV ACTIONS
+========================= */
+
+.navActions {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+.profileButton,
+.logoutButton {
+
+    padding: 9px 15px;
+
+    border-radius: 8px;
+
+    font-family: inherit;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.25s ease;
+}
+
+
+.profileButton {
+
+    background: #111;
+
+    border: 1px solid #333;
+
+    color: white;
+}
+
+.profileButton:hover {
+
+    border-color: #ff2525;
+
+    color: #ff2525;
+}
+
+
+.logoutButton {
+
+    background: transparent;
+
+    border: 1px solid rgba(255, 40, 40, 0.45);
+
+    color: #ff3333;
+}
+
+.logoutButton:hover {
+
+    background: #ff2020;
+
+    color: white;
+
+    border-color: #ff2020;
+}
+
+
+/* =========================
+   MAIN CONTAINER
+========================= */
+
+.homeContainer {
+
+    width: 90%;
+
+    max-width: 1200px;
+
+    margin: auto;
+
+    padding: 60px 0 80px;
+}
+
+
+/* =========================
+   WELCOME SECTION
+========================= */
+
+.welcomeSection {
+
+    padding: 45px;
+
+    border-radius: 22px;
+
+    background:
+
+        radial-gradient(
+            circle at 90% 20%,
+            rgba(255, 20, 20, 0.25),
+            transparent 35%
+        ),
+
+        linear-gradient(
+            135deg,
+            #160000,
+            #090909 55%,
+            #0e0000
+        );
+
+    border: 1px solid rgba(255, 35, 35, 0.25);
+
+    box-shadow:
+        0 25px 70px rgba(0, 0, 0, 0.7),
+        0 0 50px rgba(255, 0, 0, 0.08);
+}
+
+
+.smallHeading,
+.sectionLabel {
+
+    color: #ff2929;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
+}
+
+
+.welcomeText h1 {
+
+    margin-top: 12px;
+
+    font-size: clamp(32px, 5vw, 52px);
+
+    line-height: 1.1;
+
+    font-weight: 800;
+}
+
+.welcomeText h1 #welcomeMessage {
+    color: white;
+}
+
+.welcomeText h1 #usernameDisplay {
+    color: #ff2424;
+}
+
+
+.welcomeDescription {
+
+    max-width: 600px;
+
+    margin-top: 18px;
+
+    color: #999;
+
+    font-size: 15px;
+
+    line-height: 1.7;
+}
+
+
+/* =========================
+   STATUS SECTION
+========================= */
+
+.statusSection {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 18px;
+
+    margin-top: 22px;
+}
+
+
+.statusCard {
+
+    padding: 25px;
+
+    background: #0c0c0c;
+
+    border: 1px solid #242424;
+
+    border-radius: 16px;
+
+    transition: 0.25s ease;
+}
+
+
+.statusCard:hover {
+
+    transform: translateY(-3px);
+
+    border-color: rgba(255, 35, 35, 0.45);
+
+    box-shadow:
+        0 12px 35px rgba(0, 0, 0, 0.6);
+}
+
+
+.cardLabel {
+
+    color: #777;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+}
+
+
+.statusCard h2 {
+
+    margin-top: 10px;
+
+    font-size: 30px;
+
+    font-weight: 700;
+
+    color: white;
+}
+
+
+.cardUnit {
+
+    margin-top: 3px;
+
+    color: #666;
+
+    font-size: 12px;
+}
+
+
+/* =========================
+   ASSESSMENT
+========================= */
+
+.assessmentSection {
+
+    margin-top: 22px;
+}
+
+
+.assessmentCard {
+
+    position: relative;
+
+    overflow: hidden;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 35px;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #111,
+            #080808
+        );
+
+    border: 1px solid rgba(255, 40, 40, 0.3);
+}
+
+
+.assessmentContent {
+
+    max-width: 700px;
+}
+
+
+.assessmentContent h2 {
+
+    margin-top: 10px;
+
+    font-size: 26px;
+}
+
+
+.assessmentContent p:not(.sectionLabel) {
+
+    margin-top: 12px;
+
+    color: #888;
+
+    font-size: 14px;
+
+    line-height: 1.7;
+}
+
+
+.assessmentButton {
+
+    margin-top: 22px;
+
+    padding: 13px 22px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ff2222,
+            #c40000
+        );
+
+    color: white;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 25px rgba(255, 0, 0, 0.22);
+
+    transition: 0.25s ease;
+}
+
+
+.assessmentButton:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 12px 30px rgba(255, 0, 0, 0.4);
+}
+
+
+.assessmentIcon {
+
+    width: 110px;
+
+    height: 110px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255, 25, 25, 0.08);
+
+    border:
+        1px solid rgba(255, 35, 35, 0.3);
+
+    color: #ff2525;
+
+    font-size: 60px;
+
+    font-weight: 300;
+
+    box-shadow:
+        0 0 45px rgba(255, 0, 0, 0.12);
+}
+
+
+/* =========================
+   QUICK ACCESS
+========================= */
+
+.quickSection {
+
+    margin-top: 55px;
+}
+
+
+.sectionHeader h2 {
+
+    margin-top: 8px;
+
+    font-size: 26px;
+}
+
+
+.quickGrid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 18px;
+
+    margin-top: 20px;
+}
+
+
+.quickCard {
+
+    padding: 25px;
+
+    background: #0b0b0b;
+
+    border: 1px solid #242424;
+
+    border-radius: 16px;
+
+    transition: 0.25s ease;
+}
+
+
+.quickCard:hover {
+
+    transform: translateY(-4px);
+
+    border-color:
+        rgba(255, 35, 35, 0.45);
+}
+
+
+.quickIcon {
+
+    font-size: 25px;
+
+    margin-bottom: 18px;
+}
+
+
+.quickCard h3 {
+
+    font-size: 17px;
+}
+
+
+.quickCard p {
+
+    margin-top: 9px;
+
+    min-height: 42px;
+
+    color: #777;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+}
+
+
+.quickCard button {
+
+    margin-top: 20px;
+
+    padding: 9px 12px;
+
+    background: transparent;
+
+    border: 1px solid #333;
+
+    border-radius: 7px;
+
+    color: #aaa;
+
+    font-family: inherit;
+
+    font-size: 12px;
+
+    cursor: pointer;
+
+    transition: 0.25s ease;
+}
+
+
+.quickCard button:hover {
+
+    border-color: #ff2525;
+
+    color: #ff2525;
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+.footer {
+
+    padding: 30px;
+
+    text-align: center;
+
+    border-top:
+        1px solid rgba(255, 35, 35, 0.15);
+
+    color: #444;
+
+    font-size: 12px;
+}
+
+
+.footer p {
+
+    color: #777;
+
+    font-weight: 700;
+
+    letter-spacing: 1px;
+}
+
+
+.footer span {
+
+    display: block;
+
+    margin-top: 6px;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 900px) {
+
+    .navLinks {
+
+        display: none;
+    }
+
+    .quickGrid {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+}
+
+
+@media (max-width: 650px) {
+
+    .navbar {
+
+        padding: 0 20px;
+    }
+
+    .profileButton {
+
+        display: none;
+    }
+
+    .homeContainer {
+
+        width: 92%;
+
+        padding-top: 35px;
+    }
+
+    .welcomeSection {
+
+        padding: 30px 24px;
+    }
+
+    .statusSection {
+
+        grid-template-columns: 1fr;
+    }
+
+    .assessmentCard {
+
+        padding: 28px;
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 25px;
+    }
+
+    .assessmentIcon {
+
+        width: 75px;
+
+        height: 75px;
+
+        font-size: 40px;
+    }
+
+    .quickGrid {
+
+        grid-template-columns: 1fr;
+    }
+}

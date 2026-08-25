@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Gym Assistant</title>
+
+    <link rel="stylesheet" href="home.css">
+</head>
+
+<body>
+
+    <!-- =========================
+         NAVBAR
+    ========================== -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+            GYM<span>ASSISTANT</span>
+        </div>
+
+        <div class="navLinks">
+            <a href="home.html" class="active">Home</a>
+            <a href="workout.html">Workout</a>
+            <a href="nutrition.html">Nutrition</a>
+            <a href="progress.html">Progress</a>
+        </div>
+
+        <div class="navActions">
+
+            <button class="profileButton" id="profileButton">
+                Profile
+            </button>
+
+            <button class="logoutButton" id="logoutButton">
+                Logout
+            </button>
+
+        </div>
+
+    </nav>
+
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
+
+    <main class="homeContainer">
+
+        <!-- Welcome Section -->
+
+        <section class="welcomeSection">
+
+            <div class="welcomeText">
+
+                <p class="smallHeading">
+                    YOUR FITNESS JOURNEY
+                </p>
+
+                <h1>
+                    <span id="welcomeMessage">Welcome</span>,
+                    <span id="usernameDisplay">User</span>
+                </h1>
+
+                <p class="welcomeDescription">
+                    Build your body, track your progress,
+                    and become a stronger version of yourself.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- Fitness Status Cards -->
+
+        <section class="statusSection">
+
+            <div class="statusCard">
+
+                <p class="cardLabel">
+                    WEIGHT
+                </p>
+
+                <h2>
+                    <span id="weightValue">--</span>
+                </h2>
+
+                <p class="cardUnit">
+                    kg
+                </p>
+
+            </div>
+
+
+            <div class="statusCard">
+
+                <p class="cardLabel">
+                    ESTIMATED BODY FAT
+                </p>
+
+                <h2>
+                    <span id="bodyFatValue">--</span>
+                </h2>
+
+                <p class="cardUnit">
+                    % · Navy method estimate
+                </p>
+
+            </div>
+
+
+            <div class="statusCard">
+
+                <p class="cardLabel">
+                    GOAL
+                </p>
+
+                <h2 id="goalValue">
+                    SET UP
+                </h2>
+
+                <p class="cardUnit">
+                    Fitness goal
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- Assessment Card -->
+
+        <section class="assessmentSection">
+
+            <div class="assessmentCard">
+
+                <div class="assessmentContent">
+
+                    <p class="sectionLabel" id="assessmentLabel">
+                        GET STARTED
+                    </p>
+
+                    <h2 id="assessmentTitle">
+                        Complete your fitness profile
+                    </h2>
+
+                    <p id="assessmentDescription">
+                        Tell us about your body, activity level,
+                        training experience and fitness goals.
+                        We'll use this information to create
+                        your personalized fitness plan.
+                    </p>
+
+                    <button
+                    class="assessmentButton"
+                    id="assessmentButton"
+                    >
+                        Start Assessment
+                    </button>
+
+                </div>
+
+
+                <div class="assessmentIcon">
+                    +
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- Quick Access -->
+
+        <section class="quickSection">
+
+            <div class="sectionHeader">
+
+                <div>
+                    <p class="sectionLabel">
+                        QUICK ACCESS
+                    </p>
+
+                    <h2>
+                        Your Fitness Tools
+                    </h2>
+                </div>
+
+            </div>
+
+
+            <div class="quickGrid">
+
+                <div class="quickCard">
+
+                    <div class="quickIcon">
+                        🏋
+                    </div>
+
+                    <h3>
+                        Workout
+                    </h3>
+
+                    <p>
+                        View your personalized
+                        training plan.
+                    </p>
+
+                    <button
+                        onclick="window.location.href='workout.html'"
+                    >
+                        View Workout
+                    </button>
+
+                </div>
+
+
+                <div class="quickCard">
+
+                    <div class="quickIcon">
+                        🥗
+                    </div>
+
+                    <h3>
+                        Nutrition
+                    </h3>
+
+                    <p>
+                        Track calories and
+                        daily macros.
+                    </p>
+
+                    <button
+                        onclick="window.location.href='nutrition.html'"
+                    >
+                        View Nutrition
+                    </button>
+
+                </div>
+
+
+                <div class="quickCard">
+
+                    <div class="quickIcon">
+                        📈
+                    </div>
+
+                    <h3>
+                        Progress
+                    </h3>
+
+                    <p>
+                        Monitor your weight
+                        and fitness progress.
+                    </p>
+
+                    <button
+                        onclick="window.location.href='progress.html'"
+                    >
+                        View Progress
+                    </button>
+
+                </div>
+
+
+                <div class="quickCard">
+
+                    <div class="quickIcon">
+                        🤖
+                    </div>
+
+                    <h3>
+                        AI Assistant
+                    </h3>
+
+                    <p>
+                        Ask your personal
+                        fitness assistant.
+                    </p>
+
+                    <button>
+                        Ask AI
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================
+         FOOTER
+    ========================== -->
+
+    <footer class="footer">
+
+        <p>
+            GYM ASSISTANT
+        </p>
+
+        <span>
+            Build consistency. Build strength.
+        </span>
+
+    </footer>
+
+
+    <script src="home.js"></script>
+
+</body>
+</html>

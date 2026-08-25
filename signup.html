@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Gym Assistant | Sign Up</title>
+
+    <link
+        rel="stylesheet"
+        href="signup.css"
+    >
+
+</head>
+
+
+<body>
+
+    <div class="signupcontainer">
+
+        <div class="signupCard">
+
+            <!-- =========================
+                 HEADING
+            ========================== -->
+
+            <h1>
+                Create Account
+            </h1>
+
+            <p class="subtitle">
+                Sign up to get started
+            </p>
+
+
+            <!-- =========================
+                 SIGN UP FORM
+            ========================== -->
+
+            <form
+                id="signupForm"
+                class="signupform"
+            >
+
+                <!-- FULL NAME -->
+
+                <div class="inputGroup">
+
+                    <label for="fullname">
+                        Full Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="fullname"
+                        placeholder="Enter your full name"
+                    >
+
+                </div>
+
+
+                <!-- USERNAME -->
+
+                <div class="inputGroup">
+
+                    <label for="username">
+                        User Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="username"
+                        placeholder="Choose a username"
+                    >
+
+                </div>
+
+
+                <!-- EMAIL -->
+
+                <div class="inputGroup">
+
+                    <label for="email">
+                        Email
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="Enter your email"
+                    >
+
+                </div>
+
+
+                <!-- PASSWORD -->
+
+                <div class="inputGroup">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <div class="passwordWrapper">
+
+                        <input
+                            type="password"
+                            id="password"
+                            placeholder="Create a password"
+                        >
+
+                        <button
+                            type="button"
+                            class="eyeButton"
+                            id="passwordEye"
+                            aria-label="Show password"
+                        >
+
+                            <i data-lucide="eye"></i>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CONFIRM PASSWORD -->
+
+                <div class="inputGroup">
+
+                    <label for="confirmPassword">
+                        Confirm Password
+                    </label>
+
+                    <div class="passwordWrapper">
+
+                        <input
+                            type="password"
+                            id="confirmPassword"
+                            placeholder="Confirm your password"
+                        >
+
+                        <button
+                            type="button"
+                            class="eyeButton"
+                            id="confirmPasswordEye"
+                            aria-label="Show password"
+                        >
+
+                            <i data-lucide="eye"></i>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CREATE ACCOUNT -->
+
+                <button
+                    type="submit"
+                >
+                    Create Account
+                </button>
+
+
+                <!-- LOGIN LINK -->
+
+                <p class="login-text">
+
+                    Already have an account?
+
+                    <a href="index.html">
+                        Sign In
+                    </a>
+
+                </p>
+
+
+                <!-- SUCCESS MESSAGE -->
+
+                <p
+                    id="successMessage"
+                    class="success-message"
+                >
+                    Account created successfully!
+                </p>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         LUCIDE ICONS
+    ========================== -->
+
+    <script
+        src="https://unpkg.com/lucide@latest"
+    ></script>
+
+    <script>
+        lucide.createIcons();
+    </script>
+
+
+    <!-- =========================
+         SIGN UP JS
+    ========================== -->
+
+    <script src="signup.js"></script>
+
+</body>
+
+</html>

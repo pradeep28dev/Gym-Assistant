@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Gym Assistant | Fitness Assessment</title>
+
+    <link rel="stylesheet" href="assessment.css">
+</head>
+
+<body>
+
+    <!-- =========================
+         NAVBAR
+    ========================== -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+            GYM<span>ASSISTANT</span>
+        </div>
+
+        <a href="home.html" class="backButton">
+            ← Back to Home
+        </a>
+
+    </nav>
+
+
+    <!-- =========================
+         ASSESSMENT CONTAINER
+    ========================== -->
+
+    <main class="assessmentContainer">
+
+        <section class="assessmentHeader">
+
+            <p class="smallHeading">
+                FITNESS ASSESSMENT
+            </p>
+
+            <h1>
+                Let's understand
+                <span>your fitness</span>
+            </h1>
+
+            <p>
+                Tell us a little about yourself. We'll use this
+                information to personalize your fitness journey.
+            </p>
+
+        </section>
+
+
+        <!-- =========================
+             FORM
+        ========================== -->
+
+        <form id="assessmentForm" class="assessmentForm">
+
+
+            <!-- =========================
+                 BASIC INFORMATION
+            ========================== -->
+
+            <div class="formSection">
+
+                <div class="sectionTitle">
+
+                    <span>01</span>
+
+                    <div>
+                        <h2>Basic Information</h2>
+
+                        <p>
+                            Tell us about your body.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="formGrid">
+
+                    <div class="inputGroup">
+
+                        <label for="age">
+                            Age
+                        </label>
+
+                        <input
+                            type="number"
+                            id="age"
+                            placeholder="Enter your age"
+                            min="10"
+                            max="100"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="inputGroup">
+
+                        <label for="gender">
+                            Gender
+                        </label>
+
+                        <select id="gender" required>
+
+                            <option value="">
+                                Select gender
+                            </option>
+
+                            <option value="male">
+                                Male
+                            </option>
+
+                            <option value="female">
+                                Female
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="inputGroup">
+
+                        <label for="height">
+                            Height (cm)
+                        </label>
+
+                        <input
+                            type="number"
+                            id="height"
+                            placeholder="e.g. 175"
+                            min="50"
+                            max="250"
+                            step="0.1"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="inputGroup">
+
+                        <label for="weight">
+                            Weight (kg)
+                        </label>
+
+                        <input
+                            type="number"
+                            id="weight"
+                            placeholder="e.g. 70"
+                            min="20"
+                            max="300"
+                            step="0.1"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =========================
+                 BODY MEASUREMENTS
+            ========================== -->
+
+            <div class="formSection">
+
+                <div class="sectionTitle">
+
+                    <span>02</span>
+
+                    <div>
+
+                        <h2>Body Measurements</h2>
+
+                        <p>
+                            These measurements are used to estimate
+                            your body fat percentage.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="formGrid">
+
+                    <div class="inputGroup">
+
+                        <label for="neck">
+                            Neck Circumference (cm)
+                        </label>
+
+                        <input
+                            type="number"
+                            id="neck"
+                            placeholder="e.g. 38"
+                            min="15"
+                            max="100"
+                            step="0.1"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="inputGroup">
+
+                        <label for="waist">
+                            Waist Circumference (cm)
+                        </label>
+
+                        <input
+                            type="number"
+                            id="waist"
+                            placeholder="e.g. 85"
+                            min="30"
+                            max="200"
+                            step="0.1"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- FEMALE ONLY -->
+
+                    <div
+                        class="inputGroup"
+                        id="hipGroup"
+                        style="display: none;"
+                    >
+
+                        <label for="hip">
+                            Hip Circumference (cm)
+                        </label>
+
+                        <input
+                            type="number"
+                            id="hip"
+                            placeholder="e.g. 95"
+                            min="30"
+                            max="200"
+                            step="0.1"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <p class="measurementNote">
+
+                    For best results, measure around the body
+                    consistently and use centimeters.
+
+                </p>
+
+            </div>
+
+
+            <!-- =========================
+                 ACTIVITY LEVEL
+            ========================== -->
+
+            <div class="formSection">
+
+                <div class="sectionTitle">
+
+                    <span>03</span>
+
+                    <div>
+
+                        <h2>Activity Level</h2>
+
+                        <p>
+                            How active are you currently?
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="activityOptions">
+
+                    <label class="activityCard">
+
+                        <input
+                            type="radio"
+                            name="activity"
+                            value="sedentary"
+                            required
+                        >
+
+                        <div>
+
+                            <h3>
+                                Sedentary
+                            </h3>
+
+                            <p>
+                                Little or no exercise
+                            </p>
+
+                        </div>
+
+                    </label>
+
+
+                    <label class="activityCard">
+
+                        <input
+                            type="radio"
+                            name="activity"
+                            value="light"
+                        >
+
+                        <div>
+
+                            <h3>
+                                Lightly Active
+                            </h3>
+
+                            <p>
+                                Exercise 1–3 days per week
+                            </p>
+
+                        </div>
+
+                    </label>
+
+
+                    <label class="activityCard">
+
+                        <input
+                            type="radio"
+                            name="activity"
+                            value="moderate"
+                        >
+
+                        <div>
+
+                            <h3>
+                                Moderately Active
+                            </h3>
+
+                            <p>
+                                Exercise 3–5 days per week
+                            </p>
+
+                        </div>
+
+                    </label>
+
+
+                    <label class="activityCard">
+
+                        <input
+                            type="radio"
+                            name="activity"
+                            value="active"
+                        >
+
+                        <div>
+
+                            <h3>
+                                Very Active
+                            </h3>
+
+                            <p>
+                                Exercise 6–7 days per week
+                            </p>
+
+                        </div>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- =========================
+                 TRAINING EXPERIENCE
+            ========================== -->
+
+            <div class="formSection">
+
+                <div class="sectionTitle">
+
+                    <span>04</span>
+
+                    <div>
+
+                        <h2>Training Experience</h2>
+
+                        <p>
+                            Tell us about your gym experience.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="experienceOptions">
+
+                    <label>
+
+                        <input
+                            type="radio"
+                            name="experience"
+                            value="beginner"
+                            required
+                        >
+
+                        <span>
+                            Beginner
+                        </span>
+
+                    </label>
+
+
+                    <label>
+
+                        <input
+                            type="radio"
+                            name="experience"
+                            value="intermediate"
+                        >
+
+                        <span>
+                            Intermediate
+                        </span>
+
+                    </label>
+
+
+                    <label>
+
+                        <input
+                            type="radio"
+                            name="experience"
+                            value="advanced"
+                        >
+
+                        <span>
+                            Advanced
+                        </span>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- =========================
+                 FITNESS GOAL
+            ========================== -->
+
+            <div class="formSection">
+
+                <div class="sectionTitle">
+
+                    <span>05</span>
+
+                    <div>
+
+                        <h2>Fitness Goal</h2>
+
+                        <p>
+                            What do you want to achieve?
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="goalOptions">
+
+                    <label class="goalCard">
+
+                        <input
+                            type="radio"
+                            name="goal"
+                            value="weight-loss"
+                            required
+                        >
+
+                        <div>
+
+                            <h3>
+                                Lose Weight
+                            </h3>
+
+                            <p>
+                                Burn fat and become leaner.
+                            </p>
+
+                        </div>
+
+                    </label>
+
+
+                    <label class="goalCard">
+
+                        <input
+                            type="radio"
+                            name="goal"
+                            value="muscle-gain"
+                        >
+
+                        <div>
+
+                            <h3>
+                                Build Muscle
+                            </h3>
+
+                            <p>
+                                Increase muscle and strength.
+                            </p>
+
+                        </div>
+
+                    </label>
+
+
+                    <label class="goalCard">
+
+                        <input
+                            type="radio"
+                            name="goal"
+                            value="maintenance"
+                        >
+
+                        <div>
+
+                            <h3>
+                                Maintain Weight
+                            </h3>
+
+                            <p>
+                                Stay fit and maintain your body.
+                            </p>
+
+                        </div>
+
+                    </label>
+
+
+                    <label class="goalCard">
+
+                        <input
+                            type="radio"
+                            name="goal"
+                            value="general-fitness"
+                        >
+
+                        <div>
+
+                            <h3>
+                                General Fitness
+                            </h3>
+
+                            <p>
+                                Improve overall health and fitness.
+                            </p>
+
+                        </div>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- =========================
+                 SUBMIT
+            ========================== -->
+
+            <div class="submitSection">
+
+                <p id="formMessage"></p>
+
+                <button
+                    type="submit"
+                    class="saveButton"
+                >
+                    Calculate & Save Profile
+                </button>
+
+            </div>
+
+        </form>
+
+    </main>
+
+
+    <!-- =========================
+         FOOTER
+    ========================== -->
+
+    <footer class="footer">
+
+        <p>
+            GYM ASSISTANT
+        </p>
+
+        <span>
+            Build consistency. Build strength.
+        </span>
+
+    </footer>
+
+
+    <script src="assessment.js"></script>
+
+</body>
+
+</html>

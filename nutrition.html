@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Gym Assistant | Nutrition</title>
+
+    <link
+        rel="stylesheet"
+        href="nutrition.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         NAVBAR
+    ========================== -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+            GYM<span>ASSISTANT</span>
+        </div>
+
+
+        <div class="navLinks">
+
+            <a href="home.html">
+                Home
+            </a>
+
+            <a href="workout.html">
+                Workout
+            </a>
+
+            <a
+                href="nutrition.html"
+                class="active"
+            >
+                Nutrition
+            </a>
+
+            <a href="progress.html">
+                Progress
+            </a>
+
+        </div>
+
+
+        <div class="navActions">
+
+            <button
+                class="profileButton"
+                id="profileButton"
+            >
+                Profile
+            </button>
+
+            <button
+                class="logoutButton"
+                id="logoutButton"
+            >
+                Logout
+            </button>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- =========================
+         MAIN
+    ========================== -->
+
+    <main class="nutritionContainer">
+
+
+        <!-- =========================
+             HEADER
+        ========================== -->
+
+        <section class="nutritionHeader">
+
+            <p class="smallHeading">
+                YOUR NUTRITION PLAN
+            </p>
+
+            <h1>
+                Fuel your body,
+                <span id="usernameDisplay">
+                    User
+                </span>
+            </h1>
+
+            <p class="headerDescription">
+
+                Your calorie and macro targets are
+                estimated from your body information,
+                activity level and fitness goal.
+
+            </p>
+
+        </section>
+
+
+
+        <!-- =========================
+             ESTIMATE NOTICE
+        ========================== -->
+
+        <div class="estimateNotice">
+
+            <span class="noticeIcon">
+                !
+            </span>
+
+            <p>
+
+                <strong>Estimated values:</strong>
+
+                These calculations are general fitness
+                guidance and are not medical or dietary
+                advice.
+
+            </p>
+
+        </div>
+
+
+
+        <!-- =========================
+             CALORIE SUMMARY
+        ========================== -->
+
+        <section class="calorieSection">
+
+
+            <div class="calorieCard">
+
+                <p class="cardLabel">
+                    BMR
+                </p>
+
+                <h2>
+                    <span id="bmrValue">--</span>
+                </h2>
+
+                <span class="cardUnit">
+                    kcal / day
+                </span>
+
+                <p class="cardDescription">
+
+                    Estimated calories your body uses
+                    at complete rest.
+
+                </p>
+
+            </div>
+
+
+
+            <div class="calorieCard featured">
+
+                <p class="cardLabel">
+                    DAILY CALORIE TARGET
+                </p>
+
+                <h2>
+                    <span id="calorieValue">--</span>
+                </h2>
+
+                <span class="cardUnit">
+                    kcal / day
+                </span>
+
+                <p
+                    class="goalText"
+                    id="goalText"
+                >
+                    --
+                </p>
+
+            </div>
+
+
+
+            <div class="calorieCard">
+
+                <p class="cardLabel">
+                    TDEE
+                </p>
+
+                <h2>
+                    <span id="tdeeValue">--</span>
+                </h2>
+
+                <span class="cardUnit">
+                    kcal / day
+                </span>
+
+                <p class="cardDescription">
+
+                    Estimated calories burned based
+                    on your activity level.
+
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             MACRO TARGETS
+        ========================== -->
+
+        <section class="macroSection">
+
+            <div class="sectionHeader">
+
+                <div>
+
+                    <p class="sectionLabel">
+                        DAILY TARGET
+                    </p>
+
+                    <h2>
+                        Your Macros
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="macroGrid">
+
+
+                <div class="macroCard">
+
+                    <div class="macroTop">
+
+                        <div class="macroIcon">
+                            P
+                        </div>
+
+                        <div>
+
+                            <p>
+                                PROTEIN
+                            </p>
+
+                            <h3>
+                                <span id="proteinValue">
+                                    --
+                                </span>
+                                g
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+                    <div class="macroBar">
+
+                        <div
+                            class="proteinFill"
+                            id="proteinFill"
+                        ></div>
+
+                    </div>
+
+                    <span>
+                        Supports muscle growth
+                        and recovery.
+                    </span>
+
+                </div>
+
+
+
+                <div class="macroCard">
+
+                    <div class="macroTop">
+
+                        <div class="macroIcon">
+                            C
+                        </div>
+
+                        <div>
+
+                            <p>
+                                CARBOHYDRATES
+                            </p>
+
+                            <h3>
+                                <span id="carbsValue">
+                                    --
+                                </span>
+                                g
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+                    <div class="macroBar">
+
+                        <div
+                            class="carbsFill"
+                            id="carbsFill"
+                        ></div>
+
+                    </div>
+
+                    <span>
+                        Main source of energy
+                        for training.
+                    </span>
+
+                </div>
+
+
+
+                <div class="macroCard">
+
+                    <div class="macroTop">
+
+                        <div class="macroIcon">
+                            F
+                        </div>
+
+                        <div>
+
+                            <p>
+                                FAT
+                            </p>
+
+                            <h3>
+                                <span id="fatValue">
+                                    --
+                                </span>
+                                g
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+                    <div class="macroBar">
+
+                        <div
+                            class="fatFill"
+                            id="fatFill"
+                        ></div>
+
+                    </div>
+
+                    <span>
+                        Supports hormones
+                        and overall health.
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             TODAY'S PROGRESS
+        ========================== -->
+
+        <section class="dailyProgressSection">
+
+            <div class="sectionHeader">
+
+                <div>
+
+                    <p class="sectionLabel">
+                        TODAY
+                    </p>
+
+                    <h2>
+                        Nutrition Progress
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="progressGrid">
+
+
+                <div class="nutritionProgressCard">
+
+                    <p>
+                        CALORIES
+                    </p>
+
+                    <h3>
+                        <span id="consumedCalories">
+                            0
+                        </span>
+                        /
+                        <span id="targetCalories">
+                            0
+                        </span>
+                        kcal
+                    </h3>
+
+                    <div class="nutritionProgressBar">
+
+                        <div
+                            id="calorieProgressFill"
+                        ></div>
+
+                    </div>
+
+                    <small id="remainingCalories">
+                        0 kcal remaining
+                    </small>
+
+                </div>
+
+
+
+                <div class="nutritionProgressCard">
+
+                    <p>
+                        PROTEIN
+                    </p>
+
+                    <h3>
+                        <span id="consumedProtein">
+                            0
+                        </span>
+                        /
+                        <span id="targetProtein">
+                            0
+                        </span>
+                        g
+                    </h3>
+
+                    <div class="nutritionProgressBar">
+
+                        <div
+                            id="proteinProgressFill"
+                        ></div>
+
+                    </div>
+
+                    <small id="remainingProtein">
+                        0 g remaining
+                    </small>
+
+                </div>
+
+
+
+                <div class="nutritionProgressCard">
+
+                    <p>
+                        CARBS
+                    </p>
+
+                    <h3>
+                        <span id="consumedCarbs">
+                            0
+                        </span>
+                        /
+                        <span id="targetCarbs">
+                            0
+                        </span>
+                        g
+                    </h3>
+
+                    <div class="nutritionProgressBar">
+
+                        <div
+                            id="carbsProgressFill"
+                        ></div>
+
+                    </div>
+
+                    <small id="remainingCarbs">
+                        0 g remaining
+                    </small>
+
+                </div>
+
+
+
+                <div class="nutritionProgressCard">
+
+                    <p>
+                        FAT
+                    </p>
+
+                    <h3>
+                        <span id="consumedFat">
+                            0
+                        </span>
+                        /
+                        <span id="targetFat">
+                            0
+                        </span>
+                        g
+                    </h3>
+
+                    <div class="nutritionProgressBar">
+
+                        <div
+                            id="fatProgressFill"
+                        ></div>
+
+                    </div>
+
+                    <small id="remainingFat">
+                        0 g remaining
+                    </small>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             ADD FOOD
+        ========================== -->
+
+        <section class="foodSection">
+
+            <div class="sectionHeader">
+
+                <div>
+
+                    <p class="sectionLabel">
+                        FOOD TRACKER
+                    </p>
+
+                    <h2>
+                        What did you eat?
+                    </h2>
+
+                    <p class="sectionDescription">
+                        Enter the food name and quantity.
+                        Nutrition values will be estimated
+                        using the food database.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="foodInputCard">
+
+
+                <div class="inputGroup foodSearchGroup">
+
+                    <label for="foodName">
+                        FOOD NAME
+                    </label>
+
+                    <input
+                        type="text"
+                        id="foodName"
+                        placeholder="Example: Chicken, egg, rice..."
+                        autocomplete="off"
+                    >
+
+                    <div
+                        id="foodSuggestions"
+                        class="foodSuggestions"
+                    ></div>
+
+                </div>
+
+
+
+                <div class="inputGroup">
+
+                    <label for="foodQuantity">
+                        QUANTITY
+                    </label>
+
+                    <input
+                        type="number"
+                        id="foodQuantity"
+                        placeholder="Example: 200"
+                        min="1"
+                        step="0.1"
+                    >
+
+                </div>
+
+
+
+                <div class="inputGroup">
+
+                    <label for="foodUnit">
+                        UNIT
+                    </label>
+
+                    <select id="foodUnit">
+
+                        <option value="g">
+                            grams
+                        </option>
+
+                        <option value="ml">
+                            ml
+                        </option>
+
+                        <option value="serving">
+                            serving
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <button
+                    id="addFoodButton"
+                    class="primaryButton"
+                >
+                    Add Food
+                </button>
+
+            </div>
+
+
+            <p
+                id="foodStatus"
+                class="foodStatus"
+            ></p>
+
+
+            <!-- =========================
+                 FOOD LIST
+            ========================== -->
+
+            <div class="foodHistoryHeader">
+
+                <div>
+
+                    <p class="sectionLabel">
+                        TODAY'S FOOD
+                    </p>
+
+                </div>
+
+                <button
+                    id="resetFoodButton"
+                    class="secondaryButton"
+                >
+                    Reset Today
+                </button>
+
+            </div>
+
+
+            <div
+                id="foodList"
+                class="foodList"
+            ></div>
+
+        </section>
+
+
+
+        <!-- =========================
+             MEAL PLANNER
+        ========================== -->
+
+        <section class="mealPlannerSection">
+
+            <div class="sectionHeader">
+
+                <div>
+
+                    <p class="sectionLabel">
+                        PERSONAL MEAL PLAN
+                    </p>
+
+                    <h2>
+                        Design Your Daily Meals
+                    </h2>
+
+                    <p class="sectionDescription">
+
+                        Everyone eats differently.
+                        Keep, edit or delete these meals
+                        according to your routine.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="mealList"
+                class="mealList"
+            ></div>
+
+
+            <div class="mealActions">
+
+                <button
+                    id="addMealButton"
+                    class="secondaryButton"
+                >
+                    + Add Meal
+                </button>
+
+                <button
+                    id="saveMealButton"
+                    class="primaryButton"
+                >
+                    Save Meal Plan
+                </button>
+
+                <button
+                    id="resetMealButton"
+                    class="dangerButton"
+                >
+                    Reset Meals
+                </button>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             BODY DATA
+        ========================== -->
+
+        <section class="bodySection">
+
+            <div class="sectionHeader">
+
+                <div>
+
+                    <p class="sectionLabel">
+                        YOUR DATA
+                    </p>
+
+                    <h2>
+                        Calculation Based On
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="bodyGrid">
+
+                <div class="bodyCard">
+
+                    <p>
+                        WEIGHT
+                    </p>
+
+                    <h3>
+                        <span id="weightValue">
+                            --
+                        </span>
+                        kg
+                    </h3>
+
+                </div>
+
+
+                <div class="bodyCard">
+
+                    <p>
+                        HEIGHT
+                    </p>
+
+                    <h3>
+                        <span id="heightValue">
+                            --
+                        </span>
+                        cm
+                    </h3>
+
+                </div>
+
+
+                <div class="bodyCard">
+
+                    <p>
+                        AGE
+                    </p>
+
+                    <h3>
+                        <span id="ageValue">
+                            --
+                        </span>
+                        years
+                    </h3>
+
+                </div>
+
+
+                <div class="bodyCard">
+
+                    <p>
+                        ACTIVITY
+                    </p>
+
+                    <h3 id="activityValue">
+                        --
+                    </h3>
+
+                </div>
+
+
+                <div class="bodyCard">
+
+                    <p>
+                        GOAL
+                    </p>
+
+                    <h3 id="goalValue">
+                        --
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             GUIDANCE
+        ========================== -->
+
+        <section class="guidanceSection">
+
+            <div class="guidanceCard">
+
+                <p class="sectionLabel">
+                    DAILY GUIDANCE
+                </p>
+
+                <h2>
+                    Stay consistent.
+                </h2>
+
+                <p>
+
+                    Your calorie and macro targets are
+                    starting points. Track your food,
+                    body weight and performance over time.
+                    Adjust gradually when necessary.
+
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- =========================
+         FOOTER
+    ========================== -->
+
+    <footer class="footer">
+
+        <p>
+            GYM ASSISTANT
+        </p>
+
+        <span>
+            Build consistency. Build strength.
+        </span>
+
+    </footer>
+
+
+    <script src="nutrition.js"></script>
+
+</body>
+
+</html>

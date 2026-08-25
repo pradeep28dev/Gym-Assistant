@@ -1,0 +1,590 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+
+/* =========================
+   RESET
+========================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: #050505;
+}
+
+
+/* =========================
+   MAIN BACKGROUND
+========================= */
+
+.signupcontainer {
+
+    min-height: 100vh;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    padding: 30px;
+
+    color: white;
+
+    background:
+
+        radial-gradient(
+            circle at 0% 0%,
+            #ff1a1a 0%,
+            #b30000 18%,
+            transparent 45%
+        ),
+
+        radial-gradient(
+            circle at 100% 100%,
+            #ff2020 0%,
+            #a00000 18%,
+            transparent 45%
+        ),
+
+        linear-gradient(
+            135deg,
+            #180000,
+            #050505 45%,
+            #100000
+        );
+}
+
+
+/* =========================
+   SIGNUP CARD
+========================= */
+
+.signupCard {
+
+    width: 100%;
+
+    max-width: 460px;
+
+    padding: 40px;
+
+    background: rgba(10, 10, 10, 0.9);
+
+    border:
+        1px solid
+        rgba(255, 40, 40, 0.45);
+
+    border-radius: 22px;
+
+    backdrop-filter: blur(8px);
+
+    box-shadow:
+        0 25px 70px rgba(0, 0, 0, 0.9),
+        0 0 50px rgba(255, 0, 0, 0.18);
+
+    transition: 0.3s ease;
+}
+
+
+.signupCard:hover {
+
+    border-color:
+        rgba(255, 40, 40, 0.7);
+
+    box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.95),
+        0 0 60px rgba(255, 0, 0, 0.22);
+}
+
+
+/* =========================
+   HEADING
+========================= */
+
+.signupCard h1 {
+
+    text-align: center;
+
+    font-size: 28px;
+
+    font-weight: 700;
+
+    color: white;
+}
+
+
+.signupCard h1::after {
+
+    content: "";
+
+    display: block;
+
+    width: 45px;
+
+    height: 3px;
+
+    margin: 12px auto 0;
+
+    background: #ff1f1f;
+
+    border-radius: 10px;
+
+    box-shadow:
+        0 0 12px #ff1f1f;
+}
+
+
+/* =========================
+   SUBTITLE
+========================= */
+
+.subtitle {
+
+    margin-top: 12px;
+
+    margin-bottom: 28px;
+
+    text-align: center;
+
+    font-size: 14px;
+
+    color: #777;
+}
+
+
+/* =========================
+   FORM
+========================= */
+
+.signupform {
+
+    width: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+}
+
+
+/* =========================
+   INPUT GROUP
+========================= */
+
+.inputGroup {
+
+    display: flex;
+
+    flex-direction: column;
+
+    margin-bottom: 17px;
+}
+
+
+/* =========================
+   LABEL
+========================= */
+
+.inputGroup label {
+
+    margin-bottom: 7px;
+
+    font-size: 13px;
+
+    font-weight: 500;
+
+    color: #d4d4d4;
+}
+
+
+/* =========================
+   NORMAL INPUTS
+========================= */
+
+.inputGroup > input {
+
+    width: 100%;
+
+    padding: 13px 15px;
+
+    background: #111111;
+
+    border:
+        1px solid
+        #2b2b2b;
+
+    border-radius: 10px;
+
+    color: white;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    outline: none;
+
+    transition: 0.25s ease;
+}
+
+
+.inputGroup > input::placeholder {
+
+    color: #666;
+}
+
+
+.inputGroup > input:hover {
+
+    border-color: #444;
+}
+
+
+.inputGroup > input:focus {
+
+    border-color: #ff2525;
+
+    background: #151515;
+
+    box-shadow:
+        0 0 0 3px rgba(255, 37, 37, 0.12),
+        0 0 15px rgba(255, 37, 37, 0.12);
+}
+
+
+/* =========================
+   PASSWORD WRAPPER
+========================= */
+
+.passwordWrapper {
+
+    position: relative;
+
+    width: 100%;
+}
+
+
+/* =========================
+   PASSWORD INPUT
+========================= */
+
+.passwordWrapper input {
+
+    width: 100%;
+
+    padding: 13px 48px 13px 15px;
+
+    background: #111111;
+
+    border:
+        1px solid
+        #2b2b2b;
+
+    border-radius: 10px;
+
+    color: white;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    outline: none;
+
+    transition: 0.25s ease;
+}
+
+
+.passwordWrapper input::placeholder {
+
+    color: #666;
+}
+
+
+.passwordWrapper input:hover {
+
+    border-color: #444;
+}
+
+
+.passwordWrapper input:focus {
+
+    border-color: #ff2525;
+
+    background: #151515;
+
+    box-shadow:
+        0 0 0 3px rgba(255, 37, 37, 0.12),
+        0 0 15px rgba(255, 37, 37, 0.12);
+}
+
+
+/* =========================
+   EYE BUTTON
+========================= */
+
+.eyeButton {
+
+    position: absolute;
+
+    right: 10px;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    width: 32px;
+
+    height: 32px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 0;
+
+    margin: 0;
+
+    border: none;
+
+    border-radius: 6px;
+
+    background: transparent;
+
+    color: #777;
+
+    cursor: pointer;
+
+    box-shadow: none;
+
+    transition: 0.2s ease;
+}
+
+
+/* =========================
+   LUCIDE EYE ICON
+========================= */
+
+.eyeButton svg {
+
+    width: 18px;
+
+    height: 18px;
+
+    stroke-width: 2;
+}
+
+
+/* =========================
+   EYE HOVER
+========================= */
+
+.eyeButton:hover {
+
+    background:
+        rgba(255, 37, 37, 0.08);
+
+    color: #ff2525;
+
+    transform:
+        translateY(-50%);
+}
+
+
+/* =========================
+   CREATE ACCOUNT BUTTON
+========================= */
+
+.signupform > button[type="submit"] {
+
+    width: 100%;
+
+    padding: 14px;
+
+    margin-top: 8px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ff1f1f,
+            #c40000
+        );
+
+    color: white;
+
+    font-family: inherit;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 25px rgba(255, 0, 0, 0.25);
+
+    transition: all 0.25s ease;
+}
+
+
+.signupform > button[type="submit"]:hover {
+
+    transform: translateY(-2px);
+
+    background:
+        linear-gradient(
+            135deg,
+            #ff3333,
+            #e00000
+        );
+
+    box-shadow:
+        0 12px 30px rgba(255, 0, 0, 0.45);
+}
+
+
+.signupform > button[type="submit"]:active {
+
+    transform: translateY(0);
+}
+
+
+/* =========================
+   DISABLED BUTTON
+========================= */
+
+.signupform > button[type="submit"]:disabled {
+
+    cursor: not-allowed;
+
+    opacity: 0.6;
+
+    transform: none;
+
+    box-shadow: none;
+}
+
+
+/* =========================
+   SIGN IN LINK
+========================= */
+
+.login-text {
+
+    margin-top: 22px;
+
+    text-align: center;
+
+    font-size: 14px;
+
+    color: #777;
+}
+
+
+.login-text a {
+
+    margin-left: 5px;
+
+    color: #ff1f1f;
+
+    font-weight: 600;
+
+    text-decoration: none;
+
+    transition: 0.25s ease;
+}
+
+
+.login-text a:hover {
+
+    color: #ff4a4a;
+
+    text-shadow:
+        0 0 10px rgba(255, 30, 30, 0.7);
+}
+
+
+/* =========================
+   SUCCESS MESSAGE
+========================= */
+
+.success-message {
+
+    display: none;
+
+    margin-top: 20px;
+
+    padding: 12px;
+
+    text-align: center;
+
+    background:
+        rgba(0, 255, 120, 0.08);
+
+    border:
+        1px solid
+        rgba(0, 255, 120, 0.35);
+
+    border-radius: 8px;
+
+    color: #00ff78;
+
+    font-size: 14px;
+
+    font-weight: 600;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 500px) {
+
+    .signupcontainer {
+
+        padding: 20px;
+    }
+
+
+    .signupCard {
+
+        padding: 30px 22px;
+
+        border-radius: 18px;
+    }
+
+
+    .signupCard h1 {
+
+        font-size: 24px;
+    }
+
+
+    .subtitle {
+
+        font-size: 13px;
+
+        margin-bottom: 24px;
+    }
+
+
+    .inputGroup {
+
+        margin-bottom: 15px;
+    }
+
+
+    .signupform > button[type="submit"] {
+
+        padding: 13px;
+    }
+}

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Gym Assistant | Profile</title>
+
+    <link rel="stylesheet" href="profile.css">
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         NAVBAR
+    ========================== -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+            GYM<span>ASSISTANT</span>
+        </div>
+
+
+        <a
+            href="home.html"
+            class="backButton"
+        >
+            ← Back to Home
+        </a>
+
+    </nav>
+
+
+
+    <!-- =========================
+         PROFILE CONTAINER
+    ========================== -->
+
+    <main class="profileContainer">
+
+
+        <!-- =========================
+             PROFILE HEADER
+        ========================== -->
+
+        <section class="profileHeader">
+
+            <div class="profileAvatar">
+
+                <span id="profileInitial">
+                    U
+                </span>
+
+            </div>
+
+
+            <div class="profileHeaderText">
+
+                <p class="smallHeading">
+                    MY PROFILE
+                </p>
+
+                <h1>
+                    <span id="profileUsername">
+                        User
+                    </span>
+                </h1>
+
+                <p>
+                    Your personal fitness information
+                    and body statistics.
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             PERSONAL INFORMATION
+        ========================== -->
+
+        <section class="profileSection">
+
+            <div class="sectionTitle">
+
+                <span>
+                    01
+                </span>
+
+                <div>
+
+                    <h2>
+                        Personal Information
+                    </h2>
+
+                    <p>
+                        Your basic information.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="infoGrid">
+
+
+                <div class="infoCard">
+
+                    <p>
+                        AGE
+                    </p>
+
+                    <h3 id="profileAge">
+                        --
+                    </h3>
+
+                    <span>
+                        years
+                    </span>
+
+                </div>
+
+
+
+                <div class="infoCard">
+
+                    <p>
+                        GENDER
+                    </p>
+
+                    <h3 id="profileGender">
+                        --
+                    </h3>
+
+                </div>
+
+
+
+                <div class="infoCard">
+
+                    <p>
+                        HEIGHT
+                    </p>
+
+                    <h3 id="profileHeight">
+                        --
+                    </h3>
+
+                    <span>
+                        cm
+                    </span>
+
+                </div>
+
+
+
+                <div class="infoCard">
+
+                    <p>
+                        WEIGHT
+                    </p>
+
+                    <h3 id="profileWeight">
+                        --
+                    </h3>
+
+                    <span>
+                        kg
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             BODY COMPOSITION
+        ========================== -->
+
+        <section class="profileSection">
+
+            <div class="sectionTitle">
+
+                <span>
+                    02
+                </span>
+
+                <div>
+
+                    <h2>
+                        Body Composition
+                    </h2>
+
+                    <p>
+                        Your body measurements and estimated
+                        body fat.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="infoGrid">
+
+
+                <div class="infoCard highlightCard">
+
+                    <p>
+                        ESTIMATED BODY FAT
+                    </p>
+
+                    <h3 id="profileBodyFat">
+                        --
+                    </h3>
+
+                    <span>
+                        % · Navy method estimate
+                    </span>
+
+                </div>
+
+
+
+                <div class="infoCard">
+
+                    <p>
+                        NECK
+                    </p>
+
+                    <h3 id="profileNeck">
+                        --
+                    </h3>
+
+                    <span>
+                        cm
+                    </span>
+
+                </div>
+
+
+
+                <div class="infoCard">
+
+                    <p>
+                        WAIST
+                    </p>
+
+                    <h3 id="profileWaist">
+                        --
+                    </h3>
+
+                    <span>
+                        cm
+                    </span>
+
+                </div>
+
+
+
+                <div
+                    class="infoCard"
+                    id="hipCard"
+                >
+
+                    <p>
+                        HIP
+                    </p>
+
+                    <h3 id="profileHip">
+                        --
+                    </h3>
+
+                    <span>
+                        cm
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             FITNESS INFORMATION
+        ========================== -->
+
+        <section class="profileSection">
+
+            <div class="sectionTitle">
+
+                <span>
+                    03
+                </span>
+
+                <div>
+
+                    <h2>
+                        Fitness Information
+                    </h2>
+
+                    <p>
+                        Your current activity and fitness goals.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="fitnessInfoGrid">
+
+
+                <div class="fitnessInfoCard">
+
+                    <p>
+                        ACTIVITY LEVEL
+                    </p>
+
+                    <h3 id="profileActivity">
+                        --
+                    </h3>
+
+                </div>
+
+
+
+                <div class="fitnessInfoCard">
+
+                    <p>
+                        EXPERIENCE
+                    </p>
+
+                    <h3 id="profileExperience">
+                        --
+                    </h3>
+
+                </div>
+
+
+
+                <div class="fitnessInfoCard goalCard">
+
+                    <p>
+                        FITNESS GOAL
+                    </p>
+
+                    <h3 id="profileGoal">
+                        --
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             ACTIONS
+        ========================== -->
+
+        <section class="profileActions">
+
+            <button
+                id="editProfileButton"
+                class="editButton"
+            >
+                Edit Fitness Profile
+            </button>
+
+
+            <a
+                href="home.html"
+                class="homeButton"
+            >
+                Back to Dashboard
+            </a>
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- =========================
+         FOOTER
+    ========================== -->
+
+    <footer class="footer">
+
+        <p>
+            GYM ASSISTANT
+        </p>
+
+        <span>
+            Build consistency. Build strength.
+        </span>
+
+    </footer>
+
+
+
+    <script src="profile.js"></script>
+
+</body>
+
+</html>

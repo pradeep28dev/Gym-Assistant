@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Gym Assistant | Progress</title>
+
+    <link
+        rel="stylesheet"
+        href="progress.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         NAVBAR
+    ========================== -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+            GYM<span>ASSISTANT</span>
+        </div>
+
+
+        <div class="navLinks">
+
+            <a href="home.html">
+                Home
+            </a>
+
+            <a href="workout.html">
+                Workout
+            </a>
+
+            <a href="nutrition.html">
+                Nutrition
+            </a>
+
+            <a
+                href="progress.html"
+                class="active"
+            >
+                Progress
+            </a>
+
+        </div>
+
+
+        <div class="navActions">
+
+            <button
+                class="profileButton"
+                id="profileButton"
+            >
+                Profile
+            </button>
+
+            <button
+                class="logoutButton"
+                id="logoutButton"
+            >
+                Logout
+            </button>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- =========================
+         MAIN
+    ========================== -->
+
+    <main class="progressContainer">
+
+
+        <!-- =========================
+             HEADER
+        ========================== -->
+
+        <section class="progressHeader">
+
+            <div>
+
+                <p class="smallHeading">
+                    YOUR FITNESS JOURNEY
+                </p>
+
+                <h1>
+                    Track your 
+                    Progress,
+                    <span id="usernameDisplay">
+                    </span>
+                </h1>
+
+                <p class="headerDescription">
+                    Record your measurements regularly
+                    and watch how your body changes over
+                    time.
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             SUMMARY
+        ========================== -->
+
+        <section class="summarySection">
+
+            <div class="summaryCard">
+
+                <p>
+                    STARTING WEIGHT
+                </p>
+
+                <h2>
+                    <span id="startingWeight">
+                        --
+                    </span>
+                    <small>kg</small>
+                </h2>
+
+            </div>
+
+
+            <div class="summaryCard">
+
+                <p>
+                    CURRENT WEIGHT
+                </p>
+
+                <h2>
+                    <span id="currentWeight">
+                        --
+                    </span>
+                    <small>kg</small>
+                </h2>
+
+            </div>
+
+
+            <div class="summaryCard">
+
+                <p>
+                    WEIGHT CHANGE
+                </p>
+
+                <h2 id="weightChange">
+                    --
+                </h2>
+
+            </div>
+
+
+            <div class="summaryCard">
+
+                <p>
+                    CURRENT BODY FAT
+                </p>
+
+                <h2>
+                    <span id="currentBodyFat">
+                        --
+                    </span>
+                    <small>%</small>
+                </h2>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             ADD PROGRESS
+        ========================== -->
+
+        <section class="addProgressSection">
+
+            <div class="sectionHeader">
+
+                <p class="sectionLabel">
+                    UPDATE
+                </p>
+
+                <h2>
+                    Add Today's Progress
+                </h2>
+
+            </div>
+
+
+            <div class="progressFormCard">
+
+                <form id="progressForm">
+
+
+                    <div class="inputGroup">
+
+                        <label for="progressDate">
+                            Date
+                        </label>
+
+                        <input
+                            type="date"
+                            id="progressDate"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="inputGroup">
+
+                        <label for="progressWeight">
+                            Weight (kg)
+                        </label>
+
+                        <input
+                            type="number"
+                            id="progressWeight"
+                            step="0.1"
+                            min="1"
+                            placeholder="Enter weight"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="inputGroup">
+
+                        <label for="progressBodyFat">
+                            Body Fat (%) — Estimated
+                        </label>
+
+                        <input
+                            type="number"
+                            id="progressBodyFat"
+                            step="0.1"
+                            min="1"
+                            max="70"
+                            placeholder="Optional"
+                        >
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="saveButton"
+                    >
+                        Save Progress
+                    </button>
+
+                </form>
+
+
+                <p
+                    id="formMessage"
+                    class="formMessage"
+                ></p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             PROGRESS HISTORY
+        ========================== -->
+
+        <section class="historySection">
+
+            <div class="sectionHeader">
+
+                <p class="sectionLabel">
+                    HISTORY
+                </p>
+
+                <h2>
+                    Progress History
+                </h2>
+
+            </div>
+
+
+            <div class="historyCard">
+
+                <div class="tableWrapper">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    DATE
+                                </th>
+
+                                <th>
+                                    WEIGHT
+                                </th>
+
+                                <th>
+                                    BODY FAT
+                                </th>
+
+                                <th>
+                                    CHANGE
+                                </th>
+
+                                <th>
+                                    ACTION
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="progressTableBody">
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <p
+                    id="emptyMessage"
+                    class="emptyMessage"
+                >
+                    No progress records yet.
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             NOTE
+        ========================== -->
+
+        <section class="noteSection">
+
+            <div class="noteCard">
+
+                <p class="sectionLabel">
+                    REMEMBER
+                </p>
+
+                <h2>
+                    Consistency beats perfection.
+                </h2>
+
+                <p>
+                    Try to record your progress under
+                    similar conditions each time. Daily
+                    weight naturally changes, so focus
+                    more on the long-term trend than a
+                    single measurement.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- =========================
+         FOOTER
+    ========================== -->
+
+    <footer class="footer">
+
+        <p>
+            GYM ASSISTANT
+        </p>
+
+        <span>
+            Build consistency. Build strength.
+        </span>
+
+    </footer>
+
+
+    <script src="progress.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,1211 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+
+/* =========================
+   RESET
+========================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: #050505;
+    color: white;
+    min-height: 100vh;
+}
+
+
+/* =========================
+   NAVBAR
+========================= */
+
+.navbar {
+    width: 100%;
+    min-height: 72px;
+    padding: 0 6%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    background: rgba(5, 5, 5, 0.92);
+    border-bottom: 1px solid rgba(255, 35, 35, 0.25);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+}
+
+
+.logo {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
+
+.logo span {
+    color: #ff2020;
+    margin-left: 4px;
+}
+
+
+.navLinks {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+
+.navLinks a {
+    color: #888;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: 0.25s ease;
+}
+
+
+.navLinks a:hover {
+    color: white;
+}
+
+
+.navLinks a.active {
+    color: #ff2525;
+}
+
+
+.navActions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+.profileButton,
+.logoutButton,
+.primaryButton,
+.secondaryButton,
+.dangerButton {
+    padding: 9px 15px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.25s ease;
+}
+
+
+.profileButton {
+    background: #111;
+    border: 1px solid #333;
+    color: white;
+}
+
+
+.profileButton:hover {
+    border-color: #ff2525;
+    color: #ff2525;
+}
+
+
+.logoutButton {
+    background: transparent;
+    border: 1px solid rgba(255, 40, 40, 0.45);
+    color: #ff3333;
+}
+
+
+.logoutButton:hover {
+    background: #ff2020;
+    color: white;
+    border-color: #ff2020;
+}
+
+
+.primaryButton {
+    background: #ff2020;
+    border: 1px solid #ff2020;
+    color: white;
+}
+
+
+.primaryButton:hover {
+    background: #d90000;
+    border-color: #d90000;
+}
+
+
+.secondaryButton {
+    background: transparent;
+    border: 1px solid #333;
+    color: #aaa;
+}
+
+
+.secondaryButton:hover {
+    border-color: #ff2525;
+    color: #ff2525;
+}
+
+
+.dangerButton {
+    background: transparent;
+    border: 1px solid #5c2020;
+    color: #ff4545;
+}
+
+
+.dangerButton:hover {
+    background: #ff2020;
+    color: white;
+}
+
+
+/* =========================
+   MAIN
+========================= */
+
+.nutritionContainer {
+    width: 90%;
+    max-width: 1200px;
+    margin: auto;
+    padding: 60px 0 80px;
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.nutritionHeader {
+    padding: 45px;
+    border-radius: 22px;
+
+    background:
+        radial-gradient(
+            circle at 90% 20%,
+            rgba(255, 20, 20, 0.25),
+            transparent 35%
+        ),
+        linear-gradient(
+            135deg,
+            #160000,
+            #090909 55%,
+            #0e0000
+        );
+
+    border: 1px solid rgba(255, 35, 35, 0.25);
+
+    box-shadow:
+        0 25px 70px
+        rgba(0, 0, 0, 0.7);
+}
+
+
+.smallHeading,
+.sectionLabel {
+    color: #ff2929;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+
+.nutritionHeader h1 {
+    margin-top: 12px;
+    font-size: clamp(32px, 5vw, 48px);
+    line-height: 1.1;
+    font-weight: 800;
+}
+
+
+.nutritionHeader h1 span {
+    color: #ff2424;
+}
+
+
+.headerDescription {
+    max-width: 650px;
+    margin-top: 18px;
+    color: #999;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+
+/* =========================
+   NOTICE
+========================= */
+
+.estimateNotice {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    margin-top: 20px;
+    padding: 15px 18px;
+
+    border: 1px solid rgba(255, 170, 0, 0.25);
+    border-radius: 10px;
+    background: rgba(255, 170, 0, 0.04);
+
+    color: #888;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+
+.noticeIcon {
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    border-radius: 50%;
+    border: 1px solid rgba(255, 170, 0, 0.4);
+
+    color: #ffb000;
+    font-weight: 700;
+}
+
+
+.estimateNotice strong {
+    color: #aaa;
+}
+
+
+/* =========================
+   CALORIES
+========================= */
+
+.calorieSection {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-top: 22px;
+}
+
+
+.calorieCard {
+    padding: 27px;
+    background: #0c0c0c;
+    border: 1px solid #242424;
+    border-radius: 16px;
+    transition: 0.25s ease;
+}
+
+
+.calorieCard:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255, 35, 35, 0.4);
+}
+
+
+.calorieCard.featured {
+    background: linear-gradient(
+        145deg,
+        #160000,
+        #0b0b0b
+    );
+
+    border-color: rgba(255, 35, 35, 0.45);
+
+    box-shadow:
+        0 15px 40px
+        rgba(255, 0, 0, 0.07);
+}
+
+
+.cardLabel {
+    color: #666;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+
+.calorieCard h2 {
+    margin-top: 12px;
+    font-size: 34px;
+    font-weight: 800;
+}
+
+
+.cardUnit {
+    color: #666;
+    font-size: 11px;
+}
+
+
+.cardDescription {
+    margin-top: 14px;
+    color: #666;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+
+.goalText {
+    margin-top: 12px;
+    color: #ff2929;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+
+/* =========================
+   SECTIONS
+========================= */
+
+.macroSection,
+.dailyProgressSection,
+.foodSection,
+.mealPlannerSection,
+.bodySection,
+.guidanceSection {
+    margin-top: 50px;
+}
+
+
+.sectionHeader h2 {
+    margin-top: 8px;
+    font-size: 26px;
+}
+
+
+.sectionDescription {
+    margin-top: 8px;
+    color: #666;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+
+/* =========================
+   MACROS
+========================= */
+
+.macroGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-top: 20px;
+}
+
+
+.macroCard {
+    padding: 24px;
+    background: #0b0b0b;
+    border: 1px solid #242424;
+    border-radius: 15px;
+    transition: 0.25s ease;
+}
+
+
+.macroCard:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255, 35, 35, 0.4);
+}
+
+
+.macroTop {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+
+.macroIcon {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+    background: rgba(255, 25, 25, 0.08);
+    border: 1px solid rgba(255, 35, 35, 0.25);
+
+    color: #ff2525;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+
+.macroTop p {
+    color: #666;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+
+.macroTop h3 {
+    margin-top: 4px;
+    font-size: 23px;
+}
+
+
+.macroBar {
+    width: 100%;
+    height: 5px;
+    margin-top: 20px;
+
+    overflow: hidden;
+    border-radius: 10px;
+    background: #222;
+}
+
+
+.macroBar div {
+    height: 100%;
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #ff2222,
+            #c40000
+        );
+
+    transition: width 0.4s ease;
+}
+
+
+.proteinFill {
+    width: 0%;
+}
+
+
+.carbsFill {
+    width: 0%;
+}
+
+
+.fatFill {
+    width: 0%;
+}
+
+
+.macroCard > span {
+    display: block;
+    margin-top: 12px;
+    color: #666;
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+
+/* =========================
+   DAILY PROGRESS
+========================= */
+
+.progressGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-top: 20px;
+}
+
+
+.nutritionProgressCard {
+    padding: 20px;
+    background: #0b0b0b;
+    border: 1px solid #242424;
+    border-radius: 13px;
+}
+
+
+.nutritionProgressCard p {
+    color: #666;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+}
+
+
+.nutritionProgressCard h3 {
+    margin-top: 10px;
+    font-size: 16px;
+}
+
+
+.nutritionProgressBar {
+    width: 100%;
+    height: 6px;
+    margin-top: 14px;
+    overflow: hidden;
+    border-radius: 10px;
+    background: #222;
+}
+
+
+.nutritionProgressBar div {
+    width: 0%;
+    height: 100%;
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #ff2222,
+            #c40000
+        );
+
+    transition: width 0.4s ease;
+}
+
+
+.nutritionProgressCard small {
+    display: block;
+    margin-top: 9px;
+    color: #777;
+    font-size: 10px;
+}
+
+
+/* =========================
+   FOOD TRACKER
+========================= */
+
+.foodInputCard {
+    display: grid;
+    grid-template-columns: 1fr 180px 150px auto;
+    gap: 12px;
+
+    margin-top: 22px;
+    padding: 22px;
+
+    background: #0b0b0b;
+    border: 1px solid #242424;
+    border-radius: 15px;
+}
+
+
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.inputGroup label {
+    margin-bottom: 7px;
+    color: #666;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+}
+
+
+.inputGroup input,
+.inputGroup select {
+    width: 100%;
+    padding: 11px 12px;
+
+    background: #080808;
+    border: 1px solid #303030;
+    border-radius: 8px;
+
+    color: white;
+    font-family: inherit;
+    font-size: 12px;
+    outline: none;
+}
+
+
+.inputGroup input:focus,
+.inputGroup select:focus {
+    border-color: #ff2525;
+}
+
+
+.inputGroup select option {
+    background: #111;
+    color: white;
+}
+
+
+.foodInputCard .primaryButton {
+    align-self: end;
+    height: 39px;
+}
+
+
+.foodStatus {
+    min-height: 18px;
+    margin-top: 10px;
+    color: #777;
+    font-size: 11px;
+}
+
+
+.foodHistoryHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    margin-top: 25px;
+}
+
+
+.foodList {
+    display: grid;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+
+.emptyFood {
+    padding: 25px;
+    text-align: center;
+
+    color: #555;
+    background: #0b0b0b;
+    border: 1px solid #222;
+    border-radius: 12px;
+
+    font-size: 12px;
+}
+
+
+.foodCard {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    padding: 16px 18px;
+
+    background: #0b0b0b;
+    border: 1px solid #242424;
+    border-radius: 12px;
+
+    transition: 0.25s ease;
+}
+
+
+.foodCard:hover {
+    border-color: rgba(255, 35, 35, 0.35);
+}
+
+
+.foodIcon {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 8px;
+    background: rgba(255, 25, 25, 0.08);
+    color: #ff2525;
+
+    font-weight: 800;
+    font-size: 12px;
+}
+
+
+.foodInfo {
+    flex: 1;
+}
+
+
+.foodInfo h3 {
+    font-size: 14px;
+}
+
+
+.foodInfo p {
+    margin-top: 4px;
+    color: #777;
+    font-size: 10px;
+}
+
+
+.foodMacros {
+    display: flex;
+    gap: 12px;
+    color: #aaa;
+    font-size: 10px;
+}
+
+
+.foodCalories {
+    min-width: 80px;
+    text-align: right;
+}
+
+
+.foodCalories strong {
+    display: block;
+    font-size: 13px;
+}
+
+
+.foodCalories span {
+    color: #666;
+    font-size: 9px;
+}
+
+
+.deleteFoodButton,
+.deleteMealButton {
+    width: 30px;
+    height: 30px;
+
+    border: 1px solid #333;
+    border-radius: 7px;
+
+    background: transparent;
+    color: #777;
+
+    cursor: pointer;
+    font-size: 17px;
+}
+
+
+.deleteFoodButton:hover,
+.deleteMealButton:hover {
+    border-color: #ff2525;
+    color: #ff2525;
+}
+
+
+/* =========================
+   MEAL PLANNER
+========================= */
+
+.mealList {
+    display: grid;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+
+.mealCard {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    padding: 16px;
+
+    background: #0b0b0b;
+    border: 1px solid #242424;
+    border-radius: 12px;
+}
+
+
+.snackCard {
+    background: #090909;
+}
+
+
+.mealNumber {
+    width: 32px;
+    height: 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 7px;
+
+    background: rgba(255, 25, 25, 0.08);
+    color: #ff2525;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+
+.mealIcon {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 8px;
+
+    background: #151515;
+    border: 1px solid #292929;
+
+    color: #aaa;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+
+.mealContent {
+    flex: 1;
+
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 10px;
+}
+
+
+.mealNameInput,
+.mealDescriptionInput {
+    width: 100%;
+
+    padding: 9px 10px;
+
+    background: #080808;
+    border: 1px solid #2d2d2d;
+    border-radius: 7px;
+
+    color: white;
+    font-family: inherit;
+    font-size: 11px;
+    outline: none;
+}
+
+
+.mealNameInput:focus,
+.mealDescriptionInput:focus {
+    border-color: #ff2525;
+}
+
+
+.mealType {
+    min-width: 55px;
+
+    color: #666;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+
+.mealActions {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+
+/* =========================
+   BODY DATA
+========================= */
+
+.bodyGrid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-top: 20px;
+}
+
+
+.bodyCard {
+    padding: 20px;
+    background: #0b0b0b;
+    border: 1px solid #242424;
+    border-radius: 13px;
+}
+
+
+.bodyCard p {
+    color: #666;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+}
+
+
+.bodyCard h3 {
+    margin-top: 9px;
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+
+/* =========================
+   GUIDANCE
+========================= */
+
+.guidanceCard {
+    padding: 30px;
+    border-radius: 16px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #111,
+            #080808
+        );
+
+    border: 1px solid rgba(255, 40, 40, 0.3);
+}
+
+
+.guidanceCard h2 {
+    margin-top: 9px;
+    font-size: 23px;
+}
+
+
+.guidanceCard p:last-child {
+    max-width: 700px;
+    margin-top: 10px;
+
+    color: #777;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+.footer {
+    padding: 30px;
+    text-align: center;
+
+    border-top: 1px solid rgba(255, 35, 35, 0.15);
+
+    color: #444;
+    font-size: 12px;
+}
+
+
+.footer p {
+    color: #777;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+
+.footer span {
+    display: block;
+    margin-top: 6px;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1000px) {
+
+    .progressGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .foodInputCard {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .foodInputCard .inputGroup:nth-child(3) {
+        grid-column: span 1;
+    }
+
+    .foodInputCard .primaryButton {
+        align-self: end;
+    }
+
+    .bodyGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+
+@media (max-width: 900px) {
+
+    .navLinks {
+        display: none;
+    }
+
+    .calorieSection {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .calorieCard.featured {
+        grid-column: span 2;
+    }
+
+    .macroGrid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+
+@media (max-width: 650px) {
+
+    .navbar {
+        padding: 0 20px;
+    }
+
+    .profileButton {
+        display: none;
+    }
+
+    .nutritionContainer {
+        width: 92%;
+        padding-top: 35px;
+    }
+
+    .nutritionHeader {
+        padding: 30px 24px;
+    }
+
+    .estimateNotice {
+        align-items: flex-start;
+    }
+
+    .calorieSection {
+        grid-template-columns: 1fr;
+    }
+
+    .calorieCard.featured {
+        grid-column: auto;
+    }
+
+    .macroGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .progressGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .foodInputCard {
+        grid-template-columns: 1fr;
+    }
+
+    .foodInputCard .primaryButton {
+        width: 100%;
+    }
+
+    .foodHistoryHeader {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .foodCard {
+        flex-wrap: wrap;
+    }
+
+    .foodMacros {
+        width: 100%;
+        margin-left: 53px;
+    }
+
+    .foodCalories {
+        margin-left: auto;
+    }
+
+    .mealCard {
+        flex-wrap: wrap;
+    }
+
+    .mealContent {
+        width: calc(100% - 50px);
+        grid-template-columns: 1fr;
+    }
+
+    .mealType {
+        margin-left: 48px;
+    }
+
+    .mealActions {
+        flex-direction: column;
+    }
+
+    .mealActions button {
+        width: 100%;
+    }
+
+    .bodyGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* =========================
+   FOOD SUGGESTIONS
+========================= */
+
+.foodSearchGroup {
+    position: relative;
+}
+
+
+.foodSuggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+
+    margin-top: 6px;
+
+    background: #0d0d0d;
+    border: 1px solid #2d2d2d;
+    border-radius: 9px;
+
+    overflow: hidden;
+
+    z-index: 50;
+
+    display: none;
+
+    box-shadow:
+        0 15px 35px
+        rgba(0, 0, 0, 0.6);
+}
+
+
+.foodSuggestion {
+    padding: 11px 13px;
+
+    color: #bbb;
+
+    font-size: 11px;
+
+    cursor: pointer;
+
+    border-bottom:
+        1px solid #1e1e1e;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+
+.foodSuggestion:last-child {
+    border-bottom: none;
+}
+
+
+.foodSuggestion:hover {
+    background: #170000;
+    color: #ff3030;
+}
+
+
+.foodSuggestion strong {
+    color: #fff;
+}
+
+
+.foodSuggestion:hover strong {
+    color: #ff3030;
+}
