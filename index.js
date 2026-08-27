@@ -181,18 +181,41 @@ loginForm.addEventListener(
 
 
             // =========================
-            // LOGIN SUCCESS
-            // =========================
+// LOGIN SUCCESS
+// =========================
 
-            localStorage.setItem(
-                "isLoggedIn",
-                "true"
-            );
+const loggedInUsername =
+    data.username;
 
-            localStorage.setItem(
-                "username",
-                data.username
-            );
+// Check whether this user has logged in before
+const hasLoggedInBefore =
+    localStorage.getItem(
+        "hasLoggedIn_" + loggedInUsername
+    );
+
+localStorage.setItem(
+    "isLoggedIn",
+    "true"
+);
+
+localStorage.setItem(
+    "username",
+    loggedInUsername
+);
+
+// Store whether this is the user's first login
+localStorage.setItem(
+    "isFirstLogin",
+    hasLoggedInBefore !== "true"
+        ? "true"
+        : "false"
+);
+
+// Mark this user as having logged in
+localStorage.setItem(
+    "hasLoggedIn_" + loggedInUsername,
+    "true"
+);
 
 
             // =========================

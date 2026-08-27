@@ -9,6 +9,7 @@ if (isLoggedIn !== "true") {
 
     window.location.href =
         "index.html";
+
 }
 
 
@@ -25,6 +26,7 @@ if (!username) {
 
     window.location.href =
         "index.html";
+
 }
 
 
@@ -72,8 +74,92 @@ const assessmentDescription =
 // DISPLAY USERNAME
 // =========================
 
-usernameDisplay.textContent =
-    username;
+if (usernameDisplay) {
+
+    usernameDisplay.textContent =
+        username;
+
+}
+
+
+// =========================
+// SHOW START ASSESSMENT
+// =========================
+
+function showStartAssessment() {
+
+    if (assessmentLabel) {
+
+        assessmentLabel.textContent =
+            "GET STARTED";
+
+    }
+
+
+    if (assessmentTitle) {
+
+        assessmentTitle.textContent =
+            "Complete your fitness assessment";
+
+    }
+
+
+    if (assessmentDescription) {
+
+        assessmentDescription.textContent =
+            "Tell us about your fitness goals and body details to personalize your Gym Assistant experience.";
+
+    }
+
+
+    if (assessmentButton) {
+
+        assessmentButton.textContent =
+            "Start Assessment";
+
+    }
+
+}
+
+
+// =========================
+// SHOW EDIT PROFILE
+// =========================
+
+function showEditProfile() {
+
+    if (assessmentLabel) {
+
+        assessmentLabel.textContent =
+            "FITNESS PROFILE";
+
+    }
+
+
+    if (assessmentTitle) {
+
+        assessmentTitle.textContent =
+            "Your fitness profile is ready";
+
+    }
+
+
+    if (assessmentDescription) {
+
+        assessmentDescription.textContent =
+            "Your fitness information is saved. You can edit your details anytime if something needs to be corrected.";
+
+    }
+
+
+    if (assessmentButton) {
+
+        assessmentButton.textContent =
+            "Edit Fitness Profile";
+
+    }
+
+}
 
 
 // =========================
@@ -83,6 +169,10 @@ usernameDisplay.textContent =
 async function loadFitnessProfile() {
 
     try {
+
+        // =========================
+        // REQUEST PROFILE
+        // =========================
 
         const response =
             await fetch(
@@ -96,8 +186,14 @@ async function loadFitnessProfile() {
 
         if (response.status === 404) {
 
-            welcomeMessage.textContent =
-                "Welcome";
+            if (welcomeMessage) {
+
+                welcomeMessage.textContent =
+                    "Welcome";
+
+            }
+
+            showStartAssessment();
 
             return;
 
@@ -130,13 +226,19 @@ async function loadFitnessProfile() {
 
 
         // =========================
-        // NO PROFILE
+        // CHECK IF PROFILE EXISTS
         // =========================
 
         if (!fitnessProfile) {
 
-            welcomeMessage.textContent =
-                "Welcome";
+            if (welcomeMessage) {
+
+                welcomeMessage.textContent =
+                    "Welcome";
+
+            }
+
+            showStartAssessment();
 
             return;
 
@@ -144,11 +246,58 @@ async function loadFitnessProfile() {
 
 
         // =========================
-        // WELCOME MESSAGE
+        // CHECK IF ASSESSMENT
+        // IS ACTUALLY COMPLETED
+        // =========================
+        //
+        // A new user may already have
+        // a profile object in MongoDB
+        // containing default values such
+        // as 0 or 0.0.
+        //
+        // Therefore we check the actual
+        // assessment information.
+        //
+
+        const hasCompletedAssessment =
+            Number(fitnessProfile.age) > 0 &&
+            Number(fitnessProfile.height) > 0 &&
+            Number(fitnessProfile.weight) > 0 &&
+            Boolean(fitnessProfile.gender) &&
+            Boolean(fitnessProfile.activity) &&
+            Boolean(fitnessProfile.goal);
+
+
+        // =========================
+        // NEW USER
         // =========================
 
-        welcomeMessage.textContent =
-            "Welcome back";
+        if (!hasCompletedAssessment) {
+
+            if (welcomeMessage) {
+
+                welcomeMessage.textContent =
+                    "Welcome";
+
+            }
+
+            showStartAssessment();
+
+            return;
+
+        }
+
+
+        // =========================
+        // EXISTING USER
+        // =========================
+
+        if (welcomeMessage) {
+
+            welcomeMessage.textContent =
+                "Welcome back";
+
+        }
 
 
         // =========================
@@ -156,6 +305,7 @@ async function loadFitnessProfile() {
         // =========================
 
         if (
+            weightValue &&
             fitnessProfile.weight !== undefined &&
             fitnessProfile.weight !== null
         ) {
@@ -173,8 +323,10 @@ async function loadFitnessProfile() {
         // =========================
 
         if (
+            bodyFatValue &&
             fitnessProfile.bodyFat !== undefined &&
-            fitnessProfile.bodyFat !== null
+            fitnessProfile.bodyFat !== null &&
+            Number(fitnessProfile.bodyFat) > 0
         ) {
 
             bodyFatValue.textContent =
@@ -190,6 +342,7 @@ async function loadFitnessProfile() {
         // =========================
 
         if (
+            goalValue &&
             fitnessProfile.goal ===
             "weight-loss"
         ) {
@@ -200,6 +353,7 @@ async function loadFitnessProfile() {
         }
 
         else if (
+            goalValue &&
             fitnessProfile.goal ===
             "muscle-gain"
         ) {
@@ -210,6 +364,7 @@ async function loadFitnessProfile() {
         }
 
         else if (
+            goalValue &&
             fitnessProfile.goal ===
             "maintenance"
         ) {
@@ -220,6 +375,7 @@ async function loadFitnessProfile() {
         }
 
         else if (
+            goalValue &&
             fitnessProfile.goal ===
             "general-fitness"
         ) {
@@ -231,25 +387,14 @@ async function loadFitnessProfile() {
 
 
         // =========================
-        // ASSESSMENT CARD
+        // SHOW EDIT PROFILE
         // =========================
 
-        assessmentLabel.textContent =
-            "FITNESS PROFILE";
+        showEditProfile();
 
-        assessmentTitle.textContent =
-            "Your fitness profile is ready";
+    }
 
-        assessmentDescription.textContent =
-            "Your fitness information is saved. " +
-            "You can edit your details anytime if " +
-            "something needs to be corrected.";
-
-        assessmentButton.textContent =
-            "Edit Fitness Profile";
-
-
-    } catch (error) {
+    catch (error) {
 
         console.error(
             "Profile loading error:",
@@ -272,50 +417,62 @@ loadFitnessProfile();
 // ASSESSMENT BUTTON
 // =========================
 
-assessmentButton.addEventListener(
-    "click",
-    function () {
+if (assessmentButton) {
 
-        window.location.href =
-            "assessment.html";
+    assessmentButton.addEventListener(
+        "click",
+        function () {
 
-    }
-);
+            window.location.href =
+                "assessment.html";
+
+        }
+    );
+
+}
 
 
 // =========================
 // PROFILE BUTTON
 // =========================
 
-profileButton.addEventListener(
-    "click",
-    function () {
+if (profileButton) {
 
-        window.location.href =
-            "profile.html";
+    profileButton.addEventListener(
+        "click",
+        function () {
 
-    }
-);
+            window.location.href =
+                "profile.html";
+
+        }
+    );
+
+}
 
 
 // =========================
 // LOGOUT
 // =========================
 
-logoutButton.addEventListener(
-    "click",
-    function () {
+if (logoutButton) {
 
-        localStorage.removeItem(
-            "isLoggedIn"
-        );
+    logoutButton.addEventListener(
+        "click",
+        function () {
 
-        localStorage.removeItem(
-            "username"
-        );
+            localStorage.removeItem(
+                "isLoggedIn"
+            );
 
-        window.location.href =
-            "index.html";
+            localStorage.removeItem(
+                "username"
+            );
 
-    }
-);
+            window.location.href =
+                "index.html";
+
+        }
+    );
+
+}
