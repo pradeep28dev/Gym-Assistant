@@ -91,7 +91,8 @@ router.post("/signup", async (req, res) => {
 
             email: email,
 
-            password: hashedPassword
+            password: hashedPassword,
+            role: "client"
 
         });
 
@@ -172,7 +173,9 @@ router.post("/login", async (req, res) => {
     jwt.sign(
         {
             userId: user._id,
-            username: user.username
+            username: user.username,
+            role: user.role || "client",
+            gymId: user.gymId || null
         },
         process.env.JWT_SECRET,
         {
@@ -186,6 +189,12 @@ res.status(200).json({
 
     username:
         user.username,
+
+    role:
+        user.role || "client",
+
+    gymId:
+        user.gymId || null,
 
     token:
         token

@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
+const User = require("../models/User");
 
-function authMiddleware(req, res, next) {
+async function authMiddleware(req, res, next) {
 
     try {
 
@@ -50,11 +51,28 @@ function authMiddleware(req, res, next) {
                 process.env.JWT_SECRET
             );
 
-        // ===============================
-        // STORE USER INFORMATION
-        // ===============================
+        if (!decoded.userId) {
+            return res.status(401).json({
+                message: "Invalid token payload"
+            });
+        }
 
-        req.user = decoded;
+        const user = await User.findById(decoded.userId).select(
+            "_id username role gymId"
+        );
+
+        if (!user) {
+            return res.status(401).json({
+                message: "User account not found"
+            });
+        }
+
+        req.user = {
+            userId: user._id.toString(),
+            username: user.username,
+            role: user.role || "client",
+            gymId: user.gymId ? user.gymId.toString() : null
+        };
 
         next();
 

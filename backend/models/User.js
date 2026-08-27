@@ -32,6 +32,20 @@ const userSchema = new mongoose.Schema(
             required: true
         },
 
+        role: {
+            type: String,
+            enum: ["client", "trainer", "admin"],
+            default: "client",
+            required: true
+        },
+
+        gymId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Gym",
+            default: null,
+            index: true
+        },
+
 
         // ===============================
         // FITNESS PROFILE
