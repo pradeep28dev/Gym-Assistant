@@ -151,7 +151,7 @@ async function checkFitnessProfile() {
 
         const response =
             await fetch(
-                `http://localhost:5000/api/profile/${encodeURIComponent(username)}`
+                `https://gym-assistant-rb7h.onrender.com/api/profile/${encodeURIComponent(username)}`
             );
 
 

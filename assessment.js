@@ -531,7 +531,7 @@ assessmentForm.addEventListener(
 
             const response =
                 await fetch(
-                    "http://localhost:5000/api/profile",
+                    "https://gym-assistant-rb7h.onrender.com/api/profile",
                     {
                         method: "POST",
 
