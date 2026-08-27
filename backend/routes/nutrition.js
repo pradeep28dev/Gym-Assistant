@@ -243,15 +243,10 @@ router.post(
         try {
 
             const {
-
                 username,
-
                 targets,
-
                 foods,
-
                 meals
-
             } = req.body;
 
 
@@ -267,49 +262,160 @@ router.post(
             }
 
 
+            const cleanUsername =
+                String(
+                    username
+                ).trim();
+
+
+            // ==================================================
+            // PREPARE FOOD DATA
+            // ==================================================
+
+            const today =
+                new Date();
+
+
+            const year =
+                today.getFullYear();
+
+
+            const month =
+                String(
+                    today.getMonth() + 1
+                ).padStart(
+                    2,
+                    "0"
+                );
+
+
+            const day =
+                String(
+                    today.getDate()
+                ).padStart(
+                    2,
+                    "0"
+                );
+
+
+            const todayKey =
+                year +
+                "-" +
+                month +
+                "-" +
+                day;
+
+
+            const safeFoods =
+                Array.isArray(foods)
+                    ? foods.map(
+                        function (food) {
+
+                            return {
+
+                                name:
+                                    food.name,
+
+                                quantity:
+                                    Number(
+                                        food.quantity
+                                    ) || 0,
+
+                                unit:
+                                    food.unit || "g",
+
+                                calories:
+                                    Number(
+                                        food.calories
+                                    ) || 0,
+
+                                protein:
+                                    Number(
+                                        food.protein
+                                    ) || 0,
+
+                                carbs:
+                                    Number(
+                                        food.carbs
+                                    ) || 0,
+
+                                fat:
+                                    Number(
+                                        food.fat
+                                    ) || 0,
+
+                                // Keep existing date.
+                                // If an old food has no date,
+                                // assign today's date.
+                                date:
+                                    food.date ||
+                                    todayKey
+
+                            };
+
+                        }
+                    )
+                    : [];
+
+
+            // ==================================================
+            // PREPARE TARGETS
+            // ==================================================
+
+            const safeTargets = {
+
+                calories:
+                    Number(
+                        targets &&
+                        targets.calories
+                    ) || 0,
+
+                protein:
+                    Number(
+                        targets &&
+                        targets.protein
+                    ) || 0,
+
+                carbs:
+                    Number(
+                        targets &&
+                        targets.carbs
+                    ) || 0,
+
+                fat:
+                    Number(
+                        targets &&
+                        targets.fat
+                    ) || 0
+
+            };
+
+
+            // ==================================================
+            // SAVE TO MONGODB
+            // ==================================================
+
             const nutrition =
                 await Nutrition.findOneAndUpdate(
 
                     {
-
                         username:
-                            String(
-                                username
-                            ).trim()
-
+                            cleanUsername
                     },
 
                     {
 
                         username:
-                            String(
-                                username
-                            ).trim(),
+                            cleanUsername,
 
                         targets:
-                            targets || {
-
-                                calories: 0,
-
-                                protein: 0,
-
-                                carbs: 0,
-
-                                fat: 0
-
-                            },
+                            safeTargets,
 
                         foods:
-                            Array.isArray(
-                                foods
-                            )
-                                ? foods
-                                : [],
+                            safeFoods,
 
                         meals:
-                            Array.isArray(
-                                meals
-                            )
+                            Array.isArray(meals)
                                 ? meals
                                 : []
 
@@ -361,7 +467,6 @@ router.post(
 
     }
 );
-
 
 // ==================================================
 // DELETE ONE FOOD

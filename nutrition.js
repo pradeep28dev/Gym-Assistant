@@ -829,6 +829,23 @@ function updateTargetDisplays() {
 
 }
 
+// ==================================================
+// FILTER TODAY'S FOOD
+// ==================================================
+
+function filterTodayFoods() {
+
+    const today = getTodayKey();
+
+    todayFoods = allFoods.filter(
+        function (food) {
+
+            return food.date === today;
+
+        }
+    );
+
+}
 
 // ==================================================
 // SAVE NUTRITION TO DATABASE
@@ -934,9 +951,13 @@ async function loadNutritionFromDatabase() {
 
         const response =
             await fetch(
+
                 BACKEND_URL +
                 "/api/nutrition/" +
-                encodeURIComponent(username)
+                encodeURIComponent(
+                    username
+                )
+
             );
 
 
@@ -954,36 +975,19 @@ async function loadNutritionFromDatabase() {
 
 
         // ==================================================
-        // LOAD TARGETS
+        // DO NOT LOAD TARGETS FROM DATABASE
         // ==================================================
-
-        if (data.targets) {
-
-            nutritionTargets = {
-
-                calories:
-                    Number(
-                        data.targets.calories
-                    ) || 0,
-
-                protein:
-                    Number(
-                        data.targets.protein
-                    ) || 0,
-
-                carbs:
-                    Number(
-                        data.targets.carbs
-                    ) || 0,
-
-                fat:
-                    Number(
-                        data.targets.fat
-                    ) || 0
-
-            };
-
-        }
+        //
+        // Nutrition targets are calculated from the
+        // user's current fitness profile.
+        //
+        // calculateNutrition(profile) already calculated
+        // the correct values before this function runs.
+        //
+        // Therefore, DO NOT overwrite nutritionTargets
+        // with MongoDB values.
+        //
+        // ==================================================
 
 
         // ==================================================
@@ -991,7 +995,9 @@ async function loadNutritionFromDatabase() {
         // ==================================================
 
         allFoods =
-            Array.isArray(data.foods)
+            Array.isArray(
+                data.foods
+            )
                 ? data.foods
                 : [];
 
@@ -1004,7 +1010,9 @@ async function loadNutritionFromDatabase() {
         // ==================================================
 
         if (
-            Array.isArray(data.meals) &&
+            Array.isArray(
+                data.meals
+            ) &&
             data.meals.length > 0
         ) {
 
@@ -1025,13 +1033,13 @@ async function loadNutritionFromDatabase() {
         }
 
 
-        updateTargetDisplays();
-
-        updateMacroTargetBars();
-
-        renderFoodList();
+        // ==================================================
+        // DISPLAY DATA
+        // ==================================================
 
         renderMeals();
+
+        renderFoodList();
 
         updateNutritionProgress();
 
@@ -1040,6 +1048,7 @@ async function loadNutritionFromDatabase() {
 
     }
 
+
     catch (error) {
 
         console.error(
@@ -1047,63 +1056,8 @@ async function loadNutritionFromDatabase() {
             error
         );
 
+
         return false;
-
-    }
-
-}
-
-
-// ==================================================
-// FILTER TODAY'S FOOD
-// ==================================================
-
-function filterTodayFoods() {
-
-    const today =
-        getTodayKey();
-
-
-    todayFoods =
-        allFoods.filter(
-            function (food) {
-
-                return (
-                    food.date === today
-                );
-
-            }
-        );
-
-}
-
-
-// ==================================================
-// UPDATE MACRO TARGET BARS
-// ==================================================
-
-function updateMacroTargetBars() {
-
-    if (proteinFill) {
-
-        proteinFill.style.width =
-            "100%";
-
-    }
-
-
-    if (carbsFill) {
-
-        carbsFill.style.width =
-            "100%";
-
-    }
-
-
-    if (fatFill) {
-
-        fatFill.style.width =
-            "100%";
 
     }
 
@@ -1146,6 +1100,33 @@ function getFoodTotals() {
 
 
     return totals;
+
+}
+
+
+// ==================================================
+// UPDATE MACRO TARGET BARS
+// ==================================================
+
+function updateMacroTargetBars() {
+
+    updateProgressBar(
+        proteinFill,
+        nutritionTargets.protein,
+        nutritionTargets.protein
+    );
+
+    updateProgressBar(
+        carbsFill,
+        nutritionTargets.carbs,
+        nutritionTargets.carbs
+    );
+
+    updateProgressBar(
+        fatFill,
+        nutritionTargets.fat,
+        nutritionTargets.fat
+    );
 
 }
 
@@ -1263,7 +1244,6 @@ function updateNutritionProgress() {
     );
 
 }
-
 
 // ==================================================
 // PROGRESS BAR
@@ -3123,34 +3103,46 @@ async function initializeNutrition() {
 
 
         // ==================================================
-        // SAVE CURRENT TARGETS
+        // STOP IF DATABASE LOAD FAILED
+        // ==================================================
+        //
+        // IMPORTANT:
+        // Never save empty/default data back to MongoDB
+        // if the database load failed.
+        //
         // ==================================================
 
-        // This keeps nutrition targets synchronized
-        // with the current assessment profile.
-
-        const saved =
-            await saveNutritionToDatabase();
-
-
-        if (!saved) {
+        if (!loaded) {
 
             console.warn(
-                "Nutrition targets loaded/calculated, but database synchronization failed."
+                "Nutrition data could not be loaded. Database data was NOT overwritten."
             );
+
+            return;
 
         }
 
 
-        // Re-render after database synchronization.
+        // ==================================================
+        // UPDATE TARGETS
+        // ==================================================
+
+        updateTargetDisplays();
+
+        updateMacroTargetBars();
+
+        updateNutritionProgress();
+
+
+        // ==================================================
+        // FINAL RENDER
+        // ==================================================
 
         filterTodayFoods();
 
         renderFoodList();
 
         renderMeals();
-
-        updateTargetDisplays();
 
         updateNutritionProgress();
 
