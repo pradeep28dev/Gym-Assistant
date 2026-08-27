@@ -1,5 +1,5 @@
 const express = require("express");
-
+const Nutrition = require("../models/Nutrition");
 const router = express.Router();
 
 
@@ -141,5 +141,174 @@ router.get("/nutrition/search", async (req, res) => {
 
 });
 
+// ==================================================
+// GET NUTRITION DATA
+// ==================================================
+
+router.get(
+    "/nutrition/:username",
+    async (req, res) => {
+
+        try {
+
+            const username =
+                req.params.username;
+
+
+            const nutrition =
+                await Nutrition.findOne({
+                    username: username
+                });
+
+
+            if (!nutrition) {
+
+                return res.status(200).json({
+
+                    targets: {
+                        calories: 0,
+                        protein: 0,
+                        carbs: 0,
+                        fat: 0
+                    },
+
+                    foods: [],
+
+                    meals: []
+
+                });
+
+            }
+
+
+            res.status(200).json({
+
+                targets:
+                    nutrition.targets,
+
+                foods:
+                    nutrition.foods,
+
+                meals:
+                    nutrition.meals
+
+            });
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Nutrition fetch error:",
+                error
+            );
+
+            res.status(500).json({
+
+                message:
+                    "Unable to load nutrition data."
+
+            });
+
+        }
+
+    }
+);
+
+// ==================================================
+// SAVE NUTRITION DATA
+// ==================================================
+
+router.post(
+    "/nutrition",
+    async (req, res) => {
+
+        try {
+
+            const {
+                username,
+                targets,
+                foods,
+                meals
+            } = req.body;
+
+
+            if (!username) {
+
+                return res.status(400).json({
+
+                    message:
+                        "Username is required."
+
+                });
+
+            }
+
+
+            const nutrition =
+                await Nutrition.findOneAndUpdate(
+
+                    {
+                        username: username
+                    },
+
+                    {
+
+                        username: username,
+
+                        targets:
+                            targets || {
+                                calories: 0,
+                                protein: 0,
+                                carbs: 0,
+                                fat: 0
+                            },
+
+                        foods:
+                            foods || [],
+
+                        meals:
+                            meals || []
+
+                    },
+
+                    {
+                        new: true,
+                        upsert: true,
+                        runValidators: true
+                    }
+
+                );
+
+
+            res.status(200).json({
+
+                message:
+                    "Nutrition data saved successfully.",
+
+                nutrition: nutrition
+
+            });
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Nutrition save error:",
+                error
+            );
+
+            res.status(500).json({
+
+                message:
+                    "Unable to save nutrition data."
+
+            });
+
+        }
+
+    }
+);
 
 module.exports = router;

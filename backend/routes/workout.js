@@ -1,22 +1,31 @@
 const express = require("express");
 
-const Workout = require("../models/Workout");
+// IMPORTANT:
+// The filename is workout.js
+const Workout = require("../models/workout");
 
 const router = express.Router();
 
 
-// ===============================
+// =====================================================
 // GET WORKOUT DATA
-// ===============================
+// GET /api/workout/:username
+// =====================================================
 
 router.get(
-    "/workout/:username",
+    "/:username",
     async (req, res) => {
 
         try {
 
             const username =
-                req.params.username;
+                req.params.username.trim();
+
+
+            console.log(
+                "Getting workout data for:",
+                username
+            );
 
 
             const workout =
@@ -25,13 +34,16 @@ router.get(
                 });
 
 
-            // ===============================
-            // NO WORKOUT DATA YET
-            // ===============================
+            // =================================================
+            // NO WORKOUT DOCUMENT YET
+            // =================================================
 
             if (!workout) {
 
                 return res.status(200).json({
+
+                    username:
+                        username,
 
                     activePlan:
                         "recommended",
@@ -47,20 +59,26 @@ router.get(
             }
 
 
-            // ===============================
-            // RETURN WORKOUT DATA
-            // ===============================
+            // =================================================
+            // RETURN EXISTING WORKOUT
+            // =================================================
 
-            res.status(200).json({
+            return res.status(200).json({
+
+                username:
+                    workout.username,
 
                 activePlan:
-                    workout.activePlan,
+                    workout.activePlan ||
+                    "recommended",
 
                 customPlan:
-                    workout.customPlan,
+                    workout.customPlan ||
+                    null,
 
                 workoutProgress:
-                    workout.workoutProgress
+                    workout.workoutProgress ||
+                    []
 
             });
 
@@ -73,10 +91,14 @@ router.get(
                 error
             );
 
-            res.status(500).json({
+
+            return res.status(500).json({
 
                 message:
-                    "Server error"
+                    "Unable to load workout data",
+
+                error:
+                    error.message
 
             });
 
@@ -86,12 +108,13 @@ router.get(
 );
 
 
-// ===============================
+// =====================================================
 // SAVE CUSTOM WORKOUT
-// ===============================
+// POST /api/workout/custom
+// =====================================================
 
 router.post(
-    "/workout/custom",
+    "/custom",
     async (req, res) => {
 
         try {
@@ -102,7 +125,10 @@ router.post(
             } = req.body;
 
 
-            if (!username || !customPlan) {
+            if (
+                !username ||
+                !customPlan
+            ) {
 
                 return res.status(400).json({
 
@@ -118,12 +144,14 @@ router.post(
                 await Workout.findOneAndUpdate(
 
                     {
-                        username: username
+                        username:
+                            username.trim()
                     },
 
                     {
 
-                        username: username,
+                        username:
+                            username.trim(),
 
                         customPlan:
                             customPlan,
@@ -135,16 +163,21 @@ router.post(
 
                     {
 
-                        new: true,
+                        new:
+                            true,
 
-                        upsert: true
+                        upsert:
+                            true,
+
+                        runValidators:
+                            true
 
                     }
 
                 );
 
 
-            res.status(200).json({
+            return res.status(200).json({
 
                 message:
                     "Custom workout saved successfully",
@@ -166,10 +199,14 @@ router.post(
                 error
             );
 
-            res.status(500).json({
+
+            return res.status(500).json({
 
                 message:
-                    "Server error"
+                    "Unable to save custom workout",
+
+                error:
+                    error.message
 
             });
 
@@ -179,12 +216,13 @@ router.post(
 );
 
 
-// ===============================
+// =====================================================
 // CHANGE ACTIVE PLAN
-// ===============================
+// PUT /api/workout/active
+// =====================================================
 
 router.put(
-    "/workout/active",
+    "/active",
     async (req, res) => {
 
         try {
@@ -225,16 +263,51 @@ router.put(
             }
 
 
+            // =================================================
+            // IF SWITCHING TO CUSTOM,
+            // MAKE SURE CUSTOM PLAN EXISTS
+            // =================================================
+
+            if (
+                activePlan === "custom"
+            ) {
+
+                const existingWorkout =
+                    await Workout.findOne({
+                        username:
+                            username.trim()
+                    });
+
+
+                if (
+                    !existingWorkout ||
+                    !existingWorkout.customPlan
+                ) {
+
+                    return res.status(400).json({
+
+                        message:
+                            "No custom workout plan found"
+
+                    });
+
+                }
+
+            }
+
+
             const workout =
                 await Workout.findOneAndUpdate(
 
                     {
-                        username: username
+                        username:
+                            username.trim()
                     },
 
                     {
 
-                        username: username,
+                        username:
+                            username.trim(),
 
                         activePlan:
                             activePlan
@@ -243,16 +316,21 @@ router.put(
 
                     {
 
-                        new: true,
+                        new:
+                            true,
 
-                        upsert: true
+                        upsert:
+                            true,
+
+                        runValidators:
+                            true
 
                     }
 
                 );
 
 
-            res.status(200).json({
+            return res.status(200).json({
 
                 message:
                     "Active workout plan updated",
@@ -271,10 +349,14 @@ router.put(
                 error
             );
 
-            res.status(500).json({
+
+            return res.status(500).json({
 
                 message:
-                    "Server error"
+                    "Unable to update active plan",
+
+                error:
+                    error.message
 
             });
 
@@ -284,12 +366,13 @@ router.put(
 );
 
 
-// ===============================
+// =====================================================
 // SAVE DAILY WORKOUT PROGRESS
-// ===============================
+// POST /api/workout/progress
+// =====================================================
 
 router.post(
-    "/workout/progress",
+    "/progress",
     async (req, res) => {
 
         try {
@@ -318,15 +401,31 @@ router.post(
             }
 
 
+            if (
+                plan !== "recommended" &&
+                plan !== "custom"
+            ) {
+
+                return res.status(400).json({
+
+                    message:
+                        "Invalid workout plan"
+
+                });
+
+            }
+
+
             let workout =
                 await Workout.findOne({
-                    username: username
+                    username:
+                        username.trim()
                 });
 
 
-            // ===============================
+            // =================================================
             // CREATE WORKOUT DOCUMENT
-            // ===============================
+            // =================================================
 
             if (!workout) {
 
@@ -334,21 +433,25 @@ router.post(
                     new Workout({
 
                         username:
-                            username,
+                            username.trim(),
 
                         activePlan:
                             plan,
 
-                        workoutProgress: []
+                        customPlan:
+                            null,
+
+                        workoutProgress:
+                            []
 
                     });
 
             }
 
 
-            // ===============================
-            // FIND TODAY'S PROGRESS
-            // ===============================
+            // =================================================
+            // FIND EXISTING PROGRESS
+            // =================================================
 
             const existingProgress =
                 workout.workoutProgress.find(
@@ -363,21 +466,25 @@ router.post(
                 );
 
 
-            // ===============================
-            // UPDATE EXISTING
-            // ===============================
+            // =================================================
+            // UPDATE EXISTING PROGRESS
+            // =================================================
 
             if (existingProgress) {
 
                 existingProgress.completedExercises =
-                    completedExercises || [];
+                    Array.isArray(
+                        completedExercises
+                    )
+                        ? completedExercises
+                        : [];
 
             }
 
 
-            // ===============================
-            // CREATE NEW
-            // ===============================
+            // =================================================
+            // CREATE NEW PROGRESS
+            // =================================================
 
             else {
 
@@ -390,7 +497,11 @@ router.post(
                         plan,
 
                     completedExercises:
-                        completedExercises || []
+                        Array.isArray(
+                            completedExercises
+                        )
+                            ? completedExercises
+                            : []
 
                 });
 
@@ -400,7 +511,7 @@ router.post(
             await workout.save();
 
 
-            res.status(200).json({
+            return res.status(200).json({
 
                 message:
                     "Workout progress saved successfully"
@@ -416,10 +527,14 @@ router.post(
                 error
             );
 
-            res.status(500).json({
+
+            return res.status(500).json({
 
                 message:
-                    "Server error"
+                    "Unable to save workout progress",
+
+                error:
+                    error.message
 
             });
 
@@ -429,23 +544,25 @@ router.post(
 );
 
 
-// ===============================
+// =====================================================
 // DELETE CUSTOM WORKOUT
-// ===============================
+// DELETE /api/workout/custom/:username
+// =====================================================
 
 router.delete(
-    "/workout/custom/:username",
+    "/custom/:username",
     async (req, res) => {
 
         try {
 
             const username =
-                req.params.username;
+                req.params.username.trim();
 
 
             const workout =
                 await Workout.findOne({
-                    username: username
+                    username:
+                        username
                 });
 
 
@@ -461,13 +578,8 @@ router.delete(
             }
 
 
-            workout.customPlan = {
-
-                trainingDays: 0,
-
-                week: []
-
-            };
+            workout.customPlan =
+                null;
 
 
             workout.activePlan =
@@ -477,7 +589,7 @@ router.delete(
             await workout.save();
 
 
-            res.status(200).json({
+            return res.status(200).json({
 
                 message:
                     "Custom workout deleted successfully",
@@ -496,10 +608,14 @@ router.delete(
                 error
             );
 
-            res.status(500).json({
+
+            return res.status(500).json({
 
                 message:
-                    "Server error"
+                    "Unable to delete custom workout",
+
+                error:
+                    error.message
 
             });
 
@@ -508,5 +624,9 @@ router.delete(
     }
 );
 
+
+// =====================================================
+// EXPORT
+// =====================================================
 
 module.exports = router;

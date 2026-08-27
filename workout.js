@@ -8,6 +8,7 @@ const isLoggedIn =
 if (isLoggedIn !== "true") {
 
     window.location.href = "index.html";
+
 }
 
 
@@ -23,7 +24,16 @@ if (!username) {
     localStorage.removeItem("isLoggedIn");
 
     window.location.href = "index.html";
+
 }
+
+
+// =====================================================
+// BACKEND URL
+// =====================================================
+
+const API_URL =
+    "https://gym-assistant-rb7h.onrender.com";
 
 
 // =====================================================
@@ -110,30 +120,30 @@ const deleteCustomButton =
 // USERNAME
 // =====================================================
 
-usernameDisplay.textContent =
-    username;
+usernameDisplay.textContent = username;
 
 
 // =====================================================
-// STORAGE KEYS
-// =====================================================
-
-const customPlanKey =
-    "customWorkout_" + username;
-
-const activePlanKey =
-    "activeWorkoutPlan_" + username;
-
-
-// =====================================================
-// PROFILE
+// DATA
 // =====================================================
 
 let profile = null;
 
+let workoutData = {
+
+    activePlan: "recommended",
+
+    customPlan: null,
+
+    workoutProgress: []
+
+};
+
+let activePlan = "recommended";
+
 
 // =====================================================
-// GET PROFILE FROM MONGODB
+// LOAD FITNESS PROFILE
 // =====================================================
 
 async function loadFitnessProfile() {
@@ -141,16 +151,19 @@ async function loadFitnessProfile() {
     try {
 
         console.log(
-            "Loading fitness profile for:",
+            "Loading profile for:",
             username
         );
 
-
         const response =
             await fetch(
-                `https://gym-assistant-rb7h.onrender.com/api/profile/${encodeURIComponent(username)}`
+                `${API_URL}/api/profile/${encodeURIComponent(username)}`
             );
 
+        console.log(
+            "Profile response:",
+            response.status
+        );
 
         if (!response.ok) {
 
@@ -164,8 +177,8 @@ async function loadFitnessProfile() {
                     "assessment.html";
 
                 return false;
-            }
 
+            }
 
             throw new Error(
                 "Unable to fetch fitness profile"
@@ -173,10 +186,13 @@ async function loadFitnessProfile() {
 
         }
 
-
         const data =
             await response.json();
 
+        console.log(
+            "Profile data:",
+            data
+        );
 
         if (!data.profile) {
 
@@ -191,34 +207,156 @@ async function loadFitnessProfile() {
 
         }
 
-
         profile =
             data.profile;
 
-
-        console.log(
-            "Fitness profile loaded:",
-            profile
-        );
-
-
         return true;
 
+    }
 
-    } catch (error) {
+    catch (error) {
 
         console.error(
             "Profile loading error:",
             error
         );
 
-
         alert(
-            "Unable to connect to the server. Please make sure the backend is running."
+            "Unable to connect to the server."
+        );
+
+        return false;
+
+    }
+
+}
+
+
+// =====================================================
+// LOAD WORKOUT DATA FROM MONGODB
+// =====================================================
+
+async function loadWorkoutData() {
+
+    try {
+
+        console.log(
+            "Loading workout data for:",
+            username
+        );
+
+        const response =
+            await fetch(
+                `${API_URL}/api/workout/${encodeURIComponent(username)}`
+            );
+
+        console.log(
+            "Workout response status:",
+            response.status
         );
 
 
-        return false;
+        // =================================================
+        // NO DOCUMENT YET
+        // =================================================
+
+        if (response.status === 404) {
+
+            console.log(
+                "No workout document found."
+            );
+
+            workoutData = {
+
+                activePlan: "recommended",
+
+                customPlan: null,
+
+                workoutProgress: []
+
+            };
+
+            activePlan =
+                "recommended";
+
+            return true;
+
+        }
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Workout API returned " +
+                response.status
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+        console.log(
+            "Workout data from MongoDB:",
+            data
+        );
+
+
+        workoutData = {
+
+            activePlan:
+                data.activePlan ||
+                "recommended",
+
+            customPlan:
+                data.customPlan ||
+                null,
+
+            workoutProgress:
+                Array.isArray(
+                    data.workoutProgress
+                )
+                    ? data.workoutProgress
+                    : []
+
+        };
+
+
+        activePlan =
+            workoutData.activePlan;
+
+
+        return true;
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Workout data loading error:",
+            error
+        );
+
+
+        // Recommended plan can still work
+        // even if workout data cannot be loaded.
+
+        workoutData = {
+
+            activePlan: "recommended",
+
+            customPlan: null,
+
+            workoutProgress: []
+
+        };
+
+        activePlan =
+            "recommended";
+
+
+        return true;
 
     }
 
@@ -237,14 +375,16 @@ function formatValue(value) {
 
     }
 
+    return String(value)
+        .replace(/-/g, " ")
+        .replace(
+            /\b\w/g,
+            function(letter) {
 
-    return value
-        .replace("-", " ")
-        .replace(/\b\w/g, function(letter) {
+                return letter.toUpperCase();
 
-            return letter.toUpperCase();
-
-        });
+            }
+        );
 
 }
 
@@ -261,13 +401,11 @@ function formatGoal(goal) {
 
     }
 
-
     if (goal === "muscle-gain") {
 
         return "Build Muscle";
 
     }
-
 
     if (goal === "maintenance") {
 
@@ -275,13 +413,11 @@ function formatGoal(goal) {
 
     }
 
-
     if (goal === "general-fitness") {
 
         return "General Fitness";
 
     }
-
 
     return "--";
 
@@ -297,10 +433,8 @@ function displayProfile() {
     goalValue.textContent =
         formatGoal(profile.goal);
 
-
     experienceValue.textContent =
         formatValue(profile.experience);
-
 
     activityValue.textContent =
         formatValue(profile.activity);
@@ -329,22 +463,7 @@ function createDay(
 
 
 // =====================================================
-// GET RECOMMENDED PLAN
-// =====================================================
-
-function getRecommendedPlan() {
-
-    return generateWorkoutPlan(
-        profile.goal,
-        profile.experience,
-        profile.activity
-    );
-
-}
-
-
-// =====================================================
-// GENERATE WORKOUT PLAN
+// GENERATE RECOMMENDED WORKOUT
 // =====================================================
 
 function generateWorkoutPlan(
@@ -382,10 +501,7 @@ function generateWorkoutPlan(
                     ]
                 ),
 
-                createDay(
-                    "Rest",
-                    []
-                ),
+                createDay("Rest", []),
 
                 createDay(
                     "Upper Body",
@@ -397,10 +513,7 @@ function generateWorkoutPlan(
                     ]
                 ),
 
-                createDay(
-                    "Rest",
-                    []
-                ),
+                createDay("Rest", []),
 
                 createDay(
                     "Lower Body",
@@ -412,19 +525,15 @@ function generateWorkoutPlan(
                     ]
                 ),
 
-                createDay(
-                    "Rest",
-                    []
-                ),
+                createDay("Rest", []),
 
-                createDay(
-                    "Rest",
-                    []
-                )
+                createDay("Rest", [])
 
             ];
 
-        } else {
+        }
+
+        else {
 
             week = [
 
@@ -439,10 +548,7 @@ function generateWorkoutPlan(
                     ]
                 ),
 
-                createDay(
-                    "Rest",
-                    []
-                ),
+                createDay("Rest", []),
 
                 createDay(
                     "Full Body",
@@ -455,10 +561,7 @@ function generateWorkoutPlan(
                     ]
                 ),
 
-                createDay(
-                    "Rest",
-                    []
-                ),
+                createDay("Rest", []),
 
                 createDay(
                     "Full Body",
@@ -471,26 +574,22 @@ function generateWorkoutPlan(
                     ]
                 ),
 
-                createDay(
-                    "Rest",
-                    []
-                ),
+                createDay("Rest", []),
 
-                createDay(
-                    "Rest",
-                    []
-                )
+                createDay("Rest", [])
 
             ];
 
         }
+
+    }
 
 
     // =================================================
     // INTERMEDIATE
     // =================================================
 
-    } else if (experience === "intermediate") {
+    else if (experience === "intermediate") {
 
         trainingDays = 4;
 
@@ -521,10 +620,7 @@ function generateWorkoutPlan(
                     ]
                 ),
 
-                createDay(
-                    "Rest",
-                    []
-                ),
+                createDay("Rest", []),
 
                 createDay(
                     "Legs",
@@ -548,19 +644,15 @@ function generateWorkoutPlan(
                     ]
                 ),
 
-                createDay(
-                    "Rest",
-                    []
-                ),
+                createDay("Rest", []),
 
-                createDay(
-                    "Rest",
-                    []
-                )
+                createDay("Rest", [])
 
             ];
 
-        } else {
+        }
+
+        else {
 
             week = [
 
@@ -586,10 +678,7 @@ function generateWorkoutPlan(
                     ]
                 ),
 
-                createDay(
-                    "Rest",
-                    []
-                ),
+                createDay("Rest", []),
 
                 createDay(
                     "Full Body",
@@ -613,26 +702,22 @@ function generateWorkoutPlan(
                     ]
                 ),
 
-                createDay(
-                    "Rest",
-                    []
-                ),
+                createDay("Rest", []),
 
-                createDay(
-                    "Rest",
-                    []
-                )
+                createDay("Rest", [])
 
             ];
 
         }
+
+    }
 
 
     // =================================================
     // ADVANCED
     // =================================================
 
-    } else if (experience === "advanced") {
+    else if (experience === "advanced") {
 
         trainingDays = 5;
 
@@ -700,19 +785,15 @@ function generateWorkoutPlan(
                     ]
                 ),
 
-                createDay(
-                    "Rest",
-                    []
-                ),
+                createDay("Rest", []),
 
-                createDay(
-                    "Rest",
-                    []
-                )
+                createDay("Rest", [])
 
             ];
 
-        } else {
+        }
+
+        else {
 
             week = [
 
@@ -771,29 +852,24 @@ function generateWorkoutPlan(
                     ]
                 ),
 
-                createDay(
-                    "Rest",
-                    []
-                ),
+                createDay("Rest", []),
 
-                createDay(
-                    "Rest",
-                    []
-                )
+                createDay("Rest", [])
 
             ];
 
         }
+
+    }
 
 
     // =================================================
     // DEFAULT
     // =================================================
 
-    } else {
+    else {
 
         trainingDays = 4;
-
 
         week = [
 
@@ -818,10 +894,7 @@ function generateWorkoutPlan(
                 ]
             ),
 
-            createDay(
-                "Rest",
-                []
-            ),
+            createDay("Rest", []),
 
             createDay(
                 "Lower Body",
@@ -843,15 +916,9 @@ function generateWorkoutPlan(
                 ]
             ),
 
-            createDay(
-                "Rest",
-                []
-            ),
+            createDay("Rest", []),
 
-            createDay(
-                "Rest",
-                []
-            )
+            createDay("Rest", [])
 
         ];
 
@@ -860,13 +927,47 @@ function generateWorkoutPlan(
 
     return {
 
-        trainingDays:
-            trainingDays,
+        trainingDays: trainingDays,
 
-        week:
-            week
+        week: week
 
     };
+
+}
+
+
+// =====================================================
+// GET RECOMMENDED PLAN
+// =====================================================
+
+function getRecommendedPlan() {
+
+    if (!profile) {
+
+        console.error(
+            "Profile missing."
+        );
+
+        return {
+
+            trainingDays: 0,
+
+            week: []
+
+        };
+
+    }
+
+
+    return generateWorkoutPlan(
+
+        profile.goal,
+
+        profile.experience,
+
+        profile.activity
+
+    );
 
 }
 
@@ -877,57 +978,235 @@ function generateWorkoutPlan(
 
 function getCustomPlan() {
 
-    const saved =
-        localStorage.getItem(
-            customPlanKey
-        );
+    if (
+        workoutData &&
+        workoutData.customPlan
+    ) {
 
-
-    if (!saved) {
-
-        return null;
+        return workoutData.customPlan;
 
     }
 
-
-    try {
-
-        return JSON.parse(saved);
-
-    } catch (error) {
-
-        console.error(
-            "Custom plan error:",
-            error
-        );
-
-        return null;
-
-    }
+    return null;
 
 }
 
 
 // =====================================================
-// CURRENT ACTIVE PLAN
+// TODAY DATE
 // =====================================================
 
-let activePlan =
-    localStorage.getItem(
-        activePlanKey
+function getTodayDate() {
+
+    const today =
+        new Date();
+
+    return (
+
+        today.getFullYear() +
+
+        "-" +
+
+        String(
+            today.getMonth() + 1
+        ).padStart(2, "0") +
+
+        "-" +
+
+        String(
+            today.getDate()
+        ).padStart(2, "0")
+
     );
 
-
-if (!activePlan) {
-
-    activePlan =
-        "recommended";
+}
 
 
-    localStorage.setItem(
-        activePlanKey,
-        "recommended"
+// =====================================================
+// GET COMPLETED EXERCISES
+// =====================================================
+
+function getCompletedExercises() {
+
+    if (
+        !workoutData ||
+        !Array.isArray(
+            workoutData.workoutProgress
+        )
+    ) {
+
+        return [];
+
+    }
+
+
+    const today =
+        getTodayDate();
+
+
+    const progress =
+        workoutData.workoutProgress.find(
+            function(item) {
+
+                return (
+
+                    item.date === today &&
+
+                    item.plan === activePlan
+
+                );
+
+            }
+        );
+
+
+    if (!progress) {
+
+        return [];
+
+    }
+
+
+    return (
+        progress.completedExercises || []
     );
+
+}
+
+
+// =====================================================
+// SAVE WORKOUT PROGRESS
+// =====================================================
+
+async function saveCompletedExercises(
+    completedExercises
+) {
+
+    try {
+
+        const today =
+            getTodayDate();
+
+
+        const response =
+            await fetch(
+                `${API_URL}/api/workout/progress`,
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            username:
+                                username,
+
+                            date:
+                                today,
+
+                            plan:
+                                activePlan,
+
+                            completedExercises:
+                                completedExercises
+
+                        })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.message ||
+                "Unable to save workout progress"
+            );
+
+        }
+
+
+        if (
+            !Array.isArray(
+                workoutData.workoutProgress
+            )
+        ) {
+
+            workoutData.workoutProgress = [];
+
+        }
+
+
+        const existingProgress =
+            workoutData.workoutProgress.find(
+                function(item) {
+
+                    return (
+
+                        item.date === today &&
+
+                        item.plan === activePlan
+
+                    );
+
+                }
+            );
+
+
+        if (existingProgress) {
+
+            existingProgress.completedExercises =
+                completedExercises;
+
+        }
+
+        else {
+
+            workoutData.workoutProgress.push({
+
+                date:
+                    today,
+
+                plan:
+                    activePlan,
+
+                completedExercises:
+                    completedExercises
+
+            });
+
+        }
+
+
+        return true;
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Workout progress save error:",
+            error
+        );
+
+        alert(
+            "Unable to save workout progress."
+        );
+
+        return false;
+
+    }
 
 }
 
@@ -956,19 +1235,17 @@ function renderActivePlan() {
             activePlan =
                 "recommended";
 
-
-            localStorage.setItem(
-                activePlanKey,
-                "recommended"
-            );
-
+            workoutData.activePlan =
+                "recommended";
 
             plan =
                 getRecommendedPlan();
 
         }
 
-    } else {
+    }
+
+    else {
 
         plan =
             getRecommendedPlan();
@@ -977,7 +1254,27 @@ function renderActivePlan() {
 
 
     // =================================================
-    // PLAN HEADER
+    // VALIDATE PLAN
+    // =================================================
+
+    if (
+        !plan ||
+        !Array.isArray(plan.week) ||
+        plan.week.length !== 7
+    ) {
+
+        console.error(
+            "Invalid workout plan:",
+            plan
+        );
+
+        return;
+
+    }
+
+
+    // =================================================
+    // HEADER
     // =================================================
 
     if (activePlan === "custom") {
@@ -985,29 +1282,26 @@ function renderActivePlan() {
         currentPlanTitle.textContent =
             "Custom Plan";
 
-
         currentPlanDescription.textContent =
             "Your personal workout routine.";
 
-
         customPlanButton.textContent =
             "Edit Custom Plan";
-
 
         recommendedPlanButton.classList.remove(
             "hidden"
         );
 
-
         customManage.classList.remove(
             "hidden"
         );
 
-    } else {
+    }
+
+    else {
 
         currentPlanTitle.textContent =
             "Recommended Plan";
-
 
         currentPlanDescription.textContent =
             "A workout plan generated from your fitness profile.";
@@ -1018,16 +1312,16 @@ function renderActivePlan() {
             customPlanButton.textContent =
                 "Use Custom Plan";
 
-
             customManage.classList.remove(
                 "hidden"
             );
 
-        } else {
+        }
+
+        else {
 
             customPlanButton.textContent =
                 "Create Custom Plan";
-
 
             customManage.classList.add(
                 "hidden"
@@ -1074,7 +1368,8 @@ function renderActivePlan() {
 
 
     todayWorkoutDay.textContent =
-        "DAY " + (dayIndex + 1);
+        "DAY " +
+        (dayIndex + 1);
 
 
     displayExercises(
@@ -1091,95 +1386,12 @@ function renderActivePlan() {
 
 
 // =====================================================
-// TODAY DATE
-// =====================================================
-
-function getTodayDate() {
-
-    const today =
-        new Date();
-
-
-    return (
-        today.getFullYear() +
-        "-" +
-        String(
-            today.getMonth() + 1
-        ).padStart(2, "0") +
-        "-" +
-        String(
-            today.getDate()
-        ).padStart(2, "0")
-    );
-
-}
-
-
-// =====================================================
-// COMPLETION STORAGE
-// =====================================================
-
-function getWorkoutStorageKey() {
-
-    return (
-        "workoutProgress_" +
-        username +
-        "_" +
-        activePlan +
-        "_" +
-        getTodayDate()
-    );
-
-}
-
-
-function getCompletedExercises() {
-
-    const saved =
-        localStorage.getItem(
-            getWorkoutStorageKey()
-        );
-
-
-    if (!saved) {
-
-        return [];
-
-    }
-
-
-    try {
-
-        return JSON.parse(saved);
-
-    } catch (error) {
-
-        return [];
-
-    }
-
-}
-
-
-function saveCompletedExercises(
-    completedExercises
-) {
-
-    localStorage.setItem(
-        getWorkoutStorageKey(),
-        JSON.stringify(
-            completedExercises
-        )
-    );
-
-}
-
-
-// =====================================================
 // DISPLAY EXERCISES
 // =====================================================
 
-function displayExercises(exercises) {
+function displayExercises(
+    exercises
+) {
 
     exerciseList.innerHTML =
         "";
@@ -1189,7 +1401,10 @@ function displayExercises(exercises) {
     // REST DAY
     // =================================================
 
-    if (exercises.length === 0) {
+    if (
+        !exercises ||
+        exercises.length === 0
+    ) {
 
         exerciseList.innerHTML = `
 
@@ -1197,9 +1412,7 @@ function displayExercises(exercises) {
 
                 <div class="exerciseInfo">
 
-                    <h3>
-                        Rest Day
-                    </h3>
+                    <h3>Rest Day</h3>
 
                     <p>
                         Recovery is part of your training.
@@ -1215,10 +1428,8 @@ function displayExercises(exercises) {
         progressText.textContent =
             "100%";
 
-
         progressFill.style.width =
             "100%";
-
 
         return;
 
@@ -1298,7 +1509,6 @@ function displayExercises(exercises) {
                     "completed"
                 );
 
-
                 button.textContent =
                     "Completed";
 
@@ -1307,7 +1517,11 @@ function displayExercises(exercises) {
 
             button.addEventListener(
                 "click",
-                function() {
+                async function() {
+
+                    button.disabled =
+                        true;
+
 
                     const isCompleted =
                         card.classList.toggle(
@@ -1337,7 +1551,9 @@ function displayExercises(exercises) {
 
                         }
 
-                    } else {
+                    }
+
+                    else {
 
                         button.textContent =
                             "Complete";
@@ -1347,8 +1563,10 @@ function displayExercises(exercises) {
                             savedExercises.filter(
                                 function(id) {
 
-                                    return id !==
-                                        exerciseId;
+                                    return (
+                                        id !==
+                                        exerciseId
+                                    );
 
                                 }
                             );
@@ -1356,9 +1574,29 @@ function displayExercises(exercises) {
                     }
 
 
-                    saveCompletedExercises(
-                        savedExercises
-                    );
+                    const success =
+                        await saveCompletedExercises(
+                            savedExercises
+                        );
+
+
+                    if (!success) {
+
+                        card.classList.toggle(
+                            "completed"
+                        );
+
+
+                        button.textContent =
+                            isCompleted
+                                ? "Complete"
+                                : "Completed";
+
+                    }
+
+
+                    button.disabled =
+                        false;
 
 
                     updateProgress();
@@ -1407,10 +1645,8 @@ function updateProgress() {
         progressText.textContent =
             "100%";
 
-
         progressFill.style.width =
             "100%";
-
 
         return;
 
@@ -1475,9 +1711,7 @@ function displaySchedule(
                 "scheduleDay";
 
 
-            if (
-                index === todayIndex
-            ) {
+            if (index === todayIndex) {
 
                 dayCard.classList.add(
                     "today"
@@ -1486,9 +1720,7 @@ function displaySchedule(
             }
 
 
-            if (
-                day.name === "Rest"
-            ) {
+            if (day.name === "Rest") {
 
                 dayCard.classList.add(
                     "rest"
@@ -1521,7 +1753,22 @@ function displaySchedule(
 
 
 // =====================================================
-// CUSTOM PLAN EDITOR
+// ESCAPE HTML ATTRIBUTE
+// =====================================================
+
+function escapeHtmlAttribute(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+
+}
+
+
+// =====================================================
+// OPEN CUSTOM EDITOR
 // =====================================================
 
 function openCustomEditor() {
@@ -1539,7 +1786,10 @@ function openCustomEditor() {
         getCustomPlan();
 
 
-    if (existingPlan) {
+    if (
+        existingPlan &&
+        Array.isArray(existingPlan.week)
+    ) {
 
         existingPlan.week.forEach(
             function(day, index) {
@@ -1552,7 +1802,9 @@ function openCustomEditor() {
             }
         );
 
-    } else {
+    }
+
+    else {
 
         const days = [
 
@@ -1573,8 +1825,11 @@ function openCustomEditor() {
                 createCustomDay(
                     index,
                     {
+
                         name: "",
+
                         exercises: []
+
                     }
                 );
 
@@ -1621,10 +1876,6 @@ function createCustomDay(
         "customDay";
 
 
-    dayBox.dataset.index =
-        index;
-
-
     const dayNames = [
 
         "Monday",
@@ -1654,7 +1905,7 @@ function createCustomDay(
                 class="dayNameInput"
                 type="text"
                 placeholder="Workout name"
-                value="${defaultName}"
+                value="${escapeHtmlAttribute(defaultName)}"
             >
 
         </div>
@@ -1684,7 +1935,7 @@ function createCustomDay(
 
 
     if (
-        day.exercises &&
+        Array.isArray(day.exercises) &&
         day.exercises.length > 0
     ) {
 
@@ -1750,14 +2001,12 @@ function addExerciseRow(
             type="text"
             class="exerciseNameInput"
             placeholder="Exercise name"
-            value="${exerciseName}"
         >
 
         <input
             type="text"
             class="exerciseSetsInput"
             placeholder="e.g. 3 × 10"
-            value="${sets}"
         >
 
         <button
@@ -1770,13 +2019,21 @@ function addExerciseRow(
     `;
 
 
-    const removeButton =
-        row.querySelector(
-            ".removeExerciseButton"
-        );
+    row.querySelector(
+        ".exerciseNameInput"
+    ).value =
+        exerciseName || "";
 
 
-    removeButton.addEventListener(
+    row.querySelector(
+        ".exerciseSetsInput"
+    ).value =
+        sets || "";
+
+
+    row.querySelector(
+        ".removeExerciseButton"
+    ).addEventListener(
         "click",
         function() {
 
@@ -1794,10 +2051,10 @@ function addExerciseRow(
 
 
 // =====================================================
-// SAVE CUSTOM PLAN
+// SAVE CUSTOM WORKOUT
 // =====================================================
 
-function saveCustomWorkout() {
+async function saveCustomWorkout() {
 
     const dayBoxes =
         customDays.querySelectorAll(
@@ -1813,14 +2070,10 @@ function saveCustomWorkout() {
     dayBoxes.forEach(
         function(dayBox) {
 
-            const nameInput =
+            const workoutName =
                 dayBox.querySelector(
                     ".dayNameInput"
-                );
-
-
-            const workoutName =
-                nameInput.value.trim();
+                ).value.trim();
 
 
             const rows =
@@ -1863,9 +2116,7 @@ function saveCustomWorkout() {
             );
 
 
-            if (
-                exercises.length > 0
-            ) {
+            if (exercises.length > 0) {
 
                 trainingCount++;
 
@@ -1881,7 +2132,9 @@ function saveCustomWorkout() {
 
                 });
 
-            } else {
+            }
+
+            else {
 
                 week.push({
 
@@ -1897,6 +2150,21 @@ function saveCustomWorkout() {
 
         }
     );
+
+
+    // =================================================
+    // VALIDATION
+    // =================================================
+
+    if (week.length !== 7) {
+
+        alert(
+            "Please create all 7 days."
+        );
+
+        return;
+
+    }
 
 
     if (trainingCount === 0) {
@@ -1921,39 +2189,151 @@ function saveCustomWorkout() {
     };
 
 
-    localStorage.setItem(
-        customPlanKey,
-        JSON.stringify(
-            customPlan
-        )
+    console.log(
+        "Custom plan to save:",
+        customPlan
     );
 
 
-    activePlan =
-        "custom";
+    try {
+
+        saveCustomButton.disabled =
+            true;
+
+        saveCustomButton.textContent =
+            "Saving...";
 
 
-    localStorage.setItem(
-        activePlanKey,
-        "custom"
-    );
+        // =================================================
+        // SEND CUSTOM PLAN TO BACKEND
+        // =================================================
+
+        const response =
+            await fetch(
+                `${API_URL}/api/workout/custom`,
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            username:
+                                username,
+
+                            customPlan:
+                                customPlan
+
+                        })
+
+                }
+            );
 
 
-    customEditor.classList.add(
-        "hidden"
-    );
+        // =================================================
+        // READ RESPONSE SAFELY
+        // =================================================
+
+        const data =
+            await response.json();
 
 
-    renderActivePlan();
+        console.log(
+            "Save custom response:",
+            response.status,
+            data
+        );
 
 
-    window.scrollTo({
+        if (!response.ok) {
 
-        top: 0,
+            throw new Error(
+                data.message ||
+                "Failed to save custom workout"
+            );
 
-        behavior: "smooth"
+        }
 
-    });
+
+        // =================================================
+        // UPDATE LOCAL STATE
+        // =================================================
+
+        workoutData.customPlan =
+            data.customPlan ||
+            customPlan;
+
+
+        workoutData.activePlan =
+            data.activePlan ||
+            "custom";
+
+
+        activePlan =
+            workoutData.activePlan;
+
+
+        // =================================================
+        // CLOSE EDITOR
+        // =================================================
+
+        customEditor.classList.add(
+            "hidden"
+        );
+
+
+        // =================================================
+        // RENDER SAVED PLAN
+        // =================================================
+
+        renderActivePlan();
+
+
+        window.scrollTo({
+
+            top: 0,
+
+            behavior: "smooth"
+
+        });
+
+
+        alert(
+            "Custom workout saved successfully!"
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Custom workout save error:",
+            error
+        );
+
+
+        alert(
+            "Unable to save your workout. Please try again."
+        );
+
+    }
+
+    finally {
+
+        saveCustomButton.disabled =
+            false;
+
+        saveCustomButton.textContent =
+            "Save Custom Plan";
+
+    }
 
 }
 
@@ -1962,28 +2342,88 @@ function saveCustomWorkout() {
 // SWITCH TO RECOMMENDED
 // =====================================================
 
-function switchToRecommended() {
+async function switchToRecommended() {
 
-    activePlan =
-        "recommended";
+    try {
 
-
-    localStorage.setItem(
-        activePlanKey,
-        "recommended"
-    );
+        recommendedPlanButton.disabled =
+            true;
 
 
-    renderActivePlan();
+        const response =
+            await fetch(
+                `${API_URL}/api/workout/active`,
+                {
+
+                    method: "PUT",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            username:
+                                username,
+
+                            activePlan:
+                                "recommended"
+
+                        })
+
+                }
+            );
 
 
-    window.scrollTo({
+        const data =
+            await response.json();
 
-        top: 0,
 
-        behavior: "smooth"
+        if (!response.ok) {
 
-    });
+            throw new Error(
+                data.message ||
+                "Unable to switch plan"
+            );
+
+        }
+
+
+        activePlan =
+            "recommended";
+
+
+        workoutData.activePlan =
+            "recommended";
+
+
+        renderActivePlan();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Switch recommended error:",
+            error
+        );
+
+        alert(
+            "Unable to switch workout plan."
+        );
+
+    }
+
+    finally {
+
+        recommendedPlanButton.disabled =
+            false;
+
+    }
 
 }
 
@@ -1992,7 +2432,7 @@ function switchToRecommended() {
 // USE CUSTOM PLAN
 // =====================================================
 
-function useCustomPlan() {
+async function useCustomPlan() {
 
     const customPlan =
         getCustomPlan();
@@ -2007,26 +2447,87 @@ function useCustomPlan() {
     }
 
 
-    activePlan =
-        "custom";
+    try {
+
+        customPlanButton.disabled =
+            true;
 
 
-    localStorage.setItem(
-        activePlanKey,
-        "custom"
-    );
+        const response =
+            await fetch(
+                `${API_URL}/api/workout/active`,
+                {
+
+                    method: "PUT",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            username:
+                                username,
+
+                            activePlan:
+                                "custom"
+
+                        })
+
+                }
+            );
 
 
-    renderActivePlan();
+        const data =
+            await response.json();
 
 
-    window.scrollTo({
+        if (!response.ok) {
 
-        top: 0,
+            throw new Error(
+                data.message ||
+                "Unable to activate custom plan"
+            );
 
-        behavior: "smooth"
+        }
 
-    });
+
+        activePlan =
+            data.activePlan ||
+            "custom";
+
+
+        workoutData.activePlan =
+            activePlan;
+
+
+        renderActivePlan();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Use custom plan error:",
+            error
+        );
+
+        alert(
+            "Unable to activate your custom workout."
+        );
+
+    }
+
+    finally {
+
+        customPlanButton.disabled =
+            false;
+
+    }
 
 }
 
@@ -2035,7 +2536,7 @@ function useCustomPlan() {
 // DELETE CUSTOM PLAN
 // =====================================================
 
-function deleteCustomPlan() {
+async function deleteCustomPlan() {
 
     const confirmed =
         confirm(
@@ -2050,41 +2551,86 @@ function deleteCustomPlan() {
     }
 
 
-    localStorage.removeItem(
-        customPlanKey
-    );
+    try {
+
+        deleteCustomButton.disabled =
+            true;
 
 
-    activePlan =
-        "recommended";
+        const response =
+            await fetch(
+                `${API_URL}/api/workout/custom/${encodeURIComponent(username)}`,
+                {
+
+                    method: "DELETE"
+
+                }
+            );
 
 
-    localStorage.setItem(
-        activePlanKey,
-        "recommended"
-    );
+        const data =
+            await response.json();
 
 
-    renderActivePlan();
+        if (!response.ok) {
+
+            throw new Error(
+                data.message ||
+                "Unable to delete custom workout"
+            );
+
+        }
+
+
+        activePlan =
+            "recommended";
+
+
+        workoutData.activePlan =
+            "recommended";
+
+
+        workoutData.customPlan =
+            null;
+
+
+        renderActivePlan();
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Delete custom workout error:",
+            error
+        );
+
+        alert(
+            "Unable to delete your custom workout."
+        );
+
+    }
+
+    finally {
+
+        deleteCustomButton.disabled =
+            false;
+
+    }
 
 }
 
 
 // =====================================================
-// CUSTOM PLAN BUTTON
+// BUTTON EVENTS
 // =====================================================
 
 customPlanButton.addEventListener(
     "click",
     function() {
 
-        const savedCustomPlan =
-            getCustomPlan();
-
-
-        if (
-            activePlan === "custom"
-        ) {
+        if (activePlan === "custom") {
 
             openCustomEditor();
 
@@ -2093,11 +2639,13 @@ customPlanButton.addEventListener(
         }
 
 
-        if (savedCustomPlan) {
+        if (getCustomPlan()) {
 
             useCustomPlan();
 
-        } else {
+        }
+
+        else {
 
             openCustomEditor();
 
@@ -2107,37 +2655,17 @@ customPlanButton.addEventListener(
 );
 
 
-// =====================================================
-// RECOMMENDED BUTTON
-// =====================================================
-
 recommendedPlanButton.addEventListener(
     "click",
-    function() {
-
-        switchToRecommended();
-
-    }
+    switchToRecommended
 );
 
-
-// =====================================================
-// SAVE BUTTON
-// =====================================================
 
 saveCustomButton.addEventListener(
     "click",
-    function() {
-
-        saveCustomWorkout();
-
-    }
+    saveCustomWorkout
 );
 
-
-// =====================================================
-// CANCEL BUTTON
-// =====================================================
 
 cancelButton.addEventListener(
     "click",
@@ -2151,10 +2679,6 @@ cancelButton.addEventListener(
 );
 
 
-// =====================================================
-// CLOSE EDITOR
-// =====================================================
-
 closeEditorButton.addEventListener(
     "click",
     function() {
@@ -2167,31 +2691,15 @@ closeEditorButton.addEventListener(
 );
 
 
-// =====================================================
-// EDIT CUSTOM PLAN
-// =====================================================
-
 editCustomButton.addEventListener(
     "click",
-    function() {
-
-        openCustomEditor();
-
-    }
+    openCustomEditor
 );
 
 
-// =====================================================
-// DELETE CUSTOM PLAN
-// =====================================================
-
 deleteCustomButton.addEventListener(
     "click",
-    function() {
-
-        deleteCustomPlan();
-
-    }
+    deleteCustomPlan
 );
 
 
@@ -2222,11 +2730,9 @@ logoutButton.addEventListener(
             "isLoggedIn"
         );
 
-
         localStorage.removeItem(
             "username"
         );
-
 
         window.location.href =
             "index.html";
@@ -2236,10 +2742,32 @@ logoutButton.addEventListener(
 
 
 // =====================================================
-// INITIAL LOAD
+// INITIALIZE
 // =====================================================
 
 async function initializeWorkoutPage() {
+
+    console.log(
+        "================================="
+    );
+
+    console.log(
+        "INITIALIZING WORKOUT PAGE"
+    );
+
+    console.log(
+        "User:",
+        username
+    );
+
+    console.log(
+        "================================="
+    );
+
+
+    // =================================================
+    // STEP 1
+    // =================================================
 
     const profileLoaded =
         await loadFitnessProfile();
@@ -2252,16 +2780,40 @@ async function initializeWorkoutPage() {
     }
 
 
+    // =================================================
+    // STEP 2
+    // =================================================
+
+    const workoutLoaded =
+        await loadWorkoutData();
+
+
+    if (!workoutLoaded) {
+
+        return;
+
+    }
+
+
+    // =================================================
+    // STEP 3
+    // =================================================
+
     displayProfile();
 
 
+    // =================================================
+    // STEP 4
+    // =================================================
+
     renderActivePlan();
+
+
+    console.log(
+        "Workout page initialized successfully."
+    );
 
 }
 
-
-// =====================================================
-// START
-// =====================================================
 
 initializeWorkoutPage();
