@@ -35,7 +35,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api", profileRoutes);
-app.use("/api", workoutRoutes);
+app.use("/api/workout", workoutRoutes);
 app.use("/api/progress",progressRoutes);
 app.use("/api", nutritionRoutes);
 // ===============================
