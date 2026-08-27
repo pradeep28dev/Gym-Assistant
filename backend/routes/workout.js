@@ -2,7 +2,7 @@ const express = require("express");
 
 // IMPORTANT:
 // The filename is workout.js
-const Workout = require("../models/workout");
+const Workout = require("../models/Workout");
 
 const router = express.Router();
 
