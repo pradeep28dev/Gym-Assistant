@@ -11,7 +11,8 @@ const authRoutes = require("./routes/auth");
 const profileRoutes = require("./routes/profile");
 const workoutRoutes = require("./routes/workout");
 const progressRoutes = require("./routes/progress");
-
+const nutritionRoutes =
+    require("./routes/nutrition");
 
 dotenv.config();
 
@@ -36,6 +37,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api", profileRoutes);
 app.use("/api", workoutRoutes);
 app.use("/api/progress",progressRoutes);
+app.use("/api", nutritionRoutes);
 // ===============================
 // MONGODB CONNECTION
 // ===============================
@@ -67,3 +69,4 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
+

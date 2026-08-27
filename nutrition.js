@@ -4,6 +4,14 @@
 
 
 // ==================================================
+// BACKEND API
+// ==================================================
+
+const BACKEND_URL =
+    "http://localhost:5000";
+
+
+// ==================================================
 // CHECK LOGIN
 // ==================================================
 
@@ -31,14 +39,6 @@ if (!username) {
     window.location.href = "index.html";
 
 }
-
-
-// ==================================================
-// USDA API
-// ==================================================
-
-const USDA_API_KEY =
-    "jC2Jg45S605KEsAL1rgIZlDI0L6n5TkoOvozheeA";
 
 
 // ==================================================
@@ -1145,18 +1145,15 @@ function updateRemainingText(
 
 
 // ==================================================
-// USDA SEARCH
+// USDA SEARCH THROUGH BACKEND
 // ==================================================
 
 async function searchFood(foodNameText) {
 
     const url =
-        "https://api.nal.usda.gov/fdc/v1/foods/search" +
-        "?api_key=" +
-        USDA_API_KEY +
-        "&query=" +
-        encodeURIComponent(foodNameText) +
-        "&pageSize=5";
+        BACKEND_URL +
+        "/api/nutrition/search?query=" +
+        encodeURIComponent(foodNameText);
 
 
     const response =
@@ -1243,7 +1240,7 @@ async function getFoodSuggestions(
 
 
 // ==================================================
-// SEARCH FOOD SUGGESTIONS FROM USDA
+// SEARCH FOOD SUGGESTIONS THROUGH BACKEND
 // ==================================================
 
 async function searchFoodSuggestions(
@@ -1251,12 +1248,9 @@ async function searchFoodSuggestions(
 ) {
 
     const url =
-        "https://api.nal.usda.gov/fdc/v1/foods/search" +
-        "?api_key=" +
-        USDA_API_KEY +
-        "&query=" +
-        encodeURIComponent(searchText) +
-        "&pageSize=8";
+        BACKEND_URL +
+        "/api/nutrition/search?query=" +
+        encodeURIComponent(searchText);
 
 
     const response =
@@ -2464,7 +2458,9 @@ async function loadFitnessProfile() {
 
         const response =
             await fetch(
-                `http://localhost:5000/api/profile/${encodeURIComponent(username)}`
+                BACKEND_URL +
+                "/api/profile/" +
+                encodeURIComponent(username)
             );
 
 
