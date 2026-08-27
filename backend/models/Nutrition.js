@@ -1,15 +1,16 @@
 const mongoose = require("mongoose");
 
 
-// ===============================
+// ==================================================
 // FOOD SCHEMA
-// ===============================
+// ==================================================
 
 const foodSchema = new mongoose.Schema(
     {
         name: {
             type: String,
-            required: true
+            required: true,
+            trim: true
         },
 
         quantity: {
@@ -19,7 +20,8 @@ const foodSchema = new mongoose.Schema(
 
         unit: {
             type: String,
-            required: true
+            required: true,
+            trim: true
         },
 
         calories: {
@@ -40,20 +42,35 @@ const foodSchema = new mongoose.Schema(
         fat: {
             type: Number,
             default: 0
+        },
+
+        date: {
+            type: String,
+            required: true
         }
     }
 );
 
 
-// ===============================
+// ==================================================
 // MEAL SCHEMA
-// ===============================
+// ==================================================
 
 const mealSchema = new mongoose.Schema(
     {
+        type: {
+            type: String,
+            default: "meal"
+        },
+
         name: {
             type: String,
             required: true
+        },
+
+        description: {
+            type: String,
+            default: ""
         },
 
         time: {
@@ -69,85 +86,78 @@ const mealSchema = new mongoose.Schema(
 );
 
 
-// ===============================
+// ==================================================
 // NUTRITION SCHEMA
-// ===============================
+// ==================================================
 
-const nutritionSchema =
-    new mongoose.Schema(
-
-        {
-
-            username: {
-                type: String,
-                required: true,
-                unique: true,
-                trim: true
-            },
-
-
-            // ===============================
-            // DAILY TARGETS
-            // ===============================
-
-            targets: {
-
-                calories: {
-                    type: Number,
-                    default: 0
-                },
-
-                protein: {
-                    type: Number,
-                    default: 0
-                },
-
-                carbs: {
-                    type: Number,
-                    default: 0
-                },
-
-                fat: {
-                    type: Number,
-                    default: 0
-                }
-
-            },
-
-
-            // ===============================
-            // FOOD TRACKER
-            // ===============================
-
-            foods: {
-                type: [foodSchema],
-                default: []
-            },
-
-
-            // ===============================
-            // MEAL PLANNER
-            // ===============================
-
-            meals: {
-                type: [mealSchema],
-                default: []
-            }
-
+const nutritionSchema = new mongoose.Schema(
+    {
+        username: {
+            type: String,
+            required: true,
+            unique: true,
+            trim: true
         },
 
-        {
-            timestamps: true
+
+        // ==================================================
+        // DAILY TARGETS
+        // ==================================================
+
+        targets: {
+            calories: {
+                type: Number,
+                default: 0
+            },
+
+            protein: {
+                type: Number,
+                default: 0
+            },
+
+            carbs: {
+                type: Number,
+                default: 0
+            },
+
+            fat: {
+                type: Number,
+                default: 0
+            }
+        },
+
+
+        // ==================================================
+        // FOOD TRACKER
+        // ==================================================
+
+        foods: {
+            type: [foodSchema],
+            default: []
+        },
+
+
+        // ==================================================
+        // MEAL PLANNER
+        // ==================================================
+
+        meals: {
+            type: [mealSchema],
+            default: []
         }
+    },
 
-    );
+
+    {
+        timestamps: true
+    }
+);
 
 
-const Nutrition =
-    mongoose.model(
-        "Nutrition",
-        nutritionSchema
-    );
+const Nutrition = mongoose.model(
+    "Nutrition",
+    nutritionSchema
+);
 
 
 module.exports = Nutrition;

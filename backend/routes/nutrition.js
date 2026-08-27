@@ -1,148 +1,135 @@
 const express = require("express");
 const Nutrition = require("../models/Nutrition");
+
 const router = express.Router();
 
 
 // ==================================================
 // USDA NUTRITION SEARCH
+// GET /api/nutrition/search
 // ==================================================
 
-router.get("/nutrition/search", async (req, res) => {
+router.get(
+    "/nutrition/search",
+    async (req, res) => {
 
-    try {
+        try {
 
-        const query =
-            String(req.query.query || "").trim();
+            const query =
+                String(
+                    req.query.query || ""
+                ).trim();
 
 
-        // ------------------------------------------
-        // VALIDATE QUERY
-        // ------------------------------------------
+            if (!query) {
 
-        if (!query) {
+                return res.status(400).json({
 
-            return res.status(400).json({
+                    message:
+                        "Food search query is required.",
 
-                message:
-                    "Food search query is required.",
+                    foods: []
 
-                foods: []
+                });
+
+            }
+
+
+            if (!process.env.USDA_API_KEY) {
+
+                console.error(
+                    "USDA_API_KEY is missing."
+                );
+
+                return res.status(500).json({
+
+                    message:
+                        "USDA API key is not configured.",
+
+                    foods: []
+
+                });
+
+            }
+
+
+            const url =
+                "https://api.nal.usda.gov/fdc/v1/foods/search" +
+                "?api_key=" +
+                encodeURIComponent(
+                    process.env.USDA_API_KEY
+                ) +
+                "&query=" +
+                encodeURIComponent(query) +
+                "&pageSize=8";
+
+
+            const response =
+                await fetch(url);
+
+
+            if (!response.ok) {
+
+                const errorText =
+                    await response.text();
+
+                console.error(
+                    "USDA API error:",
+                    errorText
+                );
+
+                return res.status(
+                    response.status
+                ).json({
+
+                    message:
+                        "USDA food search failed.",
+
+                    foods: []
+
+                });
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            return res.status(200).json({
+
+                foods:
+                    data.foods || []
 
             });
 
         }
 
-
-        // ------------------------------------------
-        // CHECK API KEY
-        // ------------------------------------------
-
-        if (!process.env.USDA_API_KEY) {
+        catch (error) {
 
             console.error(
-                "USDA_API_KEY is missing from .env"
+                "Nutrition search error:",
+                error
             );
 
             return res.status(500).json({
 
                 message:
-                    "USDA API key is not configured.",
+                    "Unable to search nutrition data.",
 
                 foods: []
 
             });
 
         }
-
-
-        // ------------------------------------------
-        // USDA API URL
-        // ------------------------------------------
-
-        const url =
-            "https://api.nal.usda.gov/fdc/v1/foods/search" +
-            "?api_key=" +
-            encodeURIComponent(
-                process.env.USDA_API_KEY
-            ) +
-            "&query=" +
-            encodeURIComponent(query) +
-            "&pageSize=8";
-
-
-        // ------------------------------------------
-        // CALL USDA
-        // ------------------------------------------
-
-        const response =
-            await fetch(url);
-
-
-        if (!response.ok) {
-
-            const errorText =
-                await response.text();
-
-            console.error(
-                "USDA API error:",
-                errorText
-            );
-
-            return res.status(
-                response.status
-            ).json({
-
-                message:
-                    "USDA food search failed.",
-
-                foods: []
-
-            });
-
-        }
-
-
-        // ------------------------------------------
-        // GET USDA DATA
-        // ------------------------------------------
-
-        const data =
-            await response.json();
-
-
-        // ------------------------------------------
-        // RETURN FOOD DATA
-        // ------------------------------------------
-
-        return res.status(200).json({
-
-            foods:
-                data.foods || []
-
-        });
-
-    } catch (error) {
-
-        console.error(
-            "Nutrition search error:",
-            error
-        );
-
-        return res.status(500).json({
-
-            message:
-                "Unable to search nutrition data.",
-
-            foods: []
-
-        });
 
     }
+);
 
-});
 
 // ==================================================
 // GET NUTRITION DATA
+// GET /api/nutrition/:username
 // ==================================================
 
 router.get(
@@ -152,12 +139,29 @@ router.get(
         try {
 
             const username =
-                req.params.username;
+                String(
+                    req.params.username || ""
+                ).trim();
+
+
+            if (!username) {
+
+                return res.status(400).json({
+
+                    message:
+                        "Username is required."
+
+                });
+
+            }
 
 
             const nutrition =
                 await Nutrition.findOne({
-                    username: username
+
+                    username:
+                        username
+
                 });
 
 
@@ -165,11 +169,19 @@ router.get(
 
                 return res.status(200).json({
 
+                    username:
+                        username,
+
                     targets: {
+
                         calories: 0,
+
                         protein: 0,
+
                         carbs: 0,
+
                         fat: 0
+
                     },
 
                     foods: [],
@@ -181,7 +193,10 @@ router.get(
             }
 
 
-            res.status(200).json({
+            return res.status(200).json({
+
+                username:
+                    nutrition.username,
 
                 targets:
                     nutrition.targets,
@@ -203,7 +218,7 @@ router.get(
                 error
             );
 
-            res.status(500).json({
+            return res.status(500).json({
 
                 message:
                     "Unable to load nutrition data."
@@ -215,8 +230,10 @@ router.get(
     }
 );
 
+
 // ==================================================
-// SAVE NUTRITION DATA
+// SAVE COMPLETE NUTRITION DATA
+// POST /api/nutrition
 // ==================================================
 
 router.post(
@@ -226,10 +243,15 @@ router.post(
         try {
 
             const {
+
                 username,
+
                 targets,
+
                 foods,
+
                 meals
+
             } = req.body;
 
 
@@ -249,44 +271,70 @@ router.post(
                 await Nutrition.findOneAndUpdate(
 
                     {
-                        username: username
+
+                        username:
+                            String(
+                                username
+                            ).trim()
+
                     },
 
                     {
 
-                        username: username,
+                        username:
+                            String(
+                                username
+                            ).trim(),
 
                         targets:
                             targets || {
+
                                 calories: 0,
+
                                 protein: 0,
+
                                 carbs: 0,
+
                                 fat: 0
+
                             },
 
                         foods:
-                            foods || [],
+                            Array.isArray(
+                                foods
+                            )
+                                ? foods
+                                : [],
 
                         meals:
-                            meals || []
+                            Array.isArray(
+                                meals
+                            )
+                                ? meals
+                                : []
 
                     },
 
                     {
+
                         new: true,
+
                         upsert: true,
+
                         runValidators: true
+
                     }
 
                 );
 
 
-            res.status(200).json({
+            return res.status(200).json({
 
                 message:
                     "Nutrition data saved successfully.",
 
-                nutrition: nutrition
+                nutrition:
+                    nutrition
 
             });
 
@@ -299,10 +347,13 @@ router.post(
                 error
             );
 
-            res.status(500).json({
+            return res.status(500).json({
 
                 message:
-                    "Unable to save nutrition data."
+                    "Unable to save nutrition data.",
+
+                error:
+                    error.message
 
             });
 
@@ -310,5 +361,198 @@ router.post(
 
     }
 );
+
+
+// ==================================================
+// DELETE ONE FOOD
+// DELETE /api/nutrition/:username/food/:foodId
+// ==================================================
+
+router.delete(
+    "/nutrition/:username/food/:foodId",
+    async (req, res) => {
+
+        try {
+
+            const username =
+                String(
+                    req.params.username || ""
+                ).trim();
+
+
+            const foodId =
+                req.params.foodId;
+
+
+            const nutrition =
+                await Nutrition.findOne({
+
+                    username:
+                        username
+
+                });
+
+
+            if (!nutrition) {
+
+                return res.status(404).json({
+
+                    message:
+                        "Nutrition data not found."
+
+                });
+
+            }
+
+
+            const originalLength =
+                nutrition.foods.length;
+
+
+            nutrition.foods =
+                nutrition.foods.filter(
+                    function (food) {
+
+                        return (
+                            food._id.toString() !==
+                            foodId
+                        );
+
+                    }
+                );
+
+
+            if (
+                nutrition.foods.length ===
+                originalLength
+            ) {
+
+                return res.status(404).json({
+
+                    message:
+                        "Food entry not found."
+
+                });
+
+            }
+
+
+            await nutrition.save();
+
+
+            return res.status(200).json({
+
+                message:
+                    "Food deleted successfully."
+
+            });
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Food delete error:",
+                error
+            );
+
+            return res.status(500).json({
+
+                message:
+                    "Unable to delete food."
+
+            });
+
+        }
+
+    }
+);
+
+
+// ==================================================
+// RESET TODAY'S FOOD
+// DELETE /api/nutrition/:username/food/today/:date
+// ==================================================
+
+router.delete(
+    "/nutrition/:username/food/today/:date",
+    async (req, res) => {
+
+        try {
+
+            const username =
+                String(
+                    req.params.username || ""
+                ).trim();
+
+
+            const date =
+                req.params.date;
+
+
+            const nutrition =
+                await Nutrition.findOne({
+
+                    username:
+                        username
+
+                });
+
+
+            if (!nutrition) {
+
+                return res.status(200).json({
+
+                    message:
+                        "No nutrition data found."
+
+                });
+
+            }
+
+
+            nutrition.foods =
+                nutrition.foods.filter(
+                    function (food) {
+
+                        return (
+                            food.date !== date
+                        );
+
+                    }
+                );
+
+
+            await nutrition.save();
+
+
+            return res.status(200).json({
+
+                message:
+                    "Today's food reset successfully."
+
+            });
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Food reset error:",
+                error
+            );
+
+            return res.status(500).json({
+
+                message:
+                    "Unable to reset today's food."
+
+            });
+
+        }
+
+    }
+);
+
 
 module.exports = router;
