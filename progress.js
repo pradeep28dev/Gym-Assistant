@@ -38,7 +38,7 @@ if (!username) {
 // ==================================================
 
 const API_URL =
-    "http://localhost:5000/api/progress";
+    "https://gym-assistant-rb7h.onrender.com/api/progress";
 
 
 // ==================================================
