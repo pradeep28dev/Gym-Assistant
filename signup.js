@@ -13,10 +13,10 @@ const successMessage =
 // PASSWORD VISIBILITY
 // =========================
 
-const password =
+const passwordInput =
     document.getElementById("password");
 
-const confirmPassword =
+const confirmPasswordInput =
     document.getElementById("confirmPassword");
 
 const passwordEye =
@@ -34,9 +34,9 @@ passwordEye.addEventListener(
     "click",
     function () {
 
-        if (password.type === "password") {
+        if (passwordInput.type === "password") {
 
-            password.type = "text";
+            passwordInput.type = "text";
 
             passwordEye.innerHTML =
                 '<i data-lucide="eye-off"></i>';
@@ -48,7 +48,7 @@ passwordEye.addEventListener(
 
         } else {
 
-            password.type = "password";
+            passwordInput.type = "password";
 
             passwordEye.innerHTML =
                 '<i data-lucide="eye"></i>';
@@ -57,6 +57,7 @@ passwordEye.addEventListener(
                 "aria-label",
                 "Show password"
             );
+
         }
 
         lucide.createIcons();
@@ -73,9 +74,9 @@ confirmPasswordEye.addEventListener(
     "click",
     function () {
 
-        if (confirmPassword.type === "password") {
+        if (confirmPasswordInput.type === "password") {
 
-            confirmPassword.type = "text";
+            confirmPasswordInput.type = "text";
 
             confirmPasswordEye.innerHTML =
                 '<i data-lucide="eye-off"></i>';
@@ -87,7 +88,7 @@ confirmPasswordEye.addEventListener(
 
         } else {
 
-            confirmPassword.type = "password";
+            confirmPasswordInput.type = "password";
 
             confirmPasswordEye.innerHTML =
                 '<i data-lucide="eye"></i>';
@@ -96,6 +97,7 @@ confirmPasswordEye.addEventListener(
                 "aria-label",
                 "Show password"
             );
+
         }
 
         lucide.createIcons();
@@ -110,7 +112,7 @@ confirmPasswordEye.addEventListener(
 
 signupForm.addEventListener(
     "submit",
-    function (event) {
+    async function (event) {
 
         event.preventDefault();
 
@@ -138,14 +140,10 @@ signupForm.addEventListener(
                 .trim();
 
         const password =
-            document
-                .getElementById("password")
-                .value;
+            passwordInput.value;
 
         const confirmPassword =
-            document
-                .getElementById("confirmPassword")
-                .value;
+            confirmPasswordInput.value;
 
 
         // =========================
@@ -203,132 +201,7 @@ signupForm.addEventListener(
 
 
         // =========================
-        // GET EXISTING USERS
-        // =========================
-
-        const savedUsers =
-            localStorage.getItem("gymUsers");
-
-        let users = [];
-
-
-        if (savedUsers) {
-
-            try {
-
-                users =
-                    JSON.parse(savedUsers);
-
-            } catch (error) {
-
-                users = [];
-
-            }
-
-        }
-
-
-        // =========================
-        // CHECK USERNAME
-        // =========================
-
-        const usernameExists =
-            users.some(
-                function (user) {
-
-                    return (
-                        user.username.toLowerCase() ===
-                        username.toLowerCase()
-                    );
-
-                }
-            );
-
-
-        if (usernameExists) {
-
-            alert(
-                "Username already exists. Please sign in."
-            );
-
-            return;
-        }
-
-
-        // =========================
-        // CHECK EMAIL
-        // =========================
-
-        const emailExists =
-            users.some(
-                function (user) {
-
-                    return (
-                        user.email.toLowerCase() ===
-                        email.toLowerCase()
-                    );
-
-                }
-            );
-
-
-        if (emailExists) {
-
-            alert(
-                "Email already exists. Please use another email."
-            );
-
-            return;
-        }
-
-
-        // =========================
-        // CREATE USER
-        // =========================
-
-        const user = {
-
-            fullname: fullname,
-
-            username: username,
-
-            email: email,
-
-            password: password
-
-        };
-
-
-        // =========================
-        // ADD USER
-        // =========================
-
-        users.push(user);
-
-
-        // =========================
-        // SAVE ALL USERS
-        // =========================
-
-        localStorage.setItem(
-            "gymUsers",
-            JSON.stringify(users)
-        );
-
-
-        // =========================
-        // SUCCESS MESSAGE
-        // =========================
-
-        successMessage.textContent =
-            "Account created! Redirecting to sign in...";
-
-        successMessage.style.display =
-            "block";
-
-
-        // =========================
-        // DISABLE BUTTON
+        // GET CREATE ACCOUNT BUTTON
         // =========================
 
         const button =
@@ -336,22 +209,113 @@ signupForm.addEventListener(
                 'button[type="submit"]'
             );
 
+
+        // =========================
+        // DISABLE BUTTON
+        // =========================
+
         button.disabled = true;
 
+        button.textContent =
+            "Creating Account...";
 
-        // =========================
-        // REDIRECT TO LOGIN
-        // =========================
 
-        setTimeout(
-            function () {
+        try {
 
-                window.location.href =
-                    "index.html";
+            // =========================
+            // SEND DATA TO BACKEND
+            // =========================
 
-            },
-            2000
-        );
+            const response =
+                await fetch(
+                    "http://localhost:5000/api/auth/signup",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify({
+
+                            fullname: fullname,
+
+                            username: username,
+
+                            email: email,
+
+                            password: password
+
+                        })
+                    }
+                );
+
+
+            // =========================
+            // GET BACKEND RESPONSE
+            // =========================
+
+            const data =
+                await response.json();
+
+
+            // =========================
+            // CHECK RESPONSE
+            // =========================
+
+            if (!response.ok) {
+
+                alert(data.message);
+
+                button.disabled = false;
+
+                button.textContent =
+                    "Create Account";
+
+                return;
+            }
+
+
+            // =========================
+            // SUCCESS MESSAGE
+            // =========================
+
+            successMessage.textContent =
+                "Account created! Redirecting to sign in...";
+
+            successMessage.style.display =
+                "block";
+
+
+            // =========================
+            // REDIRECT TO LOGIN
+            // =========================
+
+            setTimeout(
+                function () {
+
+                    window.location.href =
+                        "index.html";
+
+                },
+                2000
+            );
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                "Unable to connect to the server. Please try again."
+            );
+
+            button.disabled = false;
+
+            button.textContent =
+                "Create Account";
+
+        }
 
     }
 );

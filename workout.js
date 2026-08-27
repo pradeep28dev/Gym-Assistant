@@ -20,6 +20,8 @@ const username =
 
 if (!username) {
 
+    localStorage.removeItem("isLoggedIn");
+
     window.location.href = "index.html";
 }
 
@@ -108,7 +110,8 @@ const deleteCustomButton =
 // USERNAME
 // =====================================================
 
-usernameDisplay.textContent = username;
+usernameDisplay.textContent =
+    username;
 
 
 // =====================================================
@@ -123,72 +126,102 @@ const activePlanKey =
 
 
 // =====================================================
-// FITNESS PROFILE
+// PROFILE
 // =====================================================
 
-const savedProfile =
-    localStorage.getItem(
-        "fitnessProfile_" + username
-    );
-
-if (!savedProfile) {
-
-    alert(
-        "Please complete your fitness assessment first."
-    );
-
-    window.location.href =
-        "assessment.html";
-}
+let profile = null;
 
 
 // =====================================================
-// PROFILE DATA
+// GET PROFILE FROM MONGODB
 // =====================================================
 
-const profile =
-    JSON.parse(savedProfile);
-
-
-// =====================================================
-// CURRENT PLAN
-// =====================================================
-
-let activePlan =
-    localStorage.getItem(activePlanKey);
-
-if (!activePlan) {
-
-    activePlan = "recommended";
-
-    localStorage.setItem(
-        activePlanKey,
-        "recommended"
-    );
-}
-
-
-// =====================================================
-// GET CUSTOM PLAN
-// =====================================================
-
-function getCustomPlan() {
-
-    const saved =
-        localStorage.getItem(customPlanKey);
-
-    if (!saved) {
-        return null;
-    }
+async function loadFitnessProfile() {
 
     try {
 
-        return JSON.parse(saved);
+        console.log(
+            "Loading fitness profile for:",
+            username
+        );
+
+
+        const response =
+            await fetch(
+                `http://localhost:5000/api/profile/${encodeURIComponent(username)}`
+            );
+
+
+        if (!response.ok) {
+
+            if (response.status === 404) {
+
+                alert(
+                    "Please complete your fitness assessment first."
+                );
+
+                window.location.href =
+                    "assessment.html";
+
+                return false;
+            }
+
+
+            throw new Error(
+                "Unable to fetch fitness profile"
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (!data.profile) {
+
+            alert(
+                "Please complete your fitness assessment first."
+            );
+
+            window.location.href =
+                "assessment.html";
+
+            return false;
+
+        }
+
+
+        profile =
+            data.profile;
+
+
+        console.log(
+            "Fitness profile loaded:",
+            profile
+        );
+
+
+        return true;
+
 
     } catch (error) {
 
-        return null;
+        console.error(
+            "Profile loading error:",
+            error
+        );
+
+
+        alert(
+            "Unable to connect to the server. Please make sure the backend is running."
+        );
+
+
+        return false;
+
     }
+
 }
 
 
@@ -199,14 +232,20 @@ function getCustomPlan() {
 function formatValue(value) {
 
     if (!value) {
+
         return "--";
+
     }
+
 
     return value
         .replace("-", " ")
         .replace(/\b\w/g, function(letter) {
+
             return letter.toUpperCase();
+
         });
+
 }
 
 
@@ -217,22 +256,35 @@ function formatValue(value) {
 function formatGoal(goal) {
 
     if (goal === "weight-loss") {
+
         return "Lose Weight";
+
     }
+
 
     if (goal === "muscle-gain") {
+
         return "Build Muscle";
+
     }
+
 
     if (goal === "maintenance") {
+
         return "Maintain Weight";
+
     }
+
 
     if (goal === "general-fitness") {
+
         return "General Fitness";
+
     }
 
+
     return "--";
+
 }
 
 
@@ -240,21 +292,30 @@ function formatGoal(goal) {
 // DISPLAY PROFILE
 // =====================================================
 
-goalValue.textContent =
-    formatGoal(profile.goal);
+function displayProfile() {
 
-experienceValue.textContent =
-    formatValue(profile.experience);
+    goalValue.textContent =
+        formatGoal(profile.goal);
 
-activityValue.textContent =
-    formatValue(profile.activity);
+
+    experienceValue.textContent =
+        formatValue(profile.experience);
+
+
+    activityValue.textContent =
+        formatValue(profile.activity);
+
+}
 
 
 // =====================================================
 // CREATE DAY
 // =====================================================
 
-function createDay(name, exercises) {
+function createDay(
+    name,
+    exercises
+) {
 
     return {
 
@@ -263,11 +324,12 @@ function createDay(name, exercises) {
         exercises: exercises
 
     };
+
 }
 
 
 // =====================================================
-// BUILD RECOMMENDED PLAN
+// GET RECOMMENDED PLAN
 // =====================================================
 
 function getRecommendedPlan() {
@@ -277,11 +339,12 @@ function getRecommendedPlan() {
         profile.experience,
         profile.activity
     );
+
 }
 
 
 // =====================================================
-// GENERATE RECOMMENDED WORKOUT
+// GENERATE WORKOUT PLAN
 // =====================================================
 
 function generateWorkoutPlan(
@@ -303,6 +366,7 @@ function generateWorkoutPlan(
 
         trainingDays = 3;
 
+
         if (goal === "muscle-gain") {
 
             week = [
@@ -318,7 +382,10 @@ function generateWorkoutPlan(
                     ]
                 ),
 
-                createDay("Rest", []),
+                createDay(
+                    "Rest",
+                    []
+                ),
 
                 createDay(
                     "Upper Body",
@@ -330,7 +397,10 @@ function generateWorkoutPlan(
                     ]
                 ),
 
-                createDay("Rest", []),
+                createDay(
+                    "Rest",
+                    []
+                ),
 
                 createDay(
                     "Lower Body",
@@ -342,9 +412,15 @@ function generateWorkoutPlan(
                     ]
                 ),
 
-                createDay("Rest", []),
+                createDay(
+                    "Rest",
+                    []
+                ),
 
-                createDay("Rest", [])
+                createDay(
+                    "Rest",
+                    []
+                )
 
             ];
 
@@ -363,7 +439,10 @@ function generateWorkoutPlan(
                     ]
                 ),
 
-                createDay("Rest", []),
+                createDay(
+                    "Rest",
+                    []
+                ),
 
                 createDay(
                     "Full Body",
@@ -376,7 +455,10 @@ function generateWorkoutPlan(
                     ]
                 ),
 
-                createDay("Rest", []),
+                createDay(
+                    "Rest",
+                    []
+                ),
 
                 createDay(
                     "Full Body",
@@ -389,11 +471,18 @@ function generateWorkoutPlan(
                     ]
                 ),
 
-                createDay("Rest", []),
+                createDay(
+                    "Rest",
+                    []
+                ),
 
-                createDay("Rest", [])
+                createDay(
+                    "Rest",
+                    []
+                )
 
             ];
+
         }
 
 
@@ -404,6 +493,7 @@ function generateWorkoutPlan(
     } else if (experience === "intermediate") {
 
         trainingDays = 4;
+
 
         if (goal === "muscle-gain") {
 
@@ -431,7 +521,10 @@ function generateWorkoutPlan(
                     ]
                 ),
 
-                createDay("Rest", []),
+                createDay(
+                    "Rest",
+                    []
+                ),
 
                 createDay(
                     "Legs",
@@ -455,9 +548,15 @@ function generateWorkoutPlan(
                     ]
                 ),
 
-                createDay("Rest", []),
+                createDay(
+                    "Rest",
+                    []
+                ),
 
-                createDay("Rest", [])
+                createDay(
+                    "Rest",
+                    []
+                )
 
             ];
 
@@ -487,7 +586,10 @@ function generateWorkoutPlan(
                     ]
                 ),
 
-                createDay("Rest", []),
+                createDay(
+                    "Rest",
+                    []
+                ),
 
                 createDay(
                     "Full Body",
@@ -511,11 +613,18 @@ function generateWorkoutPlan(
                     ]
                 ),
 
-                createDay("Rest", []),
+                createDay(
+                    "Rest",
+                    []
+                ),
 
-                createDay("Rest", [])
+                createDay(
+                    "Rest",
+                    []
+                )
 
             ];
+
         }
 
 
@@ -526,6 +635,7 @@ function generateWorkoutPlan(
     } else if (experience === "advanced") {
 
         trainingDays = 5;
+
 
         if (goal === "muscle-gain") {
 
@@ -590,9 +700,15 @@ function generateWorkoutPlan(
                     ]
                 ),
 
-                createDay("Rest", []),
+                createDay(
+                    "Rest",
+                    []
+                ),
 
-                createDay("Rest", [])
+                createDay(
+                    "Rest",
+                    []
+                )
 
             ];
 
@@ -655,11 +771,18 @@ function generateWorkoutPlan(
                     ]
                 ),
 
-                createDay("Rest", []),
+                createDay(
+                    "Rest",
+                    []
+                ),
 
-                createDay("Rest", [])
+                createDay(
+                    "Rest",
+                    []
+                )
 
             ];
+
         }
 
 
@@ -670,6 +793,7 @@ function generateWorkoutPlan(
     } else {
 
         trainingDays = 4;
+
 
         week = [
 
@@ -694,7 +818,10 @@ function generateWorkoutPlan(
                 ]
             ),
 
-            createDay("Rest", []),
+            createDay(
+                "Rest",
+                []
+            ),
 
             createDay(
                 "Lower Body",
@@ -716,21 +843,92 @@ function generateWorkoutPlan(
                 ]
             ),
 
-            createDay("Rest", []),
+            createDay(
+                "Rest",
+                []
+            ),
 
-            createDay("Rest", [])
+            createDay(
+                "Rest",
+                []
+            )
 
         ];
+
     }
 
 
     return {
 
-        trainingDays: trainingDays,
+        trainingDays:
+            trainingDays,
 
-        week: week
+        week:
+            week
 
     };
+
+}
+
+
+// =====================================================
+// GET CUSTOM PLAN
+// =====================================================
+
+function getCustomPlan() {
+
+    const saved =
+        localStorage.getItem(
+            customPlanKey
+        );
+
+
+    if (!saved) {
+
+        return null;
+
+    }
+
+
+    try {
+
+        return JSON.parse(saved);
+
+    } catch (error) {
+
+        console.error(
+            "Custom plan error:",
+            error
+        );
+
+        return null;
+
+    }
+
+}
+
+
+// =====================================================
+// CURRENT ACTIVE PLAN
+// =====================================================
+
+let activePlan =
+    localStorage.getItem(
+        activePlanKey
+    );
+
+
+if (!activePlan) {
+
+    activePlan =
+        "recommended";
+
+
+    localStorage.setItem(
+        activePlanKey,
+        "recommended"
+    );
+
 }
 
 
@@ -743,25 +941,38 @@ function renderActivePlan() {
     let plan;
 
 
+    // =================================================
+    // CUSTOM PLAN
+    // =================================================
+
     if (activePlan === "custom") {
 
-        plan = getCustomPlan();
+        plan =
+            getCustomPlan();
+
 
         if (!plan) {
 
-            activePlan = "recommended";
+            activePlan =
+                "recommended";
+
 
             localStorage.setItem(
                 activePlanKey,
                 "recommended"
             );
 
-            plan = getRecommendedPlan();
+
+            plan =
+                getRecommendedPlan();
+
         }
 
     } else {
 
-        plan = getRecommendedPlan();
+        plan =
+            getRecommendedPlan();
+
     }
 
 
@@ -774,15 +985,19 @@ function renderActivePlan() {
         currentPlanTitle.textContent =
             "Custom Plan";
 
+
         currentPlanDescription.textContent =
             "Your personal workout routine.";
+
 
         customPlanButton.textContent =
             "Edit Custom Plan";
 
+
         recommendedPlanButton.classList.remove(
             "hidden"
         );
+
 
         customManage.classList.remove(
             "hidden"
@@ -793,13 +1008,16 @@ function renderActivePlan() {
         currentPlanTitle.textContent =
             "Recommended Plan";
 
+
         currentPlanDescription.textContent =
             "A workout plan generated from your fitness profile.";
+
 
         if (getCustomPlan()) {
 
             customPlanButton.textContent =
                 "Use Custom Plan";
+
 
             customManage.classList.remove(
                 "hidden"
@@ -810,16 +1028,24 @@ function renderActivePlan() {
             customPlanButton.textContent =
                 "Create Custom Plan";
 
+
             customManage.classList.add(
                 "hidden"
             );
+
         }
+
 
         recommendedPlanButton.classList.add(
             "hidden"
         );
+
     }
 
+
+    // =================================================
+    // TRAINING DAYS
+    // =================================================
 
     trainingDays.textContent =
         plan.trainingDays;
@@ -832,10 +1058,12 @@ function renderActivePlan() {
     const today =
         new Date().getDay();
 
+
     const dayIndex =
         today === 0
             ? 6
             : today - 1;
+
 
     const todayWorkout =
         plan.week[dayIndex];
@@ -843,6 +1071,7 @@ function renderActivePlan() {
 
     todayWorkoutTitle.textContent =
         todayWorkout.name;
+
 
     todayWorkoutDay.textContent =
         "DAY " + (dayIndex + 1);
@@ -857,6 +1086,7 @@ function renderActivePlan() {
         plan.week,
         dayIndex
     );
+
 }
 
 
@@ -869,6 +1099,7 @@ function getTodayDate() {
     const today =
         new Date();
 
+
     return (
         today.getFullYear() +
         "-" +
@@ -880,6 +1111,7 @@ function getTodayDate() {
             today.getDate()
         ).padStart(2, "0")
     );
+
 }
 
 
@@ -897,6 +1129,7 @@ function getWorkoutStorageKey() {
         "_" +
         getTodayDate()
     );
+
 }
 
 
@@ -907,9 +1140,13 @@ function getCompletedExercises() {
             getWorkoutStorageKey()
         );
 
+
     if (!saved) {
+
         return [];
+
     }
+
 
     try {
 
@@ -918,7 +1155,9 @@ function getCompletedExercises() {
     } catch (error) {
 
         return [];
+
     }
+
 }
 
 
@@ -932,6 +1171,7 @@ function saveCompletedExercises(
             completedExercises
         )
     );
+
 }
 
 
@@ -941,7 +1181,8 @@ function saveCompletedExercises(
 
 function displayExercises(exercises) {
 
-    exerciseList.innerHTML = "";
+    exerciseList.innerHTML =
+        "";
 
 
     // =================================================
@@ -970,13 +1211,17 @@ function displayExercises(exercises) {
 
         `;
 
+
         progressText.textContent =
             "100%";
+
 
         progressFill.style.width =
             "100%";
 
+
         return;
+
     }
 
 
@@ -988,14 +1233,19 @@ function displayExercises(exercises) {
         function(exercise, index) {
 
             const card =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
+
 
             card.className =
                 "exerciseCard";
 
 
             const exerciseId =
-                index + "_" + exercise[0];
+                index +
+                "_" +
+                exercise[0];
 
 
             const alreadyCompleted =
@@ -1048,8 +1298,10 @@ function displayExercises(exercises) {
                     "completed"
                 );
 
+
                 button.textContent =
                     "Completed";
+
             }
 
 
@@ -1082,6 +1334,7 @@ function displayExercises(exercises) {
                             savedExercises.push(
                                 exerciseId
                             );
+
                         }
 
                     } else {
@@ -1099,6 +1352,7 @@ function displayExercises(exercises) {
 
                                 }
                             );
+
                     }
 
 
@@ -1122,6 +1376,7 @@ function displayExercises(exercises) {
 
 
     updateProgress();
+
 }
 
 
@@ -1135,6 +1390,7 @@ function updateProgress() {
         exerciseList.querySelectorAll(
             ".exerciseCard"
         );
+
 
     const completed =
         exerciseList.querySelectorAll(
@@ -1151,10 +1407,13 @@ function updateProgress() {
         progressText.textContent =
             "100%";
 
+
         progressFill.style.width =
             "100%";
 
+
         return;
+
     }
 
 
@@ -1170,8 +1429,10 @@ function updateProgress() {
     progressText.textContent =
         percentage + "%";
 
+
     progressFill.style.width =
         percentage + "%";
+
 }
 
 
@@ -1189,6 +1450,7 @@ function displaySchedule(
 
 
     const days = [
+
         "MON",
         "TUE",
         "WED",
@@ -1196,6 +1458,7 @@ function displaySchedule(
         "FRI",
         "SAT",
         "SUN"
+
     ];
 
 
@@ -1213,24 +1476,24 @@ function displaySchedule(
 
 
             if (
-                index ===
-                todayIndex
+                index === todayIndex
             ) {
 
                 dayCard.classList.add(
                     "today"
                 );
+
             }
 
 
             if (
-                day.name ===
-                "Rest"
+                day.name === "Rest"
             ) {
 
                 dayCard.classList.add(
                     "rest"
                 );
+
             }
 
 
@@ -1253,6 +1516,7 @@ function displaySchedule(
 
         }
     );
+
 }
 
 
@@ -1262,13 +1526,11 @@ function displaySchedule(
 
 function openCustomEditor() {
 
-    // Show editor first
     customEditor.classList.remove(
         "hidden"
     );
 
 
-    // Clear old editor
     customDays.innerHTML =
         "";
 
@@ -1276,10 +1538,6 @@ function openCustomEditor() {
     const existingPlan =
         getCustomPlan();
 
-
-    // =================================================
-    // LOAD EXISTING CUSTOM PLAN
-    // =================================================
 
     if (existingPlan) {
 
@@ -1293,7 +1551,6 @@ function openCustomEditor() {
 
             }
         );
-
 
     } else {
 
@@ -1323,13 +1580,9 @@ function openCustomEditor() {
 
             }
         );
+
     }
 
-
-    // =================================================
-    // IMPORTANT FIX
-    // SCROLL AFTER EDITOR IS VISIBLE
-    // =================================================
 
     setTimeout(
         function() {
@@ -1345,6 +1598,7 @@ function openCustomEditor() {
         },
         100
     );
+
 }
 
 
@@ -1429,7 +1683,6 @@ function createCustomDay(
         );
 
 
-    // Load existing exercises
     if (
         day.exercises &&
         day.exercises.length > 0
@@ -1446,6 +1699,7 @@ function createCustomDay(
 
             }
         );
+
     }
 
 
@@ -1466,6 +1720,7 @@ function createCustomDay(
     customDays.appendChild(
         dayBox
     );
+
 }
 
 
@@ -1534,6 +1789,7 @@ function addExerciseRow(
     container.appendChild(
         row
     );
+
 }
 
 
@@ -1636,6 +1892,7 @@ function saveCustomWorkout() {
                         []
 
                 });
+
             }
 
         }
@@ -1649,6 +1906,7 @@ function saveCustomWorkout() {
         );
 
         return;
+
     }
 
 
@@ -1663,10 +1921,6 @@ function saveCustomWorkout() {
     };
 
 
-    // =================================================
-    // PERMANENT LOCAL STORAGE
-    // =================================================
-
     localStorage.setItem(
         customPlanKey,
         JSON.stringify(
@@ -1674,10 +1928,6 @@ function saveCustomWorkout() {
         )
     );
 
-
-    // =================================================
-    // MAKE CUSTOM PLAN ACTIVE
-    // =================================================
 
     activePlan =
         "custom";
@@ -1689,17 +1939,14 @@ function saveCustomWorkout() {
     );
 
 
-    // Hide editor
     customEditor.classList.add(
         "hidden"
     );
 
 
-    // Render new plan
     renderActivePlan();
 
 
-    // Go to top
     window.scrollTo({
 
         top: 0,
@@ -1707,6 +1954,7 @@ function saveCustomWorkout() {
         behavior: "smooth"
 
     });
+
 }
 
 
@@ -1736,6 +1984,7 @@ function switchToRecommended() {
         behavior: "smooth"
 
     });
+
 }
 
 
@@ -1754,6 +2003,7 @@ function useCustomPlan() {
         openCustomEditor();
 
         return;
+
     }
 
 
@@ -1777,6 +2027,7 @@ function useCustomPlan() {
         behavior: "smooth"
 
     });
+
 }
 
 
@@ -1793,7 +2044,9 @@ function deleteCustomPlan() {
 
 
     if (!confirmed) {
+
         return;
+
     }
 
 
@@ -1813,6 +2066,7 @@ function deleteCustomPlan() {
 
 
     renderActivePlan();
+
 }
 
 
@@ -1828,25 +2082,23 @@ customPlanButton.addEventListener(
             getCustomPlan();
 
 
-        if (activePlan === "custom") {
+        if (
+            activePlan === "custom"
+        ) {
 
-            // If custom is already active,
-            // clicking button means EDIT.
             openCustomEditor();
 
             return;
+
         }
 
 
         if (savedCustomPlan) {
 
-            // Existing custom plan
-            // but recommended is active.
             useCustomPlan();
 
         } else {
 
-            // No custom plan yet.
             openCustomEditor();
 
         }
@@ -1944,7 +2196,7 @@ deleteCustomButton.addEventListener(
 
 
 // =====================================================
-// PROFILE
+// PROFILE BUTTON
 // =====================================================
 
 profileButton.addEventListener(
@@ -1970,9 +2222,11 @@ logoutButton.addEventListener(
             "isLoggedIn"
         );
 
+
         localStorage.removeItem(
             "username"
         );
+
 
         window.location.href =
             "index.html";
@@ -1985,4 +2239,29 @@ logoutButton.addEventListener(
 // INITIAL LOAD
 // =====================================================
 
-renderActivePlan();
+async function initializeWorkoutPage() {
+
+    const profileLoaded =
+        await loadFitnessProfile();
+
+
+    if (!profileLoaded) {
+
+        return;
+
+    }
+
+
+    displayProfile();
+
+
+    renderActivePlan();
+
+}
+
+
+// =====================================================
+// START
+// =====================================================
+
+initializeWorkoutPage();

@@ -2,10 +2,13 @@
 // CHECK LOGIN
 // =========================
 
-const isLoggedIn = localStorage.getItem("isLoggedIn");
+const isLoggedIn =
+    localStorage.getItem("isLoggedIn");
 
 if (isLoggedIn !== "true") {
+
     window.location.href = "index.html";
+
 }
 
 
@@ -13,12 +16,17 @@ if (isLoggedIn !== "true") {
 // GET CURRENT USER
 // =========================
 
-const username = localStorage.getItem("username");
+const username =
+    localStorage.getItem("username");
 
 if (!username) {
+
     localStorage.removeItem("isLoggedIn");
+
     window.location.href = "index.html";
+
 }
+
 
 // =========================
 // GET ELEMENTS
@@ -44,24 +52,28 @@ const hipInput =
 // SHOW / HIDE HIP FIELD
 // =========================
 
-genderSelect.addEventListener("change", function () {
+genderSelect.addEventListener(
+    "change",
+    function () {
 
-    if (genderSelect.value === "female") {
+        if (genderSelect.value === "female") {
 
-        hipGroup.style.display = "flex";
+            hipGroup.style.display = "flex";
 
-        hipInput.required = true;
+            hipInput.required = true;
 
-    } else {
+        } else {
 
-        hipGroup.style.display = "none";
+            hipGroup.style.display = "none";
 
-        hipInput.required = false;
+            hipInput.required = false;
 
-        hipInput.value = "";
+            hipInput.value = "";
+
+        }
+
     }
-
-});
+);
 
 
 // =========================
@@ -90,7 +102,9 @@ function calculateBodyFat(
 
 
         if (difference <= 0) {
+
             return null;
+
         }
 
 
@@ -106,6 +120,7 @@ function calculateBodyFat(
             +
 
             36.76;
+
     }
 
 
@@ -120,7 +135,9 @@ function calculateBodyFat(
 
 
         if (difference <= 0) {
+
             return null;
+
         }
 
 
@@ -136,12 +153,14 @@ function calculateBodyFat(
             -
 
             78.387;
+
     }
 
 
     else {
 
         return null;
+
     }
 
 
@@ -149,119 +168,167 @@ function calculateBodyFat(
     // ROUND RESULT
     // =========================
 
-    return Number(bodyFat.toFixed(1));
+    return Number(
+        bodyFat.toFixed(1)
+    );
+
 }
+
+
+// =========================
+// LOAD EXISTING PROFILE
+// =========================
+
+async function loadProfile() {
+
+    try {
+
+        const response =
+            await fetch(
+                `http://localhost:5000/api/profile/${encodeURIComponent(username)}`
+            );
+
+
+        if (!response.ok) {
+
+            return;
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        const profile =
+            data.profile;
+
+
+        if (!profile) {
+
+            return;
+
+        }
+
+
+        // =========================
+        // BASIC INFORMATION
+        // =========================
+
+        document.getElementById("age").value =
+            profile.age || "";
+
+        document.getElementById("gender").value =
+            profile.gender || "";
+
+        document.getElementById("height").value =
+            profile.height || "";
+
+        document.getElementById("weight").value =
+            profile.weight || "";
+
+
+        // =========================
+        // BODY MEASUREMENTS
+        // =========================
+
+        document.getElementById("neck").value =
+            profile.neck || "";
+
+        document.getElementById("waist").value =
+            profile.waist || "";
+
+
+        // =========================
+        // FEMALE HIP
+        // =========================
+
+        if (profile.gender === "female") {
+
+            hipGroup.style.display = "flex";
+
+            hipInput.required = true;
+
+            hipInput.value =
+                profile.hip || "";
+
+        }
+
+
+        // =========================
+        // ACTIVITY
+        // =========================
+
+        const activityRadio =
+            document.querySelector(
+                `input[name="activity"][value="${profile.activity}"]`
+            );
+
+        if (activityRadio) {
+
+            activityRadio.checked = true;
+
+        }
+
+
+        // =========================
+        // EXPERIENCE
+        // =========================
+
+        const experienceRadio =
+            document.querySelector(
+                `input[name="experience"][value="${profile.experience}"]`
+            );
+
+        if (experienceRadio) {
+
+            experienceRadio.checked = true;
+
+        }
+
+
+        // =========================
+        // GOAL
+        // =========================
+
+        const goalRadio =
+            document.querySelector(
+                `input[name="goal"][value="${profile.goal}"]`
+            );
+
+        if (goalRadio) {
+
+            goalRadio.checked = true;
+
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "Unable to load fitness profile:",
+            error
+        );
+
+    }
+
+}
+
+
+// =========================
+// LOAD PROFILE
+// =========================
+
+loadProfile();
 
 
 // =========================
 // FORM SUBMIT
 // =========================
 
-// =========================
-// LOAD EXISTING PROFILE
-// =========================
-
-const existingProfile =
-    localStorage.getItem(
-        "fitnessProfile_" + username
-    );
-
-
-if (existingProfile) {
-
-    const profile =
-        JSON.parse(existingProfile);
-
-
-    // =========================
-    // BASIC INFORMATION
-    // =========================
-
-    document.getElementById("age").value =
-        profile.age;
-
-    document.getElementById("gender").value =
-        profile.gender;
-
-    document.getElementById("height").value =
-        profile.height;
-
-    document.getElementById("weight").value =
-        profile.weight;
-
-
-    // =========================
-    // BODY MEASUREMENTS
-    // =========================
-
-    document.getElementById("neck").value =
-        profile.neck;
-
-    document.getElementById("waist").value =
-        profile.waist;
-
-
-    // =========================
-    // FEMALE HIP
-    // =========================
-
-    if (profile.gender === "female") {
-
-        hipGroup.style.display = "flex";
-
-        hipInput.required = true;
-
-        hipInput.value =
-            profile.hip;
-    }
-
-
-    // =========================
-    // ACTIVITY
-    // =========================
-
-    const activityRadio =
-        document.querySelector(
-            `input[name="activity"][value="${profile.activity}"]`
-        );
-
-    if (activityRadio) {
-        activityRadio.checked = true;
-    }
-
-
-    // =========================
-    // EXPERIENCE
-    // =========================
-
-    const experienceRadio =
-        document.querySelector(
-            `input[name="experience"][value="${profile.experience}"]`
-        );
-
-    if (experienceRadio) {
-        experienceRadio.checked = true;
-    }
-
-
-    // =========================
-    // GOAL
-    // =========================
-
-    const goalRadio =
-        document.querySelector(
-            `input[name="goal"][value="${profile.goal}"]`
-        );
-
-    if (goalRadio) {
-        goalRadio.checked = true;
-    }
-
-}
-
 assessmentForm.addEventListener(
     "submit",
-    function (event) {
+    async function (event) {
 
         event.preventDefault();
 
@@ -301,7 +368,7 @@ assessmentForm.addEventListener(
                 document.getElementById("waist").value
             );
 
-        let hip = null;
+        let hip = 0;
 
 
         if (gender === "female") {
@@ -310,6 +377,7 @@ assessmentForm.addEventListener(
                 parseFloat(
                     document.getElementById("hip").value
                 );
+
         }
 
 
@@ -364,9 +432,11 @@ assessmentForm.addEventListener(
 
         if (
             !height ||
+            !weight ||
             !neck ||
             !waist ||
             height <= 0 ||
+            weight <= 0 ||
             neck <= 0 ||
             waist <= 0
         ) {
@@ -375,6 +445,7 @@ assessmentForm.addEventListener(
                 "Please enter valid body measurements.";
 
             return;
+
         }
 
 
@@ -387,6 +458,7 @@ assessmentForm.addEventListener(
                 "Please enter your hip measurement.";
 
             return;
+
         }
 
 
@@ -410,6 +482,7 @@ assessmentForm.addEventListener(
                 "Unable to calculate body fat. Please check your measurements.";
 
             return;
+
         }
 
 
@@ -421,7 +494,7 @@ assessmentForm.addEventListener(
 
             username: username,
 
-            age: age,
+            age: Number(age),
 
             gender: gender,
 
@@ -442,36 +515,89 @@ assessmentForm.addEventListener(
             experience: experience,
 
             goal: goal
+
         };
 
 
         // =========================
-        // SAVE PROFILE
+        // SAVE TO MONGODB
         // =========================
 
-        localStorage.setItem(
-            "fitnessProfile_" + username,
-            JSON.stringify(fitnessProfile)
-        );
+        try {
+
+            formMessage.textContent =
+                "Saving profile...";
 
 
-        // =========================
-        // SUCCESS MESSAGE
-        // =========================
+            const response =
+                await fetch(
+                    "http://localhost:5000/api/profile",
+                    {
+                        method: "POST",
 
-        formMessage.textContent =
-            "Fitness profile saved successfully!";
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify(
+                                fitnessProfile
+                            )
+
+                    }
+                );
 
 
-        // =========================
-        // GO HOME
-        // =========================
+            const data =
+                await response.json();
 
-        setTimeout(function () {
 
-            window.location.href = "home.html";
+            if (!response.ok) {
 
-        }, 1000);
+                formMessage.textContent =
+                    data.message ||
+                    "Unable to save profile.";
+
+                return;
+
+            }
+
+
+            // =========================
+            // SUCCESS
+            // =========================
+
+            formMessage.textContent =
+                "Fitness profile saved successfully!";
+
+
+            // =========================
+            // GO HOME
+            // =========================
+
+            setTimeout(
+                function () {
+
+                    window.location.href =
+                        "home.html";
+
+                },
+                1000
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Profile save error:",
+                error
+            );
+
+            formMessage.textContent =
+                "Unable to connect to the server.";
+
+        }
 
     }
 );

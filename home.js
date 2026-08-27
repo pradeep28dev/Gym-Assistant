@@ -77,131 +77,195 @@ usernameDisplay.textContent =
 
 
 // =========================
-// GET USER FITNESS PROFILE
+// LOAD FITNESS PROFILE
 // =========================
 
-const profileKey =
-    "fitnessProfile_" + username;
+async function loadFitnessProfile() {
 
-const savedProfile =
-    localStorage.getItem(profileKey);
+    try {
+
+        const response =
+            await fetch(
+                `http://localhost:5000/api/profile/${encodeURIComponent(username)}`
+            );
 
 
-// =========================
-// CHECK FITNESS PROFILE
-// =========================
+        // =========================
+        // PROFILE NOT FOUND
+        // =========================
 
-if (savedProfile) {
+        if (response.status === 404) {
 
-    welcomeMessage.textContent =
-        "Welcome back";
+            welcomeMessage.textContent =
+                "Welcome";
 
-} else {
+            return;
 
-    welcomeMessage.textContent =
-        "Welcome";
+        }
+
+
+        // =========================
+        // OTHER SERVER ERROR
+        // =========================
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to load fitness profile"
+            );
+
+        }
+
+
+        // =========================
+        // GET RESPONSE DATA
+        // =========================
+
+        const data =
+            await response.json();
+
+
+        const fitnessProfile =
+            data.profile;
+
+
+        // =========================
+        // NO PROFILE
+        // =========================
+
+        if (!fitnessProfile) {
+
+            welcomeMessage.textContent =
+                "Welcome";
+
+            return;
+
+        }
+
+
+        // =========================
+        // WELCOME MESSAGE
+        // =========================
+
+        welcomeMessage.textContent =
+            "Welcome back";
+
+
+        // =========================
+        // WEIGHT
+        // =========================
+
+        if (
+            fitnessProfile.weight !== undefined &&
+            fitnessProfile.weight !== null
+        ) {
+
+            weightValue.textContent =
+                Number(
+                    fitnessProfile.weight
+                ).toFixed(1);
+
+        }
+
+
+        // =========================
+        // BODY FAT
+        // =========================
+
+        if (
+            fitnessProfile.bodyFat !== undefined &&
+            fitnessProfile.bodyFat !== null
+        ) {
+
+            bodyFatValue.textContent =
+                Number(
+                    fitnessProfile.bodyFat
+                ).toFixed(1);
+
+        }
+
+
+        // =========================
+        // GOAL
+        // =========================
+
+        if (
+            fitnessProfile.goal ===
+            "weight-loss"
+        ) {
+
+            goalValue.textContent =
+                "LOSE WEIGHT";
+
+        }
+
+        else if (
+            fitnessProfile.goal ===
+            "muscle-gain"
+        ) {
+
+            goalValue.textContent =
+                "BUILD MUSCLE";
+
+        }
+
+        else if (
+            fitnessProfile.goal ===
+            "maintenance"
+        ) {
+
+            goalValue.textContent =
+                "MAINTAIN";
+
+        }
+
+        else if (
+            fitnessProfile.goal ===
+            "general-fitness"
+        ) {
+
+            goalValue.textContent =
+                "FITNESS";
+
+        }
+
+
+        // =========================
+        // ASSESSMENT CARD
+        // =========================
+
+        assessmentLabel.textContent =
+            "FITNESS PROFILE";
+
+        assessmentTitle.textContent =
+            "Your fitness profile is ready";
+
+        assessmentDescription.textContent =
+            "Your fitness information is saved. " +
+            "You can edit your details anytime if " +
+            "something needs to be corrected.";
+
+        assessmentButton.textContent =
+            "Edit Fitness Profile";
+
+
+    } catch (error) {
+
+        console.error(
+            "Profile loading error:",
+            error
+        );
+
+    }
+
 }
 
 
 // =========================
-// DISPLAY FITNESS PROFILE
+// LOAD PROFILE
 // =========================
 
-if (savedProfile) {
-
-    const fitnessProfile =
-        JSON.parse(savedProfile);
-
-
-    // =========================
-    // WEIGHT
-    // =========================
-
-    if (
-        fitnessProfile.weight !== undefined &&
-        fitnessProfile.weight !== null
-    ) {
-
-        weightValue.textContent =
-            Number(
-                fitnessProfile.weight
-            ).toFixed(1);
-    }
-
-
-    // =========================
-    // BODY FAT
-    // =========================
-
-    if (
-        fitnessProfile.bodyFat !== undefined &&
-        fitnessProfile.bodyFat !== null
-    ) {
-
-        bodyFatValue.textContent =
-            Number(
-                fitnessProfile.bodyFat
-            ).toFixed(1);
-    }
-
-
-    // =========================
-    // GOAL
-    // =========================
-
-    if (
-        fitnessProfile.goal ===
-        "weight-loss"
-    ) {
-
-        goalValue.textContent =
-            "LOSE WEIGHT";
-
-    } else if (
-        fitnessProfile.goal ===
-        "muscle-gain"
-    ) {
-
-        goalValue.textContent =
-            "BUILD MUSCLE";
-
-    } else if (
-        fitnessProfile.goal ===
-        "maintenance"
-    ) {
-
-        goalValue.textContent =
-            "MAINTAIN";
-
-    } else if (
-        fitnessProfile.goal ===
-        "general-fitness"
-    ) {
-
-        goalValue.textContent =
-            "FITNESS";
-    }
-
-
-    // =========================
-    // ASSESSMENT CARD
-    // =========================
-
-    assessmentLabel.textContent =
-        "FITNESS PROFILE";
-
-    assessmentTitle.textContent =
-        "Your fitness profile is ready";
-
-    assessmentDescription.textContent =
-        "Your fitness information is saved. " +
-        "You can edit your details anytime if " +
-        "something needs to be corrected.";
-
-    assessmentButton.textContent =
-        "Edit Fitness Profile";
-
-}
+loadFitnessProfile();
 
 
 // =========================

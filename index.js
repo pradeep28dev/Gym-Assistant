@@ -41,7 +41,6 @@ passwordEye.addEventListener(
                 "Hide password"
             );
 
-            // Change eye → eye-off
             passwordEye.innerHTML =
                 '<i data-lucide="eye-off" class="eyeIcon"></i>';
 
@@ -56,7 +55,6 @@ passwordEye.addEventListener(
                 "Show password"
             );
 
-            // Change eye-off → eye
             passwordEye.innerHTML =
                 '<i data-lucide="eye" class="eyeIcon"></i>';
 
@@ -74,7 +72,7 @@ passwordEye.addEventListener(
 
 loginForm.addEventListener(
     "submit",
-    function (event) {
+    async function (event) {
 
         event.preventDefault();
 
@@ -90,9 +88,7 @@ loginForm.addEventListener(
                 .trim();
 
         const password =
-            document
-                .getElementById("password")
-                .value;
+            passwordInput.value;
 
 
         // =========================
@@ -113,101 +109,114 @@ loginForm.addEventListener(
 
 
         // =========================
-        // GET ALL USERS
+        // GET LOGIN BUTTON
         // =========================
 
-        const savedUsers =
-            localStorage.getItem("gymUsers");
+        const loginButton =
+            loginForm.querySelector(
+                'button[type="submit"]'
+            );
 
 
         // =========================
-        // NO USERS FOUND
+        // DISABLE BUTTON
         // =========================
 
-        if (!savedUsers) {
+        loginButton.disabled = true;
+
+        loginButton.textContent =
+            "Signing In...";
+
+
+        try {
+
+            // =========================
+            // SEND LOGIN REQUEST
+            // =========================
+
+            const response =
+                await fetch(
+                    "http://localhost:5000/api/auth/login",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify({
+
+                            username: username,
+
+                            password: password
+
+                        })
+                    }
+                );
+
+
+            // =========================
+            // GET BACKEND RESPONSE
+            // =========================
+
+            const data =
+                await response.json();
+
+
+            // =========================
+            // LOGIN FAILED
+            // =========================
+
+            if (!response.ok) {
+
+                alert(data.message);
+
+                loginButton.disabled = false;
+
+                loginButton.textContent =
+                    "Sign In";
+
+                return;
+            }
+
+
+            // =========================
+            // LOGIN SUCCESS
+            // =========================
+
+            localStorage.setItem(
+                "isLoggedIn",
+                "true"
+            );
+
+            localStorage.setItem(
+                "username",
+                data.username
+            );
+
+
+            // =========================
+            // GO TO HOME
+            // =========================
+
+            window.location.href =
+                "home.html";
+
+
+        } catch (error) {
+
+            console.error(error);
 
             alert(
-                "User not found. Please create a new account."
+                "Unable to connect to the server. Please try again."
             );
 
-            return;
+            loginButton.disabled = false;
+
+            loginButton.textContent =
+                "Sign In";
+
         }
-
-
-        // =========================
-        // CONVERT TO ARRAY
-        // =========================
-
-        const users =
-            JSON.parse(savedUsers);
-
-
-        // =========================
-        // FIND USER
-        // =========================
-
-        const user =
-            users.find(
-                function (user) {
-
-                    return (
-                        user.username.toLowerCase() ===
-                        username.toLowerCase()
-                    );
-
-                }
-            );
-
-
-        // =========================
-        // USER NOT FOUND
-        // =========================
-
-        if (!user) {
-
-            alert(
-                "User not found. Please create a new account."
-            );
-
-            return;
-        }
-
-
-        // =========================
-        // CHECK PASSWORD
-        // =========================
-
-        if (password !== user.password) {
-
-            alert(
-                "Incorrect password. Please try again."
-            );
-
-            return;
-        }
-
-
-        // =========================
-        // LOGIN SUCCESS
-        // =========================
-
-        localStorage.setItem(
-            "isLoggedIn",
-            "true"
-        );
-
-        localStorage.setItem(
-            "username",
-            user.username
-        );
-
-
-        // =========================
-        // GO TO HOME
-        // =========================
-
-        window.location.href =
-            "home.html";
 
     }
 );

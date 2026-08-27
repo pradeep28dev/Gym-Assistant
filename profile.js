@@ -19,6 +19,14 @@ if (isLoggedIn !== "true") {
 const username =
     localStorage.getItem("username");
 
+if (!username) {
+
+    localStorage.removeItem("isLoggedIn");
+
+    window.location.href =
+        "index.html";
+}
+
 
 // =========================
 // GET ELEMENTS
@@ -74,132 +82,18 @@ const editProfileButton =
 // DISPLAY USERNAME
 // =========================
 
-if (username) {
+if (profileUsername) {
 
     profileUsername.textContent =
         username;
-
-
-    profileInitial.textContent =
-        username.charAt(0).toUpperCase();
 }
 
+if (profileInitial) {
 
-// =========================
-// GET FITNESS PROFILE
-// =========================
-
-const savedProfile =
-    localStorage.getItem(
-        "fitnessProfile_" + username
-    );
-
-
-// =========================
-// CHECK PROFILE
-// =========================
-
-if (!savedProfile) {
-
-    alert(
-        "Please complete your fitness assessment first."
-    );
-
-    window.location.href =
-        "assessment.html";
-
-} else {
-
-
-    // =========================
-    // PARSE PROFILE
-    // =========================
-
-    const profile =
-        JSON.parse(savedProfile);
-
-
-    // =========================
-    // PERSONAL INFORMATION
-    // =========================
-
-    profileAge.textContent =
-        profile.age;
-
-
-    profileGender.textContent =
-        formatValue(profile.gender);
-
-
-    profileHeight.textContent =
-        profile.height;
-
-
-    profileWeight.textContent =
-        profile.weight;
-
-
-    // =========================
-    // BODY COMPOSITION
-    // =========================
-
-    if (
-        profile.bodyFat !== undefined &&
-        profile.bodyFat !== null
-    ) {
-
-        profileBodyFat.textContent =
-            profile.bodyFat;
-
-    } else {
-
-        profileBodyFat.textContent =
-            "--";
-    }
-
-
-    profileNeck.textContent =
-        profile.neck;
-
-
-    profileWaist.textContent =
-        profile.waist;
-
-
-    // =========================
-    // HIP
-    // =========================
-
-    if (
-        profile.gender === "female" &&
-        profile.hip
-    ) {
-
-        profileHip.textContent =
-            profile.hip;
-
-    } else {
-
-        hipCard.style.display =
-            "none";
-    }
-
-
-    // =========================
-    // FITNESS INFORMATION
-    // =========================
-
-    profileActivity.textContent =
-        formatValue(profile.activity);
-
-
-    profileExperience.textContent =
-        formatValue(profile.experience);
-
-
-    profileGoal.textContent =
-        formatGoal(profile.goal);
-
+    profileInitial.textContent =
+        username
+            .charAt(0)
+            .toUpperCase();
 }
 
 
@@ -210,14 +104,17 @@ if (!savedProfile) {
 function formatValue(value) {
 
     if (!value) {
+
         return "--";
     }
 
-    return value
-    .replace(/[-_]/g, " ")
-    .replace(/\b\w/g, function (letter) {
-        return letter.toUpperCase();
-    });
+    return String(value)
+        .replace(/[-_]/g, " ")
+        .replace(/\b\w/g, function (letter) {
+
+            return letter.toUpperCase();
+
+        });
 }
 
 
@@ -230,19 +127,16 @@ function formatGoal(goal) {
     if (goal === "weight-loss") {
 
         return "Lose Weight";
-
     }
 
     if (goal === "muscle-gain") {
 
         return "Build Muscle";
-
     }
 
     if (goal === "maintenance") {
 
         return "Maintain Weight";
-
     }
 
     if (goal === "general-fitness") {
@@ -250,8 +144,243 @@ function formatGoal(goal) {
         return "General Fitness";
     }
 
+    return formatValue(goal);
+}
 
-    return "--";
+
+// =========================
+// LOAD PROFILE FROM MONGODB
+// =========================
+
+async function loadProfile() {
+
+    try {
+
+        const response =
+            await fetch(
+                `http://localhost:5000/api/profile/${encodeURIComponent(username)}`
+            );
+
+
+        // =========================
+        // PROFILE NOT FOUND
+        // =========================
+
+        if (!response.ok) {
+
+            if (response.status === 404) {
+
+                alert(
+                    "Please complete your fitness assessment first."
+                );
+
+                window.location.href =
+                    "assessment.html";
+
+                return;
+            }
+
+
+            throw new Error(
+                "Unable to load profile."
+            );
+        }
+
+
+        // =========================
+        // GET RESPONSE
+        // =========================
+
+        const data =
+            await response.json();
+
+
+        const profile =
+            data.profile;
+
+
+        // =========================
+        // CHECK PROFILE
+        // =========================
+
+        if (!profile) {
+
+            alert(
+                "Please complete your fitness assessment first."
+            );
+
+            window.location.href =
+                "assessment.html";
+
+            return;
+        }
+
+
+        // =========================
+        // PERSONAL INFORMATION
+        // =========================
+
+        if (profileAge) {
+
+            profileAge.textContent =
+                profile.age || "--";
+        }
+
+
+        if (profileGender) {
+
+            profileGender.textContent =
+                formatValue(
+                    profile.gender
+                );
+        }
+
+
+        if (profileHeight) {
+
+            profileHeight.textContent =
+                profile.height || "--";
+        }
+
+
+        if (profileWeight) {
+
+            profileWeight.textContent =
+                profile.weight || "--";
+        }
+
+
+        // =========================
+        // BODY FAT
+        // =========================
+
+        if (
+            profileBodyFat
+        ) {
+
+            if (
+                profile.bodyFat !== undefined &&
+                profile.bodyFat !== null &&
+                profile.bodyFat !== 0
+            ) {
+
+                profileBodyFat.textContent =
+                    Number(
+                        profile.bodyFat
+                    ).toFixed(1);
+
+            } else {
+
+                profileBodyFat.textContent =
+                    "--";
+            }
+        }
+
+
+        // =========================
+        // NECK
+        // =========================
+
+        if (profileNeck) {
+
+            profileNeck.textContent =
+                profile.neck || "--";
+        }
+
+
+        // =========================
+        // WAIST
+        // =========================
+
+        if (profileWaist) {
+
+            profileWaist.textContent =
+                profile.waist || "--";
+        }
+
+
+        // =========================
+        // HIP
+        // =========================
+
+        if (
+            profile.gender === "female" &&
+            profile.hip
+        ) {
+
+            if (profileHip) {
+
+                profileHip.textContent =
+                    profile.hip;
+            }
+
+
+            if (hipCard) {
+
+                hipCard.style.display =
+                    "";
+            }
+
+        } else {
+
+            if (hipCard) {
+
+                hipCard.style.display =
+                    "none";
+            }
+        }
+
+
+        // =========================
+        // ACTIVITY
+        // =========================
+
+        if (profileActivity) {
+
+            profileActivity.textContent =
+                formatValue(
+                    profile.activity
+                );
+        }
+
+
+        // =========================
+        // EXPERIENCE
+        // =========================
+
+        if (profileExperience) {
+
+            profileExperience.textContent =
+                formatValue(
+                    profile.experience
+                );
+        }
+
+
+        // =========================
+        // GOAL
+        // =========================
+
+        if (profileGoal) {
+
+            profileGoal.textContent =
+                formatGoal(
+                    profile.goal
+                );
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Profile loading error:",
+            error
+        );
+
+
+        alert(
+            "Unable to connect to the server."
+        );
+    }
 }
 
 
@@ -259,12 +388,22 @@ function formatGoal(goal) {
 // EDIT PROFILE
 // =========================
 
-editProfileButton.addEventListener(
-    "click",
-    function () {
+if (editProfileButton) {
 
-        window.location.href =
-            "assessment.html";
+    editProfileButton.addEventListener(
+        "click",
+        function () {
 
-    }
-);
+            window.location.href =
+                "assessment.html";
+
+        }
+    );
+}
+
+
+// =========================
+// INITIALIZE
+// =========================
+
+loadProfile();
