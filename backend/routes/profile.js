@@ -1,6 +1,6 @@
 const express = require("express");
 const User = require("../models/User");
-
+const authMiddleware = require("../middleware/authMiddleware");
 const router = express.Router();
 
 
@@ -8,25 +8,26 @@ const router = express.Router();
 // SAVE / UPDATE FITNESS PROFILE
 // ===============================
 
-router.post("/profile", async (req, res) => {
+router.post("/profile",authMiddleware, async (req, res) => {
 
     try {
 
         const {
-            username,
-            gender,
-            age,
-            height,
-            weight,
-            neck,
-            waist,
-            hip,
-            bodyFat,
-            activity,
-            experience,
-            goal
-        } = req.body;
+    gender,
+    age,
+    height,
+    weight,
+    neck,
+    waist,
+    hip,
+    bodyFat,
+    activity,
+    experience,
+    goal
+} = req.body;
 
+const username =
+    req.user.username;
 
         // ===============================
         // CHECK USERNAME
@@ -128,12 +129,12 @@ router.post("/profile", async (req, res) => {
 // GET FITNESS PROFILE
 // ===============================
 
-router.get("/profile/:username", async (req, res) => {
+router.get("/profile/:username",authMiddleware, async (req, res) => {
 
     try {
 
         const username =
-            req.params.username;
+    req.user.username;
 
 
         const user =

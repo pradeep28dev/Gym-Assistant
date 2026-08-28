@@ -232,6 +232,11 @@ let allFoods = [];
 
 let todayFoods = [];
 
+// ==================================================
+// DAILY NUTRITION HISTORY
+// ==================================================
+
+let dailyNutritionHistory = [];
 
 // ==================================================
 // DEFAULT MEALS
@@ -905,8 +910,9 @@ async function saveNutritionToDatabase() {
         }
 
 
-        // MongoDB may return updated
-        // food objects with _id values.
+        // ==================================================
+        // SYNC FOODS FROM MONGODB
+        // ==================================================
 
         if (
             data.nutrition &&
@@ -918,9 +924,54 @@ async function saveNutritionToDatabase() {
             allFoods =
                 data.nutrition.foods;
 
-            filterTodayFoods();
+        }
+
+
+        // ==================================================
+        // SYNC DAILY HISTORY FROM MONGODB
+        // ==================================================
+
+        if (
+            data.nutrition &&
+            Array.isArray(
+                data.nutrition.dailyTotals
+            )
+        ) {
+
+            dailyNutritionHistory =
+                data.nutrition.dailyTotals;
 
         }
+
+
+        // ==================================================
+        // SYNC MEALS FROM MONGODB
+        // ==================================================
+
+        if (
+            data.nutrition &&
+            Array.isArray(
+                data.nutrition.meals
+            )
+        ) {
+
+            meals =
+                data.nutrition.meals;
+
+        }
+
+
+        // ==================================================
+        // UPDATE FRONTEND
+        // ==================================================
+
+        filterTodayFoods();
+
+        renderFoodList();
+
+        renderMeals();
+
+        updateNutritionProgress();
 
 
         return true;
@@ -939,7 +990,6 @@ async function saveNutritionToDatabase() {
     }
 
 }
-
 
 // ==================================================
 // LOAD NUTRITION FROM DATABASE
@@ -1004,6 +1054,16 @@ async function loadNutritionFromDatabase() {
 
         filterTodayFoods();
 
+        // ==================================================
+// LOAD DAILY NUTRITION HISTORY
+// ==================================================
+
+dailyNutritionHistory =
+    Array.isArray(
+        data.dailyTotals
+    )
+        ? data.dailyTotals
+        : [];
 
         // ==================================================
         // LOAD MEALS

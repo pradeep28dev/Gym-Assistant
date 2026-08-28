@@ -186,6 +186,8 @@ router.get(
 
                     foods: [],
 
+                    dailyTotals: [],
+
                     meals: []
 
                 });
@@ -203,6 +205,9 @@ router.get(
 
                 foods:
                     nutrition.foods,
+
+                 dailyTotals:
+        nutrition.dailyTotals || [],
 
                 meals:
                     nutrition.meals
@@ -263,40 +268,28 @@ router.post(
 
 
             const cleanUsername =
-                String(
-                    username
-                ).trim();
+                String(username).trim();
 
 
             // ==================================================
-            // PREPARE FOOD DATA
+            // TODAY'S DATE
             // ==================================================
 
             const today =
                 new Date();
 
-
             const year =
                 today.getFullYear();
-
 
             const month =
                 String(
                     today.getMonth() + 1
-                ).padStart(
-                    2,
-                    "0"
-                );
-
+                ).padStart(2, "0");
 
             const day =
                 String(
                     today.getDate()
-                ).padStart(
-                    2,
-                    "0"
-                );
-
+                ).padStart(2, "0");
 
             const todayKey =
                 year +
@@ -305,6 +298,10 @@ router.post(
                 "-" +
                 day;
 
+
+            // ==================================================
+            // PREPARE FOOD DATA
+            // ==================================================
 
             const safeFoods =
                 Array.isArray(foods)
@@ -344,9 +341,6 @@ router.post(
                                         food.fat
                                     ) || 0,
 
-                                // Keep existing date.
-                                // If an old food has no date,
-                                // assign today's date.
                                 date:
                                     food.date ||
                                     todayKey
@@ -392,6 +386,223 @@ router.post(
 
 
             // ==================================================
+            // CALCULATE DAILY TOTALS
+            // ==================================================
+
+            const dailyTotalsMap = {};
+
+
+            safeFoods.forEach(
+                function (food) {
+
+                    const date =
+                        food.date;
+
+
+                    if (
+                        !dailyTotalsMap[date]
+                    ) {
+
+                        dailyTotalsMap[date] = {
+
+                            date:
+                                date,
+
+                            calories:
+                                0,
+
+                            protein:
+                                0,
+
+                            carbs:
+                                0,
+
+                            fat:
+                                0
+
+                        };
+
+                    }
+
+
+                    dailyTotalsMap[date].calories +=
+                        Number(food.calories) || 0;
+
+                    dailyTotalsMap[date].protein +=
+                        Number(food.protein) || 0;
+
+                    dailyTotalsMap[date].carbs +=
+                        Number(food.carbs) || 0;
+
+                    dailyTotalsMap[date].fat +=
+                        Number(food.fat) || 0;
+
+                }
+            );
+
+
+            // ==================================================
+            // ROUND DAILY TOTALS
+            // ==================================================
+
+            const calculatedDailyTotals =
+                Object.values(
+                    dailyTotalsMap
+                ).map(
+                    function (total) {
+
+                        return {
+
+                            date:
+                                total.date,
+
+                            calories:
+                                Number(
+                                    total.calories.toFixed(2)
+                                ),
+
+                            protein:
+                                Number(
+                                    total.protein.toFixed(2)
+                                ),
+
+                            carbs:
+                                Number(
+                                    total.carbs.toFixed(2)
+                                ),
+
+                            fat:
+                                Number(
+                                    total.fat.toFixed(2)
+                                )
+
+                        };
+
+                    }
+                );
+
+
+            // ==================================================
+            // GET EXISTING NUTRITION DATA
+            // ==================================================
+
+            const existingNutrition =
+                await Nutrition.findOne({
+
+                    username:
+                        cleanUsername
+
+                });
+
+
+            // ==================================================
+            // PRESERVE PREVIOUS DAILY HISTORY
+            // ==================================================
+
+            let existingDailyTotals =
+                existingNutrition &&
+                Array.isArray(
+                    existingNutrition.dailyTotals
+                )
+                    ? existingNutrition.dailyTotals.map(
+                        function (total) {
+
+                            return {
+
+                                date:
+                                    total.date,
+
+                                calories:
+                                    Number(
+                                        total.calories
+                                    ) || 0,
+
+                                protein:
+                                    Number(
+                                        total.protein
+                                    ) || 0,
+
+                                carbs:
+                                    Number(
+                                        total.carbs
+                                    ) || 0,
+
+                                fat:
+                                    Number(
+                                        total.fat
+                                    ) || 0
+
+                            };
+
+                        }
+                    )
+                    : [];
+
+
+            // ==================================================
+            // UPDATE DAILY HISTORY
+            // ==================================================
+
+            calculatedDailyTotals.forEach(
+                function (newTotal) {
+
+                    const existingIndex =
+                        existingDailyTotals.findIndex(
+                            function (oldTotal) {
+
+                                return (
+                                    oldTotal.date ===
+                                    newTotal.date
+                                );
+
+                            }
+                        );
+
+
+                    if (
+                        existingIndex !== -1
+                    ) {
+
+                        // Update that day's total
+
+                        existingDailyTotals[
+                            existingIndex
+                        ] = newTotal;
+
+                    }
+
+                    else {
+
+                        // Add a new day
+
+                        existingDailyTotals.push(
+                            newTotal
+                        );
+
+                    }
+
+                }
+            );
+
+
+            // ==================================================
+            // SORT HISTORY BY DATE
+            // ==================================================
+
+            existingDailyTotals.sort(
+                function (a, b) {
+
+                    return (
+                        a.date.localeCompare(
+                            b.date
+                        )
+                    );
+
+                }
+            );
+
+
+            // ==================================================
             // SAVE TO MONGODB
             // ==================================================
 
@@ -413,6 +624,9 @@ router.post(
 
                         foods:
                             safeFoods,
+
+                        dailyTotals:
+                            existingDailyTotals,
 
                         meals:
                             Array.isArray(meals)
@@ -484,17 +698,15 @@ router.delete(
                     req.params.username || ""
                 ).trim();
 
-
             const foodId =
-                req.params.foodId;
+                String(
+                    req.params.foodId || ""
+                ).trim();
 
 
             const nutrition =
                 await Nutrition.findOne({
-
-                    username:
-                        username
-
+                    username: username
                 });
 
 
@@ -510,16 +722,16 @@ router.delete(
             }
 
 
-            const originalLength =
-                nutrition.foods.length;
+            // ==================================================
+            // FIND FOOD
+            // ==================================================
 
-
-            nutrition.foods =
-                nutrition.foods.filter(
-                    function (food) {
+            const food =
+                nutrition.foods.find(
+                    function (item) {
 
                         return (
-                            food._id.toString() !==
+                            String(item._id) ===
                             foodId
                         );
 
@@ -527,10 +739,26 @@ router.delete(
                 );
 
 
-            if (
-                nutrition.foods.length ===
-                originalLength
-            ) {
+            if (!food) {
+
+                console.log(
+                    "Food ID not found:",
+                    foodId
+                );
+
+                console.log(
+                    "Available food IDs:",
+                    nutrition.foods.map(
+                        function (item) {
+
+                            return String(
+                                item._id
+                            );
+
+                        }
+                    )
+                );
+
 
                 return res.status(404).json({
 
@@ -542,13 +770,184 @@ router.delete(
             }
 
 
+            // ==================================================
+            // REMEMBER FOOD DATE
+            // ==================================================
+
+            const foodDate =
+                food.date;
+
+
+            // ==================================================
+            // REMOVE FOOD
+            // ==================================================
+
+            nutrition.foods =
+                nutrition.foods.filter(
+                    function (item) {
+
+                        return (
+                            String(item._id) !==
+                            foodId
+                        );
+
+                    }
+                );
+
+
+            // ==================================================
+            // RECALCULATE DAILY TOTAL
+            // ==================================================
+
+            const remainingFoods =
+                nutrition.foods.filter(
+                    function (item) {
+
+                        return (
+                            item.date ===
+                            foodDate
+                        );
+
+                    }
+                );
+
+
+            let totalCalories = 0;
+            let totalProtein = 0;
+            let totalCarbs = 0;
+            let totalFat = 0;
+
+
+            remainingFoods.forEach(
+                function (item) {
+
+                    totalCalories +=
+                        Number(
+                            item.calories
+                        ) || 0;
+
+                    totalProtein +=
+                        Number(
+                            item.protein
+                        ) || 0;
+
+                    totalCarbs +=
+                        Number(
+                            item.carbs
+                        ) || 0;
+
+                    totalFat +=
+                        Number(
+                            item.fat
+                        ) || 0;
+
+                }
+            );
+
+
+            // ==================================================
+            // UPDATE DAILY TOTAL
+            // ==================================================
+
+            const historyIndex =
+                nutrition.dailyTotals.findIndex(
+                    function (item) {
+
+                        return (
+                            item.date ===
+                            foodDate
+                        );
+
+                    }
+                );
+
+
+            if (
+                remainingFoods.length === 0
+            ) {
+
+                // No food remains for this date.
+                // Remove the daily history entry.
+
+                if (
+                    historyIndex !== -1
+                ) {
+
+                    nutrition.dailyTotals.splice(
+                        historyIndex,
+                        1
+                    );
+
+                }
+
+            }
+
+            else {
+
+                const updatedTotal = {
+
+                    date:
+                        foodDate,
+
+                    calories:
+                        Number(
+                            totalCalories.toFixed(2)
+                        ),
+
+                    protein:
+                        Number(
+                            totalProtein.toFixed(2)
+                        ),
+
+                    carbs:
+                        Number(
+                            totalCarbs.toFixed(2)
+                        ),
+
+                    fat:
+                        Number(
+                            totalFat.toFixed(2)
+                        )
+
+                };
+
+
+                if (
+                    historyIndex !== -1
+                ) {
+
+                    nutrition.dailyTotals[
+                        historyIndex
+                    ] =
+                        updatedTotal;
+
+                }
+
+                else {
+
+                    nutrition.dailyTotals.push(
+                        updatedTotal
+                    );
+
+                }
+
+            }
+
+
+            // ==================================================
+            // SAVE
+            // ==================================================
+
             await nutrition.save();
 
 
             return res.status(200).json({
 
                 message:
-                    "Food deleted successfully."
+                    "Food deleted successfully.",
+
+                nutrition:
+                    nutrition
 
             });
 
@@ -564,7 +963,10 @@ router.delete(
             return res.status(500).json({
 
                 message:
-                    "Unable to delete food."
+                    "Unable to delete food.",
+
+                error:
+                    error.message
 
             });
 
@@ -572,7 +974,6 @@ router.delete(
 
     }
 );
-
 
 // ==================================================
 // RESET TODAY'S FOOD
@@ -626,6 +1027,17 @@ router.delete(
 
                     }
                 );
+
+                nutrition.dailyTotals =
+    nutrition.dailyTotals.filter(
+        function (total) {
+
+            return (
+                total.date !== date
+            );
+
+        }
+    );
 
 
             await nutrition.save();

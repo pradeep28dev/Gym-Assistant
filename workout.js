@@ -19,6 +19,9 @@ if (isLoggedIn !== "true") {
 const username =
     localStorage.getItem("username");
 
+const token =
+    localStorage.getItem("token");
+
 if (!username) {
 
     localStorage.removeItem("isLoggedIn");
@@ -156,9 +159,15 @@ async function loadFitnessProfile() {
         );
 
         const response =
-            await fetch(
-                `${API_URL}/api/profile/${encodeURIComponent(username)}`
-            );
+    await fetch(
+        `${API_URL}/api/profile/${encodeURIComponent(username)}`,
+        {
+            headers: {
+                "Authorization":
+                    `Bearer ${token}`
+            }
+        }
+    );
 
         console.log(
             "Profile response:",
@@ -246,9 +255,15 @@ async function loadWorkoutData() {
         );
 
         const response =
-            await fetch(
-                `${API_URL}/api/workout/${encodeURIComponent(username)}`
-            );
+    await fetch(
+        `${API_URL}/api/workout/${encodeURIComponent(username)}`,
+        {
+            headers: {
+                "Authorization":
+                    `Bearer ${token}`
+            }
+        }
+    );
 
         console.log(
             "Workout response status:",
@@ -1095,19 +1110,19 @@ async function saveCompletedExercises(
 
                     method: "POST",
 
-                    headers: {
+                   headers: {
 
-                        "Content-Type":
-                            "application/json"
+    "Content-Type":
+        "application/json",
 
-                    },
+    "Authorization":
+        `Bearer ${token}`
+
+},
 
                     body:
                         JSON.stringify({
-
-                            username:
-                                username,
-
+                             username: username,
                             date:
                                 today,
 
@@ -2217,17 +2232,18 @@ async function saveCustomWorkout() {
 
                     headers: {
 
-                        "Content-Type":
-                            "application/json"
+    "Content-Type":
+        "application/json",
 
-                    },
+    "Authorization":
+        `Bearer ${token}`
+
+},
 
                     body:
                         JSON.stringify({
 
-                            username:
-                                username,
-
+                             username: username,
                             customPlan:
                                 customPlan
 
@@ -2350,33 +2366,22 @@ async function switchToRecommended() {
             true;
 
 
-        const response =
-            await fetch(
-                `${API_URL}/api/workout/active`,
-                {
+       const response = await fetch(
+    `${API_URL}/api/workout/active`,
+    {
+        method: "PUT",
 
-                    method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
 
-                    headers: {
-
-                        "Content-Type":
-                            "application/json"
-
-                    },
-
-                    body:
-                        JSON.stringify({
-
-                            username:
-                                username,
-
-                            activePlan:
-                                "recommended"
-
-                        })
-
-                }
-            );
+        body: JSON.stringify({
+            username: username,
+            activePlan: "recommended"
+        })
+    }
+);
 
 
         const data =
@@ -2462,17 +2467,17 @@ async function useCustomPlan() {
 
                     headers: {
 
-                        "Content-Type":
-                            "application/json"
+    "Content-Type":
+        "application/json",
 
-                    },
+    "Authorization":
+        `Bearer ${token}`
+
+},
 
                     body:
                         JSON.stringify({
-
-                            username:
-                                username,
-
+                             username: username,
                             activePlan:
                                 "custom"
 
@@ -2562,7 +2567,13 @@ async function deleteCustomPlan() {
                 `${API_URL}/api/workout/custom/${encodeURIComponent(username)}`,
                 {
 
-                    method: "DELETE"
+                    method: "DELETE",
+                    headers: {
+
+    "Authorization":
+        `Bearer ${token}`
+
+}
 
                 }
             );

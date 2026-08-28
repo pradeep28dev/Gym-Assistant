@@ -180,7 +180,7 @@ loginForm.addEventListener(
             }
 
 
-            // =========================
+// =========================
 // LOGIN SUCCESS
 // =========================
 
@@ -201,6 +201,11 @@ localStorage.setItem(
 localStorage.setItem(
     "username",
     loggedInUsername
+);
+
+localStorage.setItem(
+    "token",
+    data.token
 );
 
 // Store whether this is the user's first login

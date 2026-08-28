@@ -3,7 +3,8 @@ const express = require("express");
 // IMPORTANT:
 // The filename is workout.js
 const Workout = require("../models/Workout");
-
+const authMiddleware =
+    require("../middleware/authMiddleware");
 const router = express.Router();
 
 
@@ -13,7 +14,7 @@ const router = express.Router();
 // =====================================================
 
 router.get(
-    "/:username",
+    "/:username", authMiddleware,
     async (req, res) => {
 
         try {
@@ -114,7 +115,7 @@ router.get(
 // =====================================================
 
 router.post(
-    "/custom",
+    "/custom", authMiddleware,
     async (req, res) => {
 
         try {
@@ -222,7 +223,7 @@ router.post(
 // =====================================================
 
 router.put(
-    "/active",
+    "/active", authMiddleware,
     async (req, res) => {
 
         try {
@@ -372,7 +373,7 @@ router.put(
 // =====================================================
 
 router.post(
-    "/progress",
+    "/progress", authMiddleware,
     async (req, res) => {
 
         try {
@@ -550,7 +551,7 @@ router.post(
 // =====================================================
 
 router.delete(
-    "/custom/:username",
+    "/custom/:username", authMiddleware,
     async (req, res) => {
 
         try {

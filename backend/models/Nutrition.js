@@ -136,6 +136,41 @@ const nutritionSchema = new mongoose.Schema(
             default: []
         },
 
+        // ==================================================
+// DAILY NUTRITION HISTORY
+// ==================================================
+
+dailyTotals: {
+    type: [
+        {
+            date: {
+                type: String,
+                required: true
+            },
+
+            calories: {
+                type: Number,
+                default: 0
+            },
+
+            protein: {
+                type: Number,
+                default: 0
+            },
+
+            carbs: {
+                type: Number,
+                default: 0
+            },
+
+            fat: {
+                type: Number,
+                default: 0
+            }
+        }
+    ],
+    default: []
+},
 
         // ==================================================
         // MEAL PLANNER
