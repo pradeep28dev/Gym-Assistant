@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Client details | Gym Assistant</title>
+    <link rel="stylesheet" href="styles/trainer-base.css">
+    <link rel="stylesheet" href="styles/trainer-dashboard.css">
+</head>
+<body>
+    <header class="site-header"><a class="brand" href="dashboard.html">GYM <span>ASSISTANT</span></a><nav class="nav-links" aria-label="Main navigation"><a href="dashboard.html">Dashboard</a><a class="active" href="clients.html">Clients</a><a href="profile.html">Profile</a></nav><div class="header-actions"><span id="usernameDisplay" class="user-chip"></span><button id="logoutButton" class="button danger small" type="button">Logout</button></div></header>
+    <main class="page-shell"><div class="page-heading"><p class="eyebrow">Client overview</p><h1 id="clientName">Client details</h1><p>Review the fitness information shared by this assigned client.</p></div><div id="detailsStatus" class="status" role="status" aria-live="polite"></div>
+        <div class="detail-grid"><section class="card"><h2>Contact</h2><dl class="data-list"><div><dt>Username</dt><dd id="clientUsername">—</dd></div><div><dt>Email</dt><dd id="clientEmail">—</dd></div></dl></section>
+        <section class="card"><h2>Fitness profile</h2><dl class="data-list"><div><dt>Gender</dt><dd id="clientGender">—</dd></div><div><dt>Age</dt><dd id="clientAge">—</dd></div><div><dt>Height</dt><dd id="clientHeight">—</dd></div><div><dt>Weight</dt><dd id="clientWeight">—</dd></div><div><dt>Body fat</dt><dd id="clientBodyFat">—</dd></div><div><dt>Activity</dt><dd id="clientActivity">—</dd></div><div><dt>Experience</dt><dd id="clientExperience">—</dd></div><div><dt>Goal</dt><dd id="clientGoal">—</dd></div></dl></section></div>
+        <p class="back-row"><a class="button secondary" href="clients.html">Back to clients</a></p>
+    </main>
+    <script src="js/config.js"></script><script src="js/auth.js"></script><script src="js/trainerApi.js"></script><script src="js/client-details.js"></script>
+</body>
+</html>

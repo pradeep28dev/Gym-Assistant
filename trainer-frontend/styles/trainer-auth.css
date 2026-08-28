@@ -1,0 +1,62 @@
+.auth-page {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 1.25rem;
+}
+
+.auth-card {
+    background: linear-gradient(145deg, #1a1a1a, #0c0c0c);
+    border: 1px solid rgba(255, 37, 56, .38);
+    border-radius: 20px;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, .7);
+    max-width: 440px;
+    padding: clamp(1.7rem, 5vw, 2.7rem);
+    min-width: 0;
+    width: 100%;
+}
+.auth-brand { font-size: 1.4rem; font-weight: 800; letter-spacing: .1em; text-align: center; }
+.auth-brand span { color: var(--accent); }
+.auth-subtitle { color: var(--muted); font-size: .9rem; margin: .5rem 0 2rem; text-align: center; }
+.auth-card h1 { font-size: 1.7rem; margin-bottom: 1.5rem; text-align: center; }
+.auth-form { display: grid; gap: 1rem; }
+.field { display: grid; gap: .4rem; }
+.field label { color: #d3d3d3; font-size: .86rem; font-weight: 600; }
+.field input, .field textarea {
+    background: #0e0e0e;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    color: var(--text);
+    outline: none;
+    padding: .75rem .85rem;
+    max-width: 100%;
+    width: 100%;
+}
+.field textarea { min-height: 100px; resize: vertical; }
+.password-field {
+    align-items: stretch;
+    display: flex;
+    gap: .5rem;
+}
+.password-field input {
+    box-sizing: border-box;
+    flex: 1 1 auto;
+    min-width: 0;
+    width: auto;
+}
+.password-field .button {
+    flex: 0 0 76px;
+    width: 76px;
+}
+.field input:focus, .field textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255, 37, 56, .12); }
+.auth-form > .button { margin-top: .4rem; width: 100%; }
+.auth-note { color: var(--muted); font-size: .78rem; margin-top: 1.4rem; text-align: center; }
+
+@media (max-width: 420px) {
+    .password-field { gap: .4rem; }
+    .password-field .button {
+        flex-basis: 68px;
+        width: 68px;
+    }
+}

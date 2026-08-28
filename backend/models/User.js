@@ -46,6 +46,38 @@ const userSchema = new mongoose.Schema(
             index: true
         },
 
+        assignedTrainerId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            default: null,
+            index: true
+        },
+
+        trainerProfile: {
+            bio: {
+                type: String,
+                default: "",
+                trim: true
+            },
+
+            specialization: {
+                type: String,
+                default: "",
+                trim: true
+            },
+
+            certifications: {
+                type: [String],
+                default: []
+            },
+
+            experience: {
+                type: String,
+                default: "",
+                trim: true
+            }
+        },
+
 
         // ===============================
         // FITNESS PROFILE

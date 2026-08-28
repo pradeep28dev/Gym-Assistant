@@ -1,0 +1,76 @@
+.stats-grid { display: grid; gap: 1rem; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: 1.5rem; }
+.stat-card { min-height: 135px; }
+.stat-card .stat-value { font-size: 2.1rem; font-weight: 800; margin-top: .5rem; overflow-wrap: anywhere; }
+.stat-card .stat-label { color: var(--muted); font-size: .78rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.dashboard-grid { display: grid; gap: 1.5rem; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); }
+.quick-links { display: grid; gap: .7rem; margin-top: 1rem; }
+.quick-links a { background: var(--surface-soft); border: 1px solid var(--border); border-radius: 9px; padding: .8rem; }
+.quick-links a:hover { border-color: var(--accent); }
+.list { display: grid; gap: .7rem; list-style: none; margin-top: 1rem; }
+.list-item { align-items: center; background: var(--surface-soft); border-radius: 9px; display: flex; gap: .75rem; justify-content: space-between; min-width: 0; padding: .8rem; }
+.list-item > span { min-width: 0; }
+.list-item strong, .list-item small { display: block; overflow-wrap: anywhere; }
+.profile-summary { display: grid; gap: .65rem; margin-top: 1rem; }
+.profile-summary div { border-bottom: 1px solid #242424; display: flex; gap: .6rem; justify-content: space-between; padding-bottom: .55rem; }
+.profile-summary dt { color: var(--muted); }
+.profile-summary dd { min-width: 0; overflow-wrap: anywhere; text-align: right; }
+
+.form-card { max-width: 760px; }
+.identity-card { max-width: 760px; margin-bottom: 1rem; }
+.profile-form { display: grid; gap: 1rem; min-width: 0; }
+.profile-form .field-row { display: grid; gap: 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.profile-form .field { min-width: 0; }
+.field input, .field textarea {
+    background: #0e0e0e;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    color: var(--text);
+    max-width: 100%;
+    min-height: 42px;
+    min-width: 0;
+    outline: none;
+    padding: .75rem .85rem;
+    width: 100%;
+}
+.field textarea { min-height: 120px; resize: vertical; }
+.field input:focus, .field textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(255, 37, 56, .12);
+}
+.form-actions { display: flex; gap: .75rem; justify-content: flex-end; margin-top: .5rem; }
+.form-actions .button { flex: 0 1 180px; min-width: 0; }
+
+.toolbar { align-items: end; display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; margin-bottom: 1rem; }
+.toolbar > div { min-width: 0; }
+.assign-form { align-items: end; display: flex; flex: 1 1 360px; gap: .6rem; min-width: 0; }
+.assign-form .field { flex: 1 1 auto; min-width: 0; }
+.assign-form input { max-width: 100%; min-width: 0; width: 100%; }
+.assign-form .button { flex: 0 0 auto; }
+.client-grid { display: grid; gap: 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.client-card { display: flex; flex-direction: column; gap: .85rem; }
+.client-card .client-meta { color: var(--muted); font-size: .86rem; overflow-wrap: anywhere; }
+.client-card .card-actions { display: flex; flex-wrap: wrap; gap: .55rem; margin-top: auto; }
+
+.detail-grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.data-list { display: grid; gap: .7rem; margin-top: 1rem; }
+.data-list div { border-bottom: 1px solid #262626; display: flex; gap: 1rem; justify-content: space-between; min-width: 0; padding-bottom: .55rem; }
+.data-list dt { color: var(--muted); }
+.data-list dd { font-weight: 600; min-width: 0; overflow-wrap: anywhere; text-align: right; }
+.back-row { margin-top: 1.25rem; }
+
+@media (max-width: 760px) {
+    .stats-grid, .dashboard-grid, .client-grid, .detail-grid { grid-template-columns: 1fr; }
+    .profile-form .field-row { grid-template-columns: 1fr; }
+    .form-actions { flex-direction: column; }
+    .form-actions .button { flex-basis: auto; width: 100%; }
+    .toolbar { align-items: stretch; }
+    .assign-form { flex-basis: 100%; flex-direction: column; }
+    .assign-form .button { width: 100%; }
+    .data-list div, .profile-summary div { align-items: flex-start; flex-direction: column; gap: .2rem; }
+    .data-list dd, .profile-summary dd { text-align: left; }
+}
+
+@media (min-width: 761px) and (max-width: 1024px) {
+    .site-header { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .page-shell { padding-left: 1.25rem; padding-right: 1.25rem; }
+}

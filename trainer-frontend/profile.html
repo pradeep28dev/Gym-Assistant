@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Trainer profile | Gym Assistant</title>
+    <link rel="stylesheet" href="styles/trainer-base.css">
+    <link rel="stylesheet" href="styles/trainer-dashboard.css">
+</head>
+<body>
+    <header class="site-header"><a class="brand" href="dashboard.html">GYM <span>ASSISTANT</span></a><nav class="nav-links" aria-label="Main navigation"><a href="dashboard.html">Dashboard</a><a href="clients.html">Clients</a><a class="active" href="profile.html">Profile</a></nav><div class="header-actions"><span id="usernameDisplay" class="user-chip"></span><button id="logoutButton" class="button danger small" type="button">Logout</button></div></header>
+    <main class="page-shell"><div class="page-heading"><p class="eyebrow">Account</p><h1>Trainer profile</h1><p>Tell clients what makes your coaching unique.</p></div><div id="profileStatus" class="status" role="status" aria-live="polite"></div>
+        <section class="card identity-card"><h2>Account information</h2><dl class="data-list"><div><dt>Username</dt><dd id="profileUsername">—</dd></div><div><dt>Email</dt><dd id="profileEmail">—</dd></div><div><dt>Role</dt><dd id="profileRole">—</dd></div><div><dt>Gym</dt><dd id="profileGym">—</dd></div></dl></section>
+        <section class="card form-card"><form id="profileForm" class="profile-form">
+            <div class="field"><label for="bio">Bio</label><textarea id="bio" maxlength="2000" placeholder="Introduce your coaching approach"></textarea></div>
+            <div class="field-row"><div class="field"><label for="specialization">Specialization</label><input id="specialization" type="text" maxlength="200"></div><div class="field"><label for="experience">Experience</label><input id="experience" type="text" maxlength="200" placeholder="e.g. 8 years"></div></div>
+            <div class="field"><label for="certifications">Certifications</label><input id="certifications" type="text" placeholder="Separate certifications with commas"></div>
+            <div class="form-actions"><a class="button secondary" href="dashboard.html">Cancel</a><button id="saveProfile" class="button primary" type="submit">Save profile</button></div>
+        </form></section>
+    </main>
+    <script src="js/config.js"></script><script src="js/auth.js"></script><script src="js/trainerApi.js"></script><script src="js/profile.js"></script>
+</body>
+</html>

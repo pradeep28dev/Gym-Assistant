@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Clients | Gym Assistant</title>
+    <link rel="stylesheet" href="styles/trainer-base.css">
+    <link rel="stylesheet" href="styles/trainer-dashboard.css">
+</head>
+<body>
+    <header class="site-header"><a class="brand" href="dashboard.html">GYM <span>ASSISTANT</span></a><nav class="nav-links" aria-label="Main navigation"><a href="dashboard.html">Dashboard</a><a class="active" href="clients.html">Clients</a><a href="profile.html">Profile</a></nav><div class="header-actions"><span id="usernameDisplay" class="user-chip"></span><button id="logoutButton" class="button danger small" type="button">Logout</button></div></header>
+    <main class="page-shell"><div class="page-heading"><p class="eyebrow">Coaching</p><h1>Your clients</h1><p>View assigned clients or add a new client by ID.</p></div>
+        <section class="card toolbar"><div><h2>Assign a client</h2><p class="muted">Only clients in your gym can be assigned.</p></div><form id="assignForm" class="assign-form"><div class="field"><label for="clientId">Client ID</label><input id="clientId" type="text" required placeholder="Paste client ID"></div><button id="assignButton" class="button primary" type="submit">Assign</button></form></section>
+        <div id="clientsStatus" class="status" role="status" aria-live="polite"></div><section id="clientList" class="client-grid" aria-label="Assigned clients"><p class="loading">Loading clients...</p></section>
+    </main>
+    <script src="js/config.js"></script><script src="js/auth.js"></script><script src="js/trainerApi.js"></script><script src="js/clients.js"></script>
+</body>
+</html>
