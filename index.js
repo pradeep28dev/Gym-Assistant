@@ -203,6 +203,14 @@ localStorage.setItem(
     loggedInUsername
 );
 
+// Store JWT token
+if (data.token) {
+    localStorage.setItem(
+        "token",
+        data.token
+    );
+}
+
 // Store whether this is the user's first login
 localStorage.setItem(
     "isFirstLogin",

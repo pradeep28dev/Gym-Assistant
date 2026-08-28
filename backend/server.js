@@ -11,8 +11,8 @@ const authRoutes = require("./routes/auth");
 const profileRoutes = require("./routes/profile");
 const workoutRoutes = require("./routes/workout");
 const progressRoutes = require("./routes/progress");
-const nutritionRoutes =
-    require("./routes/nutrition");
+const nutritionRoutes = require("./routes/nutrition");
+const authMiddleware = require("./middleware/authMiddleware");
 
 dotenv.config();
 
@@ -34,10 +34,10 @@ app.use(express.json());
 // ===============================
 
 app.use("/api/auth", authRoutes);
-app.use("/api", profileRoutes);
-app.use("/api/workout", workoutRoutes);
-app.use("/api/progress",progressRoutes);
-app.use("/api", nutritionRoutes);
+app.use("/api", authMiddleware, profileRoutes);
+app.use("/api/workout", authMiddleware, workoutRoutes);
+app.use("/api/progress", authMiddleware, progressRoutes);
+app.use("/api", authMiddleware, nutritionRoutes);
 // ===============================
 // MONGODB CONNECTION
 // ===============================

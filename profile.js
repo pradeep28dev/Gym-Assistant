@@ -13,15 +13,20 @@ if (isLoggedIn !== "true") {
 
 
 // =========================
-// GET CURRENT USER
+// GET CURRENT USER & TOKEN
 // =========================
 
 const username =
     localStorage.getItem("username");
 
-if (!username) {
+const token =
+    localStorage.getItem("token");
+
+if (!username || !token) {
 
     localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("username");
+    localStorage.removeItem("token");
 
     window.location.href =
         "index.html";
@@ -174,6 +179,18 @@ const response =
         // =========================
 
         if (!response.ok) {
+
+            if (response.status === 401) {
+
+                localStorage.removeItem("isLoggedIn");
+                localStorage.removeItem("username");
+                localStorage.removeItem("token");
+
+                window.location.href =
+                    "index.html";
+
+                return;
+            }
 
             if (response.status === 404) {
 

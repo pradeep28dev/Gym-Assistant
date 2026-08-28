@@ -13,15 +13,20 @@ if (isLoggedIn !== "true") {
 
 
 // =====================================================
-// GET USER
+// GET USER & TOKEN
 // =====================================================
 
 const username =
     localStorage.getItem("username");
 
-if (!username) {
+const token =
+    localStorage.getItem("token");
+
+if (!username || !token) {
 
     localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("username");
+    localStorage.removeItem("token");
 
     window.location.href = "index.html";
 
@@ -34,8 +39,6 @@ if (!username) {
 
 const API_URL =
     "https://gym-assistant-rb7h.onrender.com";
-
-    const token = localStorage.getItem("token");
 
 // =====================================================
 // GET ELEMENTS
@@ -173,6 +176,19 @@ async function loadFitnessProfile() {
 
         if (!response.ok) {
 
+            if (response.status === 401) {
+
+                localStorage.removeItem("isLoggedIn");
+                localStorage.removeItem("username");
+                localStorage.removeItem("token");
+
+                window.location.href =
+                    "index.html";
+
+                return false;
+
+            }
+
             if (response.status === 404) {
 
                 alert(
@@ -295,6 +311,19 @@ async function loadWorkoutData() {
 
 
         if (!response.ok) {
+
+            if (response.status === 401) {
+
+                localStorage.removeItem("isLoggedIn");
+                localStorage.removeItem("username");
+                localStorage.removeItem("token");
+
+                window.location.href =
+                    "index.html";
+
+                return false;
+
+            }
 
             throw new Error(
                 "Workout API returned " +
@@ -2760,6 +2789,10 @@ logoutButton.addEventListener(
 
         localStorage.removeItem(
             "username"
+        );
+
+        localStorage.removeItem(
+            "token"
         );
 
         window.location.href =
