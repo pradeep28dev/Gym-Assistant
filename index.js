@@ -203,6 +203,11 @@ localStorage.setItem(
     loggedInUsername
 );
 
+localStorage.setItem(
+    "token",
+    data.token
+);
+
 // Store whether this is the user's first login
 localStorage.setItem(
     "isFirstLogin",

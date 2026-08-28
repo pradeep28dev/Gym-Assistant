@@ -27,13 +27,36 @@ if (!username) {
 
 }
 
+const token =
+    localStorage.getItem("token");
+
+if (!token) {
+
+    localStorage.removeItem("isLoggedIn");
+
+    window.location.href = "index.html";
+
+}
+
 
 // =====================================================
 // BACKEND URL
 // =====================================================
 
 const API_URL =
-    "https://gym-assistant-rb7h.onrender.com";
+    "http://localhost:5000";
+
+function authHeaders(includeJson) {
+    const headers = {
+        "Authorization": `Bearer ${token}`
+    };
+
+    if (includeJson) {
+        headers["Content-Type"] = "application/json";
+    }
+
+    return headers;
+}
 
 
 // =====================================================
@@ -157,7 +180,10 @@ async function loadFitnessProfile() {
 
         const response =
             await fetch(
-                `${API_URL}/api/profile/${encodeURIComponent(username)}`
+                `${API_URL}/api/profile/${encodeURIComponent(username)}`,
+                {
+                    headers: authHeaders(false)
+                }
             );
 
         console.log(
@@ -247,7 +273,10 @@ async function loadWorkoutData() {
 
         const response =
             await fetch(
-                `${API_URL}/api/workout/${encodeURIComponent(username)}`
+                `${API_URL}/api/workout/${encodeURIComponent(username)}`,
+                {
+                    headers: authHeaders(false)
+                }
             );
 
         console.log(
@@ -1098,7 +1127,9 @@ async function saveCompletedExercises(
                     headers: {
 
                         "Content-Type":
-                            "application/json"
+                            "application/json",
+                        "Authorization":
+                            `Bearer ${token}`
 
                     },
 
@@ -2218,7 +2249,9 @@ async function saveCustomWorkout() {
                     headers: {
 
                         "Content-Type":
-                            "application/json"
+                            "application/json",
+                        "Authorization":
+                            `Bearer ${token}`
 
                     },
 
@@ -2360,7 +2393,9 @@ async function switchToRecommended() {
                     headers: {
 
                         "Content-Type":
-                            "application/json"
+                            "application/json",
+                        "Authorization":
+                            `Bearer ${token}`
 
                     },
 
@@ -2463,7 +2498,9 @@ async function useCustomPlan() {
                     headers: {
 
                         "Content-Type":
-                            "application/json"
+                            "application/json",
+                        "Authorization":
+                            `Bearer ${token}`
 
                     },
 
@@ -2562,7 +2599,11 @@ async function deleteCustomPlan() {
                 `${API_URL}/api/workout/custom/${encodeURIComponent(username)}`,
                 {
 
-                    method: "DELETE"
+                    method: "DELETE",
+                    headers: {
+                        "Authorization":
+                            `Bearer ${token}`
+                    }
 
                 }
             );

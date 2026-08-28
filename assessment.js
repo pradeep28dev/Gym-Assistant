@@ -27,6 +27,17 @@ if (!username) {
 
 }
 
+const token =
+    localStorage.getItem("token");
+
+if (!token) {
+
+    localStorage.removeItem("isLoggedIn");
+
+    window.location.href = "index.html";
+
+}
+
 
 // =========================
 // GET ELEMENTS
@@ -185,7 +196,12 @@ async function loadProfile() {
 
         const response =
             await fetch(
-                `https://gym-assistant-rb7h.onrender.com/api/profile/${encodeURIComponent(username)}`
+                `https://gym-assistant-rb7h.onrender.com/api/profile/${encodeURIComponent(username)}`,
+                {
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
             );
 
 
@@ -537,7 +553,9 @@ assessmentForm.addEventListener(
 
                         headers: {
                             "Content-Type":
-                                "application/json"
+                                "application/json",
+                            "Authorization":
+                                `Bearer ${token}`
                         },
 
                         body:
