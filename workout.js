@@ -1134,7 +1134,7 @@ async function saveCompletedExercises(
 
                     method: "POST",
 
-                    headers: {
+                   headers: {
 
     "Content-Type":
         "application/json",
@@ -1146,10 +1146,7 @@ async function saveCompletedExercises(
 
                     body:
                         JSON.stringify({
-
-                            username:
-                                username,
-
+                             username: username,
                             date:
                                 today,
 
@@ -2270,9 +2267,7 @@ async function saveCustomWorkout() {
                     body:
                         JSON.stringify({
 
-                            username:
-                                username,
-
+                             username: username,
                             customPlan:
                                 customPlan
 
@@ -2395,36 +2390,22 @@ async function switchToRecommended() {
             true;
 
 
-        const response =
-            await fetch(
-                `${API_URL}/api/workout/active`,
-                {
+        const response = await fetch(
+            `${API_URL}/api/workout/active`,
+            {
+                method: "PUT",
 
-                    method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
 
-                    headers: {
-
-    "Content-Type":
-        "application/json",
-
-    "Authorization":
-        `Bearer ${token}`
-
-},
-
-                    body:
-                        JSON.stringify({
-
-                            username:
-                                username,
-
-                            activePlan:
-                                "recommended"
-
-                        })
-
-                }
-            );
+                body: JSON.stringify({
+                    username: username,
+                    activePlan: "recommended"
+                })
+            }
+        );
 
 
         const data =
@@ -2520,10 +2501,7 @@ async function useCustomPlan() {
 
                     body:
                         JSON.stringify({
-
-                            username:
-                                username,
-
+                             username: username,
                             activePlan:
                                 "custom"
 

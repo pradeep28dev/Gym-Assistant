@@ -277,6 +277,11 @@ let allFoods = [];
 
 let todayFoods = [];
 
+// ==================================================
+// DAILY NUTRITION HISTORY
+// ==================================================
+
+let dailyNutritionHistory = [];
 
 // ==================================================
 // DEFAULT MEALS
@@ -896,7 +901,6 @@ function filterTodayFoods() {
 
 }
 
-
 // ==================================================
 // LOAD NUTRITION FROM DATABASE
 // ==================================================
@@ -1144,6 +1148,16 @@ async function loadNutritionFromDatabase() {
 
         }
 
+        // ==================================================
+// LOAD DAILY NUTRITION HISTORY
+// ==================================================
+
+dailyNutritionHistory =
+    Array.isArray(
+        data.dailyTotals
+    )
+        ? data.dailyTotals
+        : [];
 
         // ==================================================
         // LOAD MEALS

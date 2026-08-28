@@ -161,7 +161,8 @@ async function loadProfile() {
 
     try {
 
-       const token = localStorage.getItem("token");
+        const token =
+            localStorage.getItem("token");
 
 const response =
     await fetch(
