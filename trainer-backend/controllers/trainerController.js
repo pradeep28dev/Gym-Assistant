@@ -40,6 +40,18 @@ async function getClient(req, res) {
     }
 }
 
+async function getClientAssessment(req, res) {
+    try {
+        const assessment = await trainerService.getAssignedClientAssessment(
+            req.user.userId,
+            req.params.clientId
+        );
+        return res.status(200).json(assessment);
+    } catch (error) {
+        return handleError(res, error);
+    }
+}
+
 async function assignClient(req, res) {
     try {
         const client = await trainerService.assignClient(
@@ -73,6 +85,7 @@ async function unassignClient(req, res) {
 module.exports = {
     listClients,
     getClient,
+    getClientAssessment,
     assignClient,
     unassignClient
 };

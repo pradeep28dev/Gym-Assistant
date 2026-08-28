@@ -71,6 +71,13 @@ function createTrainerService(repository = userRepository) {
         return client;
     }
 
+    async function getAssignedClientAssessment(trainerId, clientId) {
+        const client = await getAssignedClient(trainerId, clientId);
+        return {
+            fitnessProfile: client.fitnessProfile || {}
+        };
+    }
+
     async function assignClient(trainerId, clientId) {
         assertValidUserId(clientId);
         const trainer = await getTrainer(trainerId);
@@ -130,6 +137,7 @@ function createTrainerService(repository = userRepository) {
     return {
         listAssignedClients,
         getAssignedClient,
+        getAssignedClientAssessment,
         assignClient,
         unassignClient
     };

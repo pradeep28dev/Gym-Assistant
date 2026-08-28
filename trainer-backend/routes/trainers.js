@@ -11,6 +11,7 @@ router.get("/profile", trainerOnly, trainerProfileController.getProfile);
 router.put("/profile", trainerOnly, trainerProfileController.updateProfile);
 router.get("/clients", trainerOnly, trainerController.listClients);
 router.get("/clients/:clientId", trainerOnly, trainerController.getClient);
+router.get("/clients/:clientId/assessment", trainerOnly, trainerController.getClientAssessment);
 router.post("/clients/:clientId/assign", trainerOnly, trainerController.assignClient);
 router.delete("/clients/:clientId/assign", trainerOnly, trainerController.unassignClient);
 

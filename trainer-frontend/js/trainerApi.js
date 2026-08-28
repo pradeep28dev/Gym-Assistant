@@ -93,6 +93,12 @@
         getClient: function (clientId) {
             return request(trainerUrl("/clients/" + encodeURIComponent(clientId)), { method: "GET" });
         },
+        getClientAssessment: function (clientId) {
+            return request(
+                trainerUrl("/clients/" + encodeURIComponent(clientId) + "/assessment"),
+                { method: "GET" }
+            );
+        },
         assignClient: function (clientId) {
             return request(
                 trainerUrl("/clients/" + encodeURIComponent(clientId) + "/assign"),
