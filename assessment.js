@@ -183,10 +183,18 @@ async function loadProfile() {
 
     try {
 
-        const response =
-            await fetch(
-                `https://gym-assistant-rb7h.onrender.com/api/profile/${encodeURIComponent(username)}`
-            );
+        const token = localStorage.getItem("token");
+
+const response =
+    await fetch(
+        `https://gym-assistant-rb7h.onrender.com/api/profile/${encodeURIComponent(username)}`,
+        {
+            headers: {
+                "Authorization": `Bearer ${token}`
+                
+            }
+        }
+    );
 
 
         if (!response.ok) {
@@ -530,23 +538,22 @@ assessmentForm.addEventListener(
 
 
             const response =
-                await fetch(
-                    "https://gym-assistant-rb7h.onrender.com/api/profile",
-                    {
-                        method: "POST",
+    await fetch(
+        "https://gym-assistant-rb7h.onrender.com/api/profile",
+        {
+            method: "POST",
 
-                        headers: {
-                            "Content-Type":
-                                "application/json"
-                        },
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem("token")}`
+            },
 
-                        body:
-                            JSON.stringify(
-                                fitnessProfile
-                            )
-
-                    }
-                );
+            body:
+                JSON.stringify(
+                    fitnessProfile
+                )
+        }
+    );
 
 
             const data =

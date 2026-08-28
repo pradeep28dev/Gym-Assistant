@@ -156,10 +156,17 @@ async function loadProfile() {
 
     try {
 
-        const response =
-            await fetch(
-                `https://gym-assistant-rb7h.onrender.com/api/profile/${encodeURIComponent(username)}`
-            );
+       const token = localStorage.getItem("token");
+
+const response =
+    await fetch(
+        `https://gym-assistant-rb7h.onrender.com/api/profile/${encodeURIComponent(username)}`,
+        {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+    );
 
 
         // =========================

@@ -42,6 +42,50 @@ if (!username) {
 
 
 // ==================================================
+// GET TOKEN
+// ==================================================
+
+const token =
+    localStorage.getItem("token");
+
+if (!token) {
+
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("username");
+
+    window.location.href = "index.html";
+
+}
+
+
+// ==================================================
+// AUTH HEADERS
+// ==================================================
+
+function getAuthHeaders(includeJSON = false) {
+
+    const headers = {
+
+        "Authorization":
+            `Bearer ${localStorage.getItem("token")}`
+
+    };
+
+
+    if (includeJSON) {
+
+        headers["Content-Type"] =
+            "application/json";
+
+    }
+
+
+    return headers;
+
+}
+
+
+// ==================================================
 // GET HTML ELEMENTS
 // ==================================================
 
@@ -205,7 +249,8 @@ const resetMealButton =
 
 if (usernameDisplay) {
 
-    usernameDisplay.textContent = username;
+    usernameDisplay.textContent =
+        username;
 
 }
 
@@ -325,7 +370,8 @@ function escapeHTML(value) {
 
 function getTodayKey() {
 
-    const date = new Date();
+    const date =
+        new Date();
 
     const year =
         date.getFullYear();
@@ -361,9 +407,7 @@ function getActivityMultiplier(activity) {
             .trim();
 
 
-    if (
-        value === "sedentary"
-    ) {
+    if (value === "sedentary") {
 
         return 1.2;
 
@@ -656,7 +700,6 @@ function calculateNutrition(profile) {
         );
 
 
-    // Minimum calorie safeguard
     if (
         gender === "male" &&
         calories < 1500
@@ -693,7 +736,7 @@ function calculateNutrition(profile) {
     const fat =
         fatCalories / 9;
 
-    const remainingCalories =
+    const remainingCaloriesForCarbs =
         calories -
         proteinCalories -
         fatCalories;
@@ -701,7 +744,7 @@ function calculateNutrition(profile) {
     const carbs =
         Math.max(
             0,
-            remainingCalories / 4
+            remainingCaloriesForCarbs / 4
         );
 
 
@@ -829,114 +872,27 @@ function updateTargetDisplays() {
 
 }
 
+
 // ==================================================
 // FILTER TODAY'S FOOD
 // ==================================================
 
 function filterTodayFoods() {
 
-    const today = getTodayKey();
-
-    todayFoods = allFoods.filter(
-        function (food) {
-
-            return food.date === today;
-
-        }
-    );
-
-}
-
-// ==================================================
-// SAVE NUTRITION TO DATABASE
-// ==================================================
-
-async function saveNutritionToDatabase() {
-
-    try {
-
-        const response =
-            await fetch(
-                BACKEND_URL +
-                "/api/nutrition",
-                {
-
-                    method: "POST",
-
-                    headers: {
-
-                        "Content-Type":
-                            "application/json"
-
-                    },
-
-                    body:
-                        JSON.stringify({
-
-                            username:
-                                username,
-
-                            targets:
-                                nutritionTargets,
-
-                            foods:
-                                allFoods,
-
-                            meals:
-                                meals
-
-                        })
-
-                }
-            );
+    const today =
+        getTodayKey();
 
 
-        const data =
-            await response.json();
+    todayFoods =
+        allFoods.filter(
+            function (food) {
 
+                return (
+                    food.date === today
+                );
 
-        if (!response.ok) {
-
-            throw new Error(
-                data.message ||
-                "Unable to save nutrition data."
-            );
-
-        }
-
-
-        // MongoDB may return updated
-        // food objects with _id values.
-
-        if (
-            data.nutrition &&
-            Array.isArray(
-                data.nutrition.foods
-            )
-        ) {
-
-            allFoods =
-                data.nutrition.foods;
-
-            filterTodayFoods();
-
-        }
-
-
-        return true;
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Nutrition database save error:",
-            error
+            }
         );
-
-        return false;
-
-    }
 
 }
 
@@ -956,53 +912,237 @@ async function loadNutritionFromDatabase() {
                 "/api/nutrition/" +
                 encodeURIComponent(
                     username
-                )
+                ),
+
+                {
+
+                    method: "GET",
+
+                    headers:
+                        getAuthHeaders()
+
+                }
 
             );
 
 
-        if (!response.ok) {
+        // ==================================================
+        // UNAUTHORIZED
+        // ==================================================
 
-            throw new Error(
-                "Unable to load nutrition data."
+        if (response.status === 401) {
+
+            console.error(
+                "Nutrition authentication failed."
             );
+
+
+            localStorage.removeItem(
+                "isLoggedIn"
+            );
+
+            localStorage.removeItem(
+                "token"
+            );
+
+            localStorage.removeItem(
+                "username"
+            );
+
+
+            window.location.href =
+                "index.html";
+
+
+            return false;
 
         }
 
+
+        // ==================================================
+        // NO NUTRITION RECORD YET
+        // ==================================================
+
+        if (response.status === 404) {
+
+            console.log(
+                "No nutrition record found. Creating initial local state."
+            );
+
+
+            allFoods = [];
+
+            meals =
+                JSON.parse(
+                    JSON.stringify(
+                        defaultMeals
+                    )
+                );
+
+
+            filterTodayFoods();
+
+            return true;
+
+        }
+
+
+        // ==================================================
+        // OTHER SERVER ERROR
+        // ==================================================
+
+        if (!response.ok) {
+
+            const errorData =
+                await response.json()
+                    .catch(
+                        function () {
+                            return {};
+                        }
+                    );
+
+
+            console.error(
+                "Nutrition load failed:",
+                response.status,
+                errorData
+            );
+
+
+            return false;
+
+        }
+
+
+        // ==================================================
+        // READ RESPONSE
+        // ==================================================
 
         const data =
             await response.json();
 
 
-        // ==================================================
-        // DO NOT LOAD TARGETS FROM DATABASE
-        // ==================================================
-        //
-        // Nutrition targets are calculated from the
-        // user's current fitness profile.
-        //
-        // calculateNutrition(profile) already calculated
-        // the correct values before this function runs.
-        //
-        // Therefore, DO NOT overwrite nutritionTargets
-        // with MongoDB values.
-        //
-        // ==================================================
+        console.log(
+            "Nutrition data loaded from MongoDB:",
+            data
+        );
 
 
         // ==================================================
-        // LOAD FOODS
+        // GET NUTRITION OBJECT
         // ==================================================
 
-        allFoods =
+        const nutrition =
+            data.nutrition ||
+            data.data ||
+            data;
+
+
+        // ==================================================
+        // LOAD TARGETS
+        // ==================================================
+
+        if (
+            nutrition.targets &&
+            typeof nutrition.targets === "object"
+        ) {
+
+            nutritionTargets = {
+
+                calories:
+                    Number(
+                        nutrition.targets.calories
+                    ) ||
+                    nutritionTargets.calories,
+
+                protein:
+                    Number(
+                        nutrition.targets.protein
+                    ) ||
+                    nutritionTargets.protein,
+
+                carbs:
+                    Number(
+                        nutrition.targets.carbs
+                    ) ||
+                    nutritionTargets.carbs,
+
+                fat:
+                    Number(
+                        nutrition.targets.fat
+                    ) ||
+                    nutritionTargets.fat
+
+            };
+
+        }
+
+
+        // ==================================================
+        // LOAD ALL FOODS
+        // ==================================================
+
+        if (
             Array.isArray(
-                data.foods
+                nutrition.foods
             )
-                ? data.foods
-                : [];
+        ) {
 
+            allFoods =
+                nutrition.foods.map(
+                    function (food) {
 
-        filterTodayFoods();
+                        return {
+
+                            ...food,
+
+                            calories:
+                                Number(
+                                    food.calories
+                                ) || 0,
+
+                            protein:
+                                Number(
+                                    food.protein
+                                ) || 0,
+
+                            carbs:
+                                Number(
+                                    food.carbs
+                                ) || 0,
+
+                            fat:
+                                Number(
+                                    food.fat
+                                ) || 0,
+
+                            quantity:
+                                Number(
+                                    food.quantity
+                                ) || 0,
+
+                            date:
+                                food.date ||
+                                getTodayKey()
+
+                        };
+
+                    }
+                );
+
+        }
+
+        else {
+
+            // IMPORTANT:
+            // Do NOT erase existing data if
+            // the server response doesn't contain foods.
+
+            console.warn(
+                "No foods array returned by MongoDB."
+            );
+
+        }
 
 
         // ==================================================
@@ -1011,17 +1151,18 @@ async function loadNutritionFromDatabase() {
 
         if (
             Array.isArray(
-                data.meals
-            ) &&
-            data.meals.length > 0
+                nutrition.meals
+            )
         ) {
 
             meals =
-                data.meals;
+                nutrition.meals;
 
         }
 
         else {
+
+            // Only use defaults if no meals exist.
 
             meals =
                 JSON.parse(
@@ -1034,20 +1175,19 @@ async function loadNutritionFromDatabase() {
 
 
         // ==================================================
-        // DISPLAY DATA
+        // FILTER TODAY'S FOOD
         // ==================================================
 
-        renderMeals();
+        filterTodayFoods();
 
-        renderFoodList();
 
-        updateNutritionProgress();
-
+        // ==================================================
+        // RETURN SUCCESS
+        // ==================================================
 
         return true;
 
     }
-
 
     catch (error) {
 
@@ -1057,7 +1197,323 @@ async function loadNutritionFromDatabase() {
         );
 
 
+        // IMPORTANT:
+        // Never clear allFoods or meals here.
+        // Never save empty data after a failed GET.
+
         return false;
+
+    }
+
+}
+
+
+// ==================================================
+// SAVE NUTRITION TO DATABASE
+// ==================================================
+
+async function saveNutritionToDatabase() {
+
+    try {
+
+        const response =
+            await fetch(
+
+                BACKEND_URL +
+                "/api/nutrition",
+
+                {
+
+                    method: "POST",
+
+                    headers:
+                        getAuthHeaders(true),
+
+                    body:
+                        JSON.stringify({
+
+                            username:
+                                username,
+
+                            targets:
+                                nutritionTargets,
+
+                            foods:
+                                allFoods,
+
+                            meals:
+                                meals
+
+                        })
+
+                }
+
+            );
+
+
+        if (response.status === 401) {
+
+            localStorage.removeItem(
+                "isLoggedIn"
+            );
+
+            localStorage.removeItem(
+                "token"
+            );
+
+            localStorage.removeItem(
+                "username"
+            );
+
+            window.location.href =
+                "index.html";
+
+            return false;
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.message ||
+                "Unable to save nutrition data."
+            );
+
+        }
+
+
+        // ==================================================
+        // USE SERVER RETURNED DATA
+        // ==================================================
+
+        if (
+            data.nutrition
+        ) {
+
+            if (
+                Array.isArray(
+                    data.nutrition.foods
+                )
+            ) {
+
+                allFoods =
+                    data.nutrition.foods;
+
+            }
+
+
+            if (
+                Array.isArray(
+                    data.nutrition.meals
+                )
+            ) {
+
+                meals =
+                    data.nutrition.meals;
+
+            }
+
+
+            if (
+                data.nutrition.targets
+            ) {
+
+                nutritionTargets =
+                    data.nutrition.targets;
+
+            }
+
+        }
+
+
+        filterTodayFoods();
+
+
+        return true;
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Nutrition database save error:",
+            error
+        );
+
+
+        return false;
+
+    }
+
+}
+
+
+// ==================================================
+// LOAD FITNESS PROFILE
+// ==================================================
+
+async function loadFitnessProfile() {
+
+    try {
+
+        const currentToken =
+            localStorage.getItem("token");
+
+
+        if (!currentToken) {
+
+            localStorage.removeItem(
+                "isLoggedIn"
+            );
+
+            window.location.href =
+                "index.html";
+
+            return null;
+
+        }
+
+
+        const response =
+            await fetch(
+
+                BACKEND_URL +
+                "/api/profile/" +
+                encodeURIComponent(
+                    username
+                ),
+
+                {
+
+                    method: "GET",
+
+                    headers:
+                        getAuthHeaders()
+
+                }
+
+            );
+
+
+        // ==================================================
+        // UNAUTHORIZED
+        // ==================================================
+
+        if (response.status === 401) {
+
+            console.error(
+                "Profile authentication failed."
+            );
+
+
+            localStorage.removeItem(
+                "isLoggedIn"
+            );
+
+            localStorage.removeItem(
+                "token"
+            );
+
+            localStorage.removeItem(
+                "username"
+            );
+
+
+            window.location.href =
+                "index.html";
+
+
+            return null;
+
+        }
+
+
+        // ==================================================
+        // PROFILE NOT FOUND
+        // ==================================================
+
+        if (!response.ok) {
+
+            console.error(
+                "Profile request failed:",
+                response.status
+            );
+
+
+            alert(
+                "Please complete your fitness assessment first."
+            );
+
+
+            window.location.href =
+                "assessment.html";
+
+
+            return null;
+
+        }
+
+
+        // ==================================================
+        // READ RESPONSE
+        // ==================================================
+
+        const data =
+            await response.json();
+
+
+        const profile =
+            data.profile;
+
+
+        // ==================================================
+        // VALIDATE PROFILE
+        // ==================================================
+
+        if (
+            !profile ||
+            !profile.age ||
+            !profile.height ||
+            !profile.weight
+        ) {
+
+            alert(
+                "Please complete your fitness assessment first."
+            );
+
+
+            window.location.href =
+                "assessment.html";
+
+
+            return null;
+
+        }
+
+
+        return profile;
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Unable to load fitness profile:",
+            error
+        );
+
+
+        alert(
+            "Unable to connect to the server."
+        );
+
+
+        return null;
 
     }
 
@@ -1116,11 +1572,13 @@ function updateMacroTargetBars() {
         nutritionTargets.protein
     );
 
+
     updateProgressBar(
         carbsFill,
         nutritionTargets.carbs,
         nutritionTargets.carbs
     );
+
 
     updateProgressBar(
         fatFill,
@@ -1215,7 +1673,7 @@ function updateNutritionProgress() {
     updateRemainingText(
         remainingCalories,
         nutritionTargets.calories -
-        totals.calories,
+            totals.calories,
         "kcal"
     );
 
@@ -1223,7 +1681,7 @@ function updateNutritionProgress() {
     updateRemainingText(
         remainingProtein,
         nutritionTargets.protein -
-        totals.protein,
+            totals.protein,
         "g"
     );
 
@@ -1231,7 +1689,7 @@ function updateNutritionProgress() {
     updateRemainingText(
         remainingCarbs,
         nutritionTargets.carbs -
-        totals.carbs,
+            totals.carbs,
         "g"
     );
 
@@ -1239,11 +1697,12 @@ function updateNutritionProgress() {
     updateRemainingText(
         remainingFat,
         nutritionTargets.fat -
-        totals.fat,
+            totals.fat,
         "g"
     );
 
 }
+
 
 // ==================================================
 // PROGRESS BAR
@@ -1357,11 +1816,33 @@ async function searchFood(foodNameText) {
     const url =
         BACKEND_URL +
         "/api/nutrition/search?query=" +
-        encodeURIComponent(foodNameText);
+        encodeURIComponent(
+            foodNameText
+        );
 
 
     const response =
-        await fetch(url);
+        await fetch(
+
+            url,
+
+            {
+
+                headers:
+                    getAuthHeaders()
+
+            }
+
+        );
+
+
+    if (response.status === 401) {
+
+        throw new Error(
+            "Authentication failed."
+        );
+
+    }
 
 
     if (!response.ok) {
@@ -1369,10 +1850,12 @@ async function searchFood(foodNameText) {
         let message =
             "Food search failed.";
 
+
         try {
 
             const errorData =
                 await response.json();
+
 
             if (errorData.message) {
 
@@ -1389,7 +1872,10 @@ async function searchFood(foodNameText) {
 
         }
 
-        throw new Error(message);
+
+        throw new Error(
+            message
+        );
 
     }
 
@@ -1426,7 +1912,9 @@ let suggestionTimer = null;
 // GET FOOD SUGGESTIONS
 // ==================================================
 
-async function getFoodSuggestions(searchText) {
+async function getFoodSuggestions(
+    searchText
+) {
 
     if (
         !searchText ||
@@ -1461,6 +1949,7 @@ async function getFoodSuggestions(searchText) {
             error
         );
 
+
         hideFoodSuggestions();
 
     }
@@ -1472,16 +1961,31 @@ async function getFoodSuggestions(searchText) {
 // SEARCH FOOD SUGGESTIONS
 // ==================================================
 
-async function searchFoodSuggestions(searchText) {
+async function searchFoodSuggestions(
+    searchText
+) {
 
     const url =
         BACKEND_URL +
         "/api/nutrition/search?query=" +
-        encodeURIComponent(searchText);
+        encodeURIComponent(
+            searchText
+        );
 
 
     const response =
-        await fetch(url);
+        await fetch(
+
+            url,
+
+            {
+
+                headers:
+                    getAuthHeaders()
+
+            }
+
+        );
 
 
     if (!response.ok) {
@@ -1531,55 +2035,57 @@ function showFoodSuggestions(foods) {
     }
 
 
-    foods.slice(0, 8).forEach(
-        function (food) {
+    foods.slice(0, 8)
+        .forEach(
+            function (food) {
 
-            const suggestion =
-                document.createElement(
-                    "div"
+                const suggestion =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                suggestion.className =
+                    "foodSuggestion";
+
+
+                suggestion.textContent =
+                    food.description ||
+                    "Unknown food";
+
+
+                suggestion.addEventListener(
+                    "click",
+                    function () {
+
+                        if (foodName) {
+
+                            foodName.value =
+                                food.description ||
+                                "";
+
+                        }
+
+
+                        hideFoodSuggestions();
+
+
+                        if (foodQuantity) {
+
+                            foodQuantity.focus();
+
+                        }
+
+                    }
                 );
 
 
-            suggestion.className =
-                "foodSuggestion";
+                foodSuggestions.appendChild(
+                    suggestion
+                );
 
-
-            suggestion.textContent =
-                food.description ||
-                "Unknown food";
-
-
-            suggestion.addEventListener(
-                "click",
-                function () {
-
-                    if (foodName) {
-
-                        foodName.value =
-                            food.description || "";
-
-                    }
-
-
-                    hideFoodSuggestions();
-
-
-                    if (foodQuantity) {
-
-                        foodQuantity.focus();
-
-                    }
-
-                }
-            );
-
-
-            foodSuggestions.appendChild(
-                suggestion
-            );
-
-        }
-    );
+            }
+        );
 
 
     foodSuggestions.style.display =
@@ -1706,7 +2212,10 @@ document.addEventListener(
 // GET USDA NUTRIENT
 // ==================================================
 
-function getNutrient(food, nutrientNames) {
+function getNutrient(
+    food,
+    nutrientNames
+) {
 
     if (
         !food ||
@@ -1854,12 +2363,10 @@ if (addFoodButton) {
 
             try {
 
-                // ==================================================
-                // SEARCH USDA
-                // ==================================================
-
                 const foods =
-                    await searchFood(name);
+                    await searchFood(
+                        name
+                    );
 
 
                 const food =
@@ -1883,7 +2390,9 @@ if (addFoodButton) {
                     quantity;
 
 
-                if (unit === "serving") {
+                if (
+                    unit === "serving"
+                ) {
 
                     baseQuantity =
                         Number(
@@ -1896,11 +2405,6 @@ if (addFoodButton) {
                 if (
                     unit === "ml"
                 ) {
-
-                    // For foods where USDA
-                    // provides values per 100g,
-                    // ml is treated approximately
-                    // as 1 ml = 1 g.
 
                     baseQuantity =
                         quantity;
@@ -2002,7 +2506,7 @@ if (addFoodButton) {
 
 
                 // ==================================================
-                // ADD TO MEMORY
+                // ADD TO CURRENT DATA
                 // ==================================================
 
                 allFoods.push(
@@ -2285,11 +2789,26 @@ function renderFoodList() {
                                         {
 
                                             method:
-                                                "DELETE"
+                                                "DELETE",
+
+                                            headers:
+                                                getAuthHeaders()
 
                                         }
 
                                     );
+
+
+                                if (
+                                    response.status ===
+                                    401
+                                ) {
+
+                                    throw new Error(
+                                        "Authentication failed."
+                                    );
+
+                                }
 
 
                                 if (!response.ok) {
@@ -2348,8 +2867,12 @@ function renderFoodList() {
                                     ) {
 
                                         return (
-                                            String(item._id) !==
-                                            String(food._id)
+                                            String(
+                                                item._id
+                                            ) !==
+                                            String(
+                                                food._id
+                                            )
                                         );
 
                                     }
@@ -2444,11 +2967,26 @@ if (resetFoodButton) {
                         {
 
                             method:
-                                "DELETE"
+                                "DELETE",
+
+                            headers:
+                                getAuthHeaders()
 
                         }
 
                     );
+
+
+                if (
+                    response.status ===
+                    401
+                ) {
+
+                    throw new Error(
+                        "Authentication failed."
+                    );
+
+                }
 
 
                 if (!response.ok) {
@@ -2470,6 +3008,10 @@ if (resetFoodButton) {
 
                 }
 
+
+                // ==================================================
+                // REMOVE ONLY TODAY'S FOOD LOCALLY
+                // ==================================================
 
                 allFoods =
                     allFoods.filter(
@@ -2687,7 +3229,7 @@ function renderMeals() {
 
                 deleteButton.addEventListener(
                     "click",
-                    function (event) {
+                    async function (event) {
 
                         event.preventDefault();
 
@@ -2925,6 +3467,7 @@ if (profileButton) {
 
             event.preventDefault();
 
+
             window.location.href =
                 "profile.html";
 
@@ -2955,101 +3498,16 @@ if (logoutButton) {
                 "username"
             );
 
+            localStorage.removeItem(
+                "token"
+            );
+
 
             window.location.href =
                 "index.html";
 
         }
     );
-
-}
-
-
-// ==================================================
-// LOAD FITNESS PROFILE
-// ==================================================
-
-async function loadFitnessProfile() {
-
-    try {
-
-        const response =
-            await fetch(
-
-                BACKEND_URL +
-                "/api/profile/" +
-                encodeURIComponent(
-                    username
-                )
-
-            );
-
-
-        if (!response.ok) {
-
-            alert(
-                "Please complete your fitness assessment first."
-            );
-
-
-            window.location.href =
-                "assessment.html";
-
-
-            return null;
-
-        }
-
-
-        const data =
-            await response.json();
-
-
-        const profile =
-            data.profile;
-
-
-        if (
-            !profile ||
-            !profile.age ||
-            !profile.height ||
-            !profile.weight
-        ) {
-
-            alert(
-                "Please complete your fitness assessment first."
-            );
-
-
-            window.location.href =
-                "assessment.html";
-
-
-            return null;
-
-        }
-
-
-        return profile;
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Unable to load fitness profile:",
-            error
-        );
-
-
-        alert(
-            "Unable to connect to the server."
-        );
-
-
-        return null;
-
-    }
 
 }
 
@@ -3062,8 +3520,13 @@ async function initializeNutrition() {
 
     try {
 
+        console.log(
+            "Initializing nutrition..."
+        );
+
+
         // ==================================================
-        // LOAD PROFILE
+        // LOAD PROFILE FIRST
         // ==================================================
 
         const profile =
@@ -3077,8 +3540,14 @@ async function initializeNutrition() {
         }
 
 
+        console.log(
+            "Fitness profile loaded:",
+            profile
+        );
+
+
         // ==================================================
-        // CALCULATE CURRENT TARGETS
+        // CALCULATE NUTRITION TARGETS
         // ==================================================
 
         const calculated =
@@ -3095,7 +3564,7 @@ async function initializeNutrition() {
 
 
         // ==================================================
-        // LOAD SAVED FOODS + MEALS
+        // LOAD SAVED NUTRITION DATA
         // ==================================================
 
         const loaded =
@@ -3103,19 +3572,26 @@ async function initializeNutrition() {
 
 
         // ==================================================
-        // STOP IF DATABASE LOAD FAILED
+        // VERY IMPORTANT
         // ==================================================
         //
-        // IMPORTANT:
-        // Never save empty/default data back to MongoDB
-        // if the database load failed.
+        // If MongoDB loading fails:
+        //
+        // DO NOT:
+        // - clear allFoods
+        // - clear meals
+        // - save empty arrays
         //
         // ==================================================
 
         if (!loaded) {
 
             console.warn(
-                "Nutrition data could not be loaded. Database data was NOT overwritten."
+                "Nutrition data could not be loaded from MongoDB."
+            );
+
+            console.warn(
+                "Existing database data was NOT overwritten."
             );
 
             return;
@@ -3124,19 +3600,12 @@ async function initializeNutrition() {
 
 
         // ==================================================
-        // UPDATE TARGETS
+        // UPDATE UI AFTER DATABASE LOAD
         // ==================================================
 
         updateTargetDisplays();
 
         updateMacroTargetBars();
-
-        updateNutritionProgress();
-
-
-        // ==================================================
-        // FINAL RENDER
-        // ==================================================
 
         filterTodayFoods();
 
@@ -3145,6 +3614,11 @@ async function initializeNutrition() {
         renderMeals();
 
         updateNutritionProgress();
+
+
+        console.log(
+            "Nutrition initialized successfully."
+        );
 
     }
 

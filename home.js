@@ -173,12 +173,21 @@ async function loadFitnessProfile() {
         // =========================
         // REQUEST PROFILE
         // =========================
+        const token =
+    localStorage.getItem("token");
 
-        const response =
-            await fetch(
-                `https://gym-assistant-rb7h.onrender.com/api/profile/${encodeURIComponent(username)}`
-            );
+const response =
+    await fetch(
+        `https://gym-assistant-rb7h.onrender.com/api/profile/${encodeURIComponent(username)}`,
+        {
+            method: "GET",
 
+            headers: {
+                "Authorization":
+                    `Bearer ${token}`
+            }
+        }
+    );
 
         // =========================
         // PROFILE NOT FOUND

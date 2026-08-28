@@ -4,6 +4,17 @@
 
 
 // ==================================================
+// BACKEND API
+// ==================================================
+
+const BACKEND_URL =
+    "https://gym-assistant-rb7h.onrender.com";
+
+const API_URL =
+    BACKEND_URL + "/api/progress";
+
+
+// ==================================================
 // CHECK LOGIN
 // ==================================================
 
@@ -12,7 +23,8 @@ const isLoggedIn =
 
 if (isLoggedIn !== "true") {
 
-    window.location.href = "index.html";
+    window.location.href =
+        "index.html";
 
 }
 
@@ -26,19 +38,41 @@ const username =
 
 if (!username) {
 
-    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem(
+        "isLoggedIn"
+    );
 
-    window.location.href = "index.html";
+    localStorage.removeItem(
+        "token"
+    );
+
+    window.location.href =
+        "index.html";
 
 }
 
 
 // ==================================================
-// API URL
+// GET TOKEN
 // ==================================================
 
-const API_URL =
-    "https://gym-assistant-rb7h.onrender.com/api/progress";
+const token =
+    localStorage.getItem("token");
+
+if (!token) {
+
+    localStorage.removeItem(
+        "isLoggedIn"
+    );
+
+    localStorage.removeItem(
+        "username"
+    );
+
+    window.location.href =
+        "index.html";
+
+}
 
 
 // ==================================================
@@ -46,46 +80,74 @@ const API_URL =
 // ==================================================
 
 const usernameDisplay =
-    document.getElementById("usernameDisplay");
+    document.getElementById(
+        "usernameDisplay"
+    );
 
 const startingWeight =
-    document.getElementById("startingWeight");
+    document.getElementById(
+        "startingWeight"
+    );
 
 const currentWeight =
-    document.getElementById("currentWeight");
+    document.getElementById(
+        "currentWeight"
+    );
 
 const weightChange =
-    document.getElementById("weightChange");
+    document.getElementById(
+        "weightChange"
+    );
 
 const currentBodyFat =
-    document.getElementById("currentBodyFat");
+    document.getElementById(
+        "currentBodyFat"
+    );
 
 const progressForm =
-    document.getElementById("progressForm");
+    document.getElementById(
+        "progressForm"
+    );
 
 const progressDate =
-    document.getElementById("progressDate");
+    document.getElementById(
+        "progressDate"
+    );
 
 const progressWeight =
-    document.getElementById("progressWeight");
+    document.getElementById(
+        "progressWeight"
+    );
 
 const progressBodyFat =
-    document.getElementById("progressBodyFat");
+    document.getElementById(
+        "progressBodyFat"
+    );
 
 const progressTableBody =
-    document.getElementById("progressTableBody");
+    document.getElementById(
+        "progressTableBody"
+    );
 
 const emptyMessage =
-    document.getElementById("emptyMessage");
+    document.getElementById(
+        "emptyMessage"
+    );
 
 const formMessage =
-    document.getElementById("formMessage");
+    document.getElementById(
+        "formMessage"
+    );
 
 const profileButton =
-    document.getElementById("profileButton");
+    document.getElementById(
+        "profileButton"
+    );
 
 const logoutButton =
-    document.getElementById("logoutButton");
+    document.getElementById(
+        "logoutButton"
+    );
 
 
 // ==================================================
@@ -101,34 +163,64 @@ if (usernameDisplay) {
 
 
 // ==================================================
-// SET DATE LIMITS
+// AUTH HEADERS
 // ==================================================
 
-const today =
-    new Date();
+function getAuthHeaders() {
+
+    return {
+
+        "Content-Type":
+            "application/json",
+
+        "Authorization":
+            `Bearer ${token}`
+
+    };
+
+}
 
 
-const year =
-    today.getFullYear();
+// ==================================================
+// TODAY'S DATE
+// ==================================================
 
+function getTodayString() {
 
-const month =
-    String(
-        today.getMonth() + 1
-    ).padStart(2, "0");
+    const date =
+        new Date();
 
+    const year =
+        date.getFullYear();
 
-const day =
-    String(
-        today.getDate()
-    ).padStart(2, "0");
+    const month =
+        String(
+            date.getMonth() + 1
+        ).padStart(2, "0");
+
+    const day =
+        String(
+            date.getDate()
+        ).padStart(2, "0");
+
+    return (
+        year +
+        "-" +
+        month +
+        "-" +
+        day
+    );
+
+}
 
 
 const todayString =
-    `${year}-${month}-${day}`;
+    getTodayString();
 
 
-// Default date = today
+// ==================================================
+// SET DATE LIMITS
+// ==================================================
 
 if (progressDate) {
 
@@ -151,9 +243,59 @@ async function checkFitnessProfile() {
 
         const response =
             await fetch(
-                `https://gym-assistant-rb7h.onrender.com/api/profile/${encodeURIComponent(username)}`
+
+                BACKEND_URL +
+                "/api/profile/" +
+                encodeURIComponent(
+                    username
+                ),
+
+                {
+
+                    method:
+                        "GET",
+
+                    headers: {
+
+                        "Authorization":
+                            `Bearer ${token}`
+
+                    }
+
+                }
+
             );
 
+
+        // ==================================================
+        // TOKEN EXPIRED / INVALID
+        // ==================================================
+
+        if (response.status === 401) {
+
+            localStorage.removeItem(
+                "isLoggedIn"
+            );
+
+            localStorage.removeItem(
+                "username"
+            );
+
+            localStorage.removeItem(
+                "token"
+            );
+
+            window.location.href =
+                "index.html";
+
+            return false;
+
+        }
+
+
+        // ==================================================
+        // PROFILE NOT FOUND
+        // ==================================================
 
         if (!response.ok) {
 
@@ -177,6 +319,10 @@ async function checkFitnessProfile() {
             data.profile;
 
 
+        // ==================================================
+        // CHECK REQUIRED PROFILE DATA
+        // ==================================================
+
         if (
             !profile ||
             !profile.age ||
@@ -198,7 +344,9 @@ async function checkFitnessProfile() {
 
         return true;
 
-    } catch (error) {
+    }
+
+    catch (error) {
 
         console.error(
             "Fitness profile check error:",
@@ -206,8 +354,12 @@ async function checkFitnessProfile() {
         );
 
 
-        formMessage.textContent =
-            "Unable to connect to the server.";
+        if (formMessage) {
+
+            formMessage.textContent =
+                "Unable to connect to the server.";
+
+        }
 
 
         return false;
@@ -227,14 +379,77 @@ async function getProgressRecords() {
 
         const response =
             await fetch(
-                `${API_URL}/${encodeURIComponent(username)}`
+
+                API_URL +
+                "/" +
+                encodeURIComponent(
+                    username
+                ),
+
+                {
+
+                    method:
+                        "GET",
+
+                    headers: {
+
+                        "Authorization":
+                            `Bearer ${token}`
+
+                    }
+
+                }
+
             );
 
 
+        // ==================================================
+        // TOKEN ERROR
+        // ==================================================
+
+        if (response.status === 401) {
+
+            localStorage.removeItem(
+                "isLoggedIn"
+            );
+
+            localStorage.removeItem(
+                "username"
+            );
+
+            localStorage.removeItem(
+                "token"
+            );
+
+            window.location.href =
+                "index.html";
+
+            return [];
+
+        }
+
+
+        // ==================================================
+        // OTHER ERROR
+        // ==================================================
+
         if (!response.ok) {
 
+            const errorData =
+                await response
+                    .json()
+                    .catch(
+                        function () {
+                            return {};
+                        }
+                    );
+
+
             throw new Error(
+
+                errorData.message ||
                 "Unable to fetch progress."
+
             );
 
         }
@@ -244,10 +459,17 @@ async function getProgressRecords() {
             await response.json();
 
 
-        return data.progress || [];
+        return (
+            Array.isArray(
+                data.progress
+            )
+                ? data.progress
+                : []
+        );
 
+    }
 
-    } catch (error) {
+    catch (error) {
 
         console.error(
             "Progress fetch error:",
@@ -271,24 +493,85 @@ async function getProgressRecords() {
 
 
 // ==================================================
+// FORMAT DATE
+// ==================================================
+
+function formatDate(dateString) {
+
+    if (!dateString) {
+
+        return "--";
+
+    }
+
+
+    const parts =
+        String(
+            dateString
+        ).split("-");
+
+
+    if (
+        parts.length !== 3
+    ) {
+
+        return dateString;
+
+    }
+
+
+    return (
+        parts[2] +
+        "/" +
+        parts[1] +
+        "/" +
+        parts[0]
+    );
+
+}
+
+
+// ==================================================
 // UPDATE SUMMARY
 // ==================================================
 
 function updateSummary(records) {
 
-    if (!records || records.length === 0) {
+    if (
+        !records ||
+        records.length === 0
+    ) {
 
-        startingWeight.textContent =
-            "--";
+        if (startingWeight) {
 
-        currentWeight.textContent =
-            "--";
+            startingWeight.textContent =
+                "--";
 
-        weightChange.textContent =
-            "--";
+        }
 
-        currentBodyFat.textContent =
-            "--";
+        if (currentWeight) {
+
+            currentWeight.textContent =
+                "--";
+
+        }
+
+        if (weightChange) {
+
+            weightChange.textContent =
+                "--";
+
+            weightChange.className =
+                "";
+
+        }
+
+        if (currentBodyFat) {
+
+            currentBodyFat.textContent =
+                "--";
+
+        }
 
         return;
 
@@ -303,8 +586,10 @@ function updateSummary(records) {
         [...records].sort(
             function (a, b) {
 
-                return a.date.localeCompare(
-                    b.date
+                return String(
+                    a.date
+                ).localeCompare(
+                    String(b.date)
                 );
 
             }
@@ -342,73 +627,158 @@ function updateSummary(records) {
     // STARTING WEIGHT
     // ==================================================
 
-    startingWeight.textContent =
-        firstWeight.toFixed(1);
+    if (startingWeight) {
+
+        startingWeight.textContent =
+            firstWeight.toFixed(1);
+
+    }
 
 
     // ==================================================
     // CURRENT WEIGHT
     // ==================================================
 
-    currentWeight.textContent =
-        latestWeight.toFixed(1);
+    if (currentWeight) {
+
+        currentWeight.textContent =
+            latestWeight.toFixed(1);
+
+    }
 
 
     // ==================================================
     // WEIGHT CHANGE
     // ==================================================
 
-    if (change > 0) {
+    if (weightChange) {
 
-        weightChange.textContent =
-            "+" +
-            change.toFixed(1) +
-            " kg";
+        if (change > 0) {
 
-        weightChange.className =
-            "changePositive";
+            weightChange.textContent =
+                "+" +
+                change.toFixed(1) +
+                " kg";
 
-    } else if (change < 0) {
+            weightChange.className =
+                "changePositive";
 
-        weightChange.textContent =
-            change.toFixed(1) +
-            " kg";
+        }
 
-        weightChange.className =
-            "changeNegative";
+        else if (change < 0) {
 
-    } else {
+            weightChange.textContent =
+                change.toFixed(1) +
+                " kg";
 
-        weightChange.textContent =
-            "0 kg";
+            weightChange.className =
+                "changeNegative";
 
-        weightChange.className =
-            "";
+        }
+
+        else {
+
+            weightChange.textContent =
+                "0 kg";
+
+            weightChange.className =
+                "";
+
+        }
 
     }
 
 
     // ==================================================
-    // BODY FAT
+    // CURRENT BODY FAT
     // ==================================================
+
+    if (currentBodyFat) {
+
+        if (
+            latestRecord.bodyFat !== null &&
+            latestRecord.bodyFat !== undefined &&
+            latestRecord.bodyFat !== ""
+        ) {
+
+            currentBodyFat.textContent =
+                Number(
+                    latestRecord.bodyFat
+                ).toFixed(1);
+
+        }
+
+        else {
+
+            currentBodyFat.textContent =
+                "--";
+
+        }
+
+    }
+
+}
+
+
+// ==================================================
+// CALCULATE CHANGE FROM PREVIOUS RECORD
+// ==================================================
+
+function calculateChange(
+    currentRecord,
+    records
+) {
+
+    const sortedRecords =
+        [...records].sort(
+            function (a, b) {
+
+                return String(
+                    a.date
+                ).localeCompare(
+                    String(b.date)
+                );
+
+            }
+        );
+
+
+    const currentIndex =
+        sortedRecords.findIndex(
+            function (record) {
+
+                return (
+                    String(record.id) ===
+                    String(currentRecord.id)
+                );
+
+            }
+        );
+
 
     if (
-        latestRecord.bodyFat !== null &&
-        latestRecord.bodyFat !== undefined &&
-        latestRecord.bodyFat !== ""
+        currentIndex <= 0
     ) {
 
-        currentBodyFat.textContent =
-            Number(
-                latestRecord.bodyFat
-            ).toFixed(1);
-
-    } else {
-
-        currentBodyFat.textContent =
-            "--";
+        return null;
 
     }
+
+
+    const previousRecord =
+        sortedRecords[
+            currentIndex - 1
+        ];
+
+
+    return (
+        Number(
+            currentRecord.weight
+        ) -
+        Number(
+            previousRecord.weight
+        )
+    );
 
 }
 
@@ -424,7 +794,9 @@ async function displayProgress() {
 
 
     if (!progressTableBody) {
+
         return;
+
     }
 
 
@@ -472,8 +844,10 @@ async function displayProgress() {
         [...records].sort(
             function (a, b) {
 
-                return b.date.localeCompare(
-                    a.date
+                return String(
+                    b.date
+                ).localeCompare(
+                    String(a.date)
                 );
 
             }
@@ -488,7 +862,9 @@ async function displayProgress() {
         function (record) {
 
             const row =
-                document.createElement("tr");
+                document.createElement(
+                    "tr"
+                );
 
 
             // ==================================================
@@ -496,8 +872,9 @@ async function displayProgress() {
             // ==================================================
 
             const dateCell =
-                document.createElement("td");
-
+                document.createElement(
+                    "td"
+                );
 
             dateCell.textContent =
                 formatDate(
@@ -510,8 +887,9 @@ async function displayProgress() {
             // ==================================================
 
             const weightCell =
-                document.createElement("td");
-
+                document.createElement(
+                    "td"
+                );
 
             weightCell.textContent =
                 Number(
@@ -525,7 +903,9 @@ async function displayProgress() {
             // ==================================================
 
             const bodyFatCell =
-                document.createElement("td");
+                document.createElement(
+                    "td"
+                );
 
 
             if (
@@ -540,7 +920,9 @@ async function displayProgress() {
                     ).toFixed(1) +
                     "%";
 
-            } else {
+            }
+
+            else {
 
                 bodyFatCell.textContent =
                     "--";
@@ -553,7 +935,9 @@ async function displayProgress() {
             // ==================================================
 
             const changeCell =
-                document.createElement("td");
+                document.createElement(
+                    "td"
+                );
 
 
             const change =
@@ -568,7 +952,9 @@ async function displayProgress() {
                 changeCell.textContent =
                     "--";
 
-            } else if (change > 0) {
+            }
+
+            else if (change > 0) {
 
                 changeCell.textContent =
                     "+" +
@@ -578,7 +964,9 @@ async function displayProgress() {
                 changeCell.className =
                     "changePositive";
 
-            } else if (change < 0) {
+            }
+
+            else if (change < 0) {
 
                 changeCell.textContent =
                     change.toFixed(1) +
@@ -587,7 +975,9 @@ async function displayProgress() {
                 changeCell.className =
                     "changeNegative";
 
-            } else {
+            }
+
+            else {
 
                 changeCell.textContent =
                     "0 kg";
@@ -596,24 +986,26 @@ async function displayProgress() {
 
 
             // ==================================================
-            // DELETE
+            // ACTION
             // ==================================================
 
             const actionCell =
-                document.createElement("td");
+                document.createElement(
+                    "td"
+                );
 
 
             const deleteButton =
-                document.createElement("button");
+                document.createElement(
+                    "button"
+                );
 
 
             deleteButton.type =
                 "button";
 
-
             deleteButton.textContent =
                 "Delete";
-
 
             deleteButton.className =
                 "deleteButton";
@@ -644,21 +1036,17 @@ async function displayProgress() {
                 dateCell
             );
 
-
             row.appendChild(
                 weightCell
             );
-
 
             row.appendChild(
                 bodyFatCell
             );
 
-
             row.appendChild(
                 changeCell
             );
-
 
             row.appendChild(
                 actionCell
@@ -677,94 +1065,15 @@ async function displayProgress() {
     // UPDATE SUMMARY
     // ==================================================
 
-    updateSummary(records);
-
-}
-
-
-// ==================================================
-// FORMAT DATE
-// ==================================================
-
-function formatDate(dateString) {
-
-    const parts =
-        dateString.split("-");
-
-
-    if (parts.length !== 3) {
-
-        return dateString;
-
-    }
-
-
-    return (
-        parts[2] +
-        "/" +
-        parts[1] +
-        "/" +
-        parts[0]
+    updateSummary(
+        records
     );
 
 }
 
 
 // ==================================================
-// CALCULATE WEIGHT CHANGE
-// ==================================================
-
-function calculateChange(
-    currentRecord,
-    records
-) {
-
-    const sortedRecords =
-        [...records].sort(
-            function (a, b) {
-
-                return a.date.localeCompare(
-                    b.date
-                );
-
-            }
-        );
-
-
-    const currentIndex =
-        sortedRecords.findIndex(
-            function (record) {
-
-                return String(record.id) ===
-                    String(currentRecord.id);
-
-            }
-        );
-
-
-    if (currentIndex <= 0) {
-
-        return null;
-
-    }
-
-
-    const previousRecord =
-        sortedRecords[
-            currentIndex - 1
-        ];
-
-
-    return (
-        Number(currentRecord.weight) -
-        Number(previousRecord.weight)
-    );
-
-}
-
-
-// ==================================================
-// DELETE PROGRESS
+// DELETE PROGRESS RECORD
 // ==================================================
 
 async function deleteProgress(id) {
@@ -786,36 +1095,100 @@ async function deleteProgress(id) {
 
         const response =
             await fetch(
-                `${API_URL}/${encodeURIComponent(username)}/${id}`,
+
+                API_URL +
+                "/" +
+                encodeURIComponent(
+                    username
+                ) +
+                "/" +
+                encodeURIComponent(
+                    id
+                ),
+
                 {
-                    method: "DELETE"
+
+                    method:
+                        "DELETE",
+
+                    headers: {
+
+                        "Authorization":
+                            `Bearer ${token}`
+
+                    }
+
                 }
+
             );
 
 
         const data =
-            await response.json();
+            await response
+                .json()
+                .catch(
+                    function () {
+                        return {};
+                    }
+                );
 
 
-        if (!response.ok) {
+        if (
+            response.status === 401
+        ) {
 
-            formMessage.textContent =
-                data.message ||
-                "Unable to delete progress.";
+            localStorage.removeItem(
+                "isLoggedIn"
+            );
+
+            localStorage.removeItem(
+                "username"
+            );
+
+            localStorage.removeItem(
+                "token"
+            );
+
+            window.location.href =
+                "index.html";
 
             return;
 
         }
 
 
-        formMessage.textContent =
-            "Progress record deleted successfully.";
+        if (!response.ok) {
 
+            if (formMessage) {
+
+                formMessage.textContent =
+                    data.message ||
+                    "Unable to delete progress.";
+
+            }
+
+            return;
+
+        }
+
+
+        if (formMessage) {
+
+            formMessage.textContent =
+                "Progress record deleted successfully.";
+
+        }
+
+
+        // ==================================================
+        // RELOAD FROM MONGODB
+        // ==================================================
 
         await displayProgress();
 
+    }
 
-    } catch (error) {
+    catch (error) {
 
         console.error(
             "Progress delete error:",
@@ -823,8 +1196,12 @@ async function deleteProgress(id) {
         );
 
 
-        formMessage.textContent =
-            "Unable to connect to the server.";
+        if (formMessage) {
+
+            formMessage.textContent =
+                "Unable to connect to the server.";
+
+        }
 
     }
 
@@ -849,24 +1226,32 @@ if (progressForm) {
             // ==================================================
 
             const date =
-                progressDate.value;
+                progressDate
+                    ? progressDate.value
+                    : "";
 
 
             const weight =
-                parseFloat(
-                    progressWeight.value
-                );
+                progressWeight
+                    ? parseFloat(
+                        progressWeight.value
+                    )
+                    : NaN;
 
 
             let bodyFat =
-                progressBodyFat.value;
+                progressBodyFat
+                    ? progressBodyFat.value.trim()
+                    : "";
 
 
             if (bodyFat === "") {
 
                 bodyFat = null;
 
-            } else {
+            }
+
+            else {
 
                 bodyFat =
                     parseFloat(
@@ -894,7 +1279,10 @@ if (progressForm) {
             // PREVENT FUTURE DATE
             // ==================================================
 
-            if (date > todayString) {
+            if (
+                date >
+                todayString
+            ) {
 
                 formMessage.textContent =
                     "You cannot add progress for a future date.";
@@ -909,7 +1297,7 @@ if (progressForm) {
             // ==================================================
 
             if (
-                !weight ||
+                isNaN(weight) ||
                 weight <= 0
             ) {
 
@@ -943,19 +1331,19 @@ if (progressForm) {
 
 
             // ==================================================
-            // BUTTON STATE
+            // GET SUBMIT BUTTON
             // ==================================================
-
-            const originalButtonText =
-                progressForm.querySelector(
-                    'button[type="submit"]'
-                )?.textContent;
-
 
             const submitButton =
                 progressForm.querySelector(
                     'button[type="submit"]'
                 );
+
+
+            const originalButtonText =
+                submitButton
+                    ? submitButton.textContent
+                    : "Save Progress";
 
 
             if (submitButton) {
@@ -969,26 +1357,32 @@ if (progressForm) {
             }
 
 
-            formMessage.textContent =
-                "Saving progress...";
+            if (formMessage) {
+
+                formMessage.textContent =
+                    "Saving progress...";
+
+            }
 
 
             // ==================================================
-            // SEND TO BACKEND
+            // SAVE TO MONGODB
             // ==================================================
 
             try {
 
                 const response =
                     await fetch(
-                        API_URL,
-                        {
-                            method: "POST",
 
-                            headers: {
-                                "Content-Type":
-                                    "application/json"
-                            },
+                        API_URL,
+
+                        {
+
+                            method:
+                                "POST",
+
+                            headers:
+                                getAuthHeaders(),
 
                             body:
                                 JSON.stringify({
@@ -1008,22 +1402,61 @@ if (progressForm) {
                                 })
 
                         }
+
                     );
 
 
                 const data =
-                    await response.json();
+                    await response
+                        .json()
+                        .catch(
+                            function () {
+                                return {};
+                            }
+                        );
 
 
                 // ==================================================
-                // ERROR
+                // TOKEN ERROR
+                // ==================================================
+
+                if (
+                    response.status === 401
+                ) {
+
+                    localStorage.removeItem(
+                        "isLoggedIn"
+                    );
+
+                    localStorage.removeItem(
+                        "username"
+                    );
+
+                    localStorage.removeItem(
+                        "token"
+                    );
+
+                    window.location.href =
+                        "index.html";
+
+                    return;
+
+                }
+
+
+                // ==================================================
+                // BACKEND ERROR
                 // ==================================================
 
                 if (!response.ok) {
 
-                    formMessage.textContent =
-                        data.message ||
-                        "Unable to save progress.";
+                    if (formMessage) {
+
+                        formMessage.textContent =
+                            data.message ||
+                            "Unable to save progress.";
+
+                    }
 
                     return;
 
@@ -1034,33 +1467,52 @@ if (progressForm) {
                 // SUCCESS
                 // ==================================================
 
-                formMessage.textContent =
-                    "Progress saved successfully!";
+                if (formMessage) {
+
+                    formMessage.textContent =
+                        "Progress saved successfully!";
+
+                }
 
 
                 // ==================================================
                 // RESET FORM
                 // ==================================================
 
-                progressWeight.value =
-                    "";
+                if (progressWeight) {
 
-                progressBodyFat.value =
-                    "";
+                    progressWeight.value =
+                        "";
+
+                }
 
 
-                progressDate.value =
-                    todayString;
+                if (progressBodyFat) {
+
+                    progressBodyFat.value =
+                        "";
+
+                }
+
+
+                if (progressDate) {
+
+                    progressDate.value =
+                        todayString;
+
+                }
 
 
                 // ==================================================
-                // REFRESH TABLE
+                // IMPORTANT:
+                // FETCH FRESH DATA FROM MONGODB
                 // ==================================================
 
                 await displayProgress();
 
+            }
 
-            } catch (error) {
+            catch (error) {
 
                 console.error(
                     "Progress save error:",
@@ -1068,10 +1520,16 @@ if (progressForm) {
                 );
 
 
-                formMessage.textContent =
-                    "Unable to connect to the server.";
+                if (formMessage) {
 
-            } finally {
+                    formMessage.textContent =
+                        "Unable to connect to the server.";
+
+                }
+
+            }
+
+            finally {
 
                 if (submitButton) {
 
@@ -1079,8 +1537,7 @@ if (progressForm) {
                         false;
 
                     submitButton.textContent =
-                        originalButtonText ||
-                        "Save Progress";
+                        originalButtonText;
 
                 }
 
@@ -1100,7 +1557,9 @@ if (profileButton) {
 
     profileButton.addEventListener(
         "click",
-        function () {
+        function (event) {
+
+            event.preventDefault();
 
             window.location.href =
                 "profile.html";
@@ -1119,15 +1578,21 @@ if (logoutButton) {
 
     logoutButton.addEventListener(
         "click",
-        function () {
+        function (event) {
+
+            event.preventDefault();
+
 
             localStorage.removeItem(
                 "isLoggedIn"
             );
 
-
             localStorage.removeItem(
                 "username"
+            );
+
+            localStorage.removeItem(
+                "token"
             );
 
 
@@ -1141,10 +1606,14 @@ if (logoutButton) {
 
 
 // ==================================================
-// INITIAL LOAD
+// INITIALIZE PROGRESS
 // ==================================================
 
 async function initializeProgress() {
+
+    // ==================================================
+    // CHECK FITNESS PROFILE
+    // ==================================================
 
     const profileExists =
         await checkFitnessProfile();
@@ -1157,9 +1626,17 @@ async function initializeProgress() {
     }
 
 
+    // ==================================================
+    // LOAD PROGRESS FROM MONGODB
+    // ==================================================
+
     await displayProgress();
 
 }
 
+
+// ==================================================
+// START
+// ==================================================
 
 initializeProgress();

@@ -35,6 +35,7 @@ if (!username) {
 const API_URL =
     "https://gym-assistant-rb7h.onrender.com";
 
+    const token = localStorage.getItem("token");
 
 // =====================================================
 // GET ELEMENTS
@@ -156,9 +157,14 @@ async function loadFitnessProfile() {
         );
 
         const response =
-            await fetch(
-                `${API_URL}/api/profile/${encodeURIComponent(username)}`
-            );
+    await fetch(
+        `${API_URL}/api/profile/${encodeURIComponent(username)}`,
+        {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+    );
 
         console.log(
             "Profile response:",
@@ -246,10 +252,14 @@ async function loadWorkoutData() {
         );
 
         const response =
-            await fetch(
-                `${API_URL}/api/workout/${encodeURIComponent(username)}`
-            );
-
+    await fetch(
+        `${API_URL}/api/workout/${encodeURIComponent(username)}`,
+        {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+    );
         console.log(
             "Workout response status:",
             response.status
@@ -1097,10 +1107,13 @@ async function saveCompletedExercises(
 
                     headers: {
 
-                        "Content-Type":
-                            "application/json"
+    "Content-Type":
+        "application/json",
 
-                    },
+    "Authorization":
+        `Bearer ${token}`
+
+},
 
                     body:
                         JSON.stringify({
@@ -2215,12 +2228,15 @@ async function saveCustomWorkout() {
 
                     method: "POST",
 
-                    headers: {
+                   headers: {
 
-                        "Content-Type":
-                            "application/json"
+    "Content-Type":
+        "application/json",
 
-                    },
+    "Authorization":
+        `Bearer ${token}`
+
+},
 
                     body:
                         JSON.stringify({
@@ -2359,10 +2375,13 @@ async function switchToRecommended() {
 
                     headers: {
 
-                        "Content-Type":
-                            "application/json"
+    "Content-Type":
+        "application/json",
 
-                    },
+    "Authorization":
+        `Bearer ${token}`
+
+},
 
                     body:
                         JSON.stringify({
@@ -2462,10 +2481,13 @@ async function useCustomPlan() {
 
                     headers: {
 
-                        "Content-Type":
-                            "application/json"
+    "Content-Type":
+        "application/json",
 
-                    },
+    "Authorization":
+        `Bearer ${token}`
+
+},
 
                     body:
                         JSON.stringify({
@@ -2562,7 +2584,13 @@ async function deleteCustomPlan() {
                 `${API_URL}/api/workout/custom/${encodeURIComponent(username)}`,
                 {
 
-                    method: "DELETE"
+                    method: "DELETE",
+                    headers: {
+
+    "Authorization":
+        `Bearer ${token}`
+
+}
 
                 }
             );
