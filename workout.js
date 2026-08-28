@@ -145,6 +145,14 @@ let workoutData = {
 
 let activePlan = "recommended";
 
+let calendarView = "year";
+
+let calendarYear =
+    new Date().getFullYear();
+
+let calendarMonth =
+    new Date().getMonth();
+
 
 // =====================================================
 // LOAD FITNESS PROFILE
@@ -1251,6 +1259,977 @@ async function saveCompletedExercises(
 
 
 // =====================================================
+// CURRENT PLAN
+// =====================================================
+
+function getCurrentPlan() {
+
+    let plan;
+
+    if (activePlan === "custom") {
+
+        plan =
+            getCustomPlan();
+
+        if (!plan) {
+
+            plan =
+                getRecommendedPlan();
+
+        }
+
+    }
+
+    else {
+
+        plan =
+            getRecommendedPlan();
+
+    }
+
+    if (
+        !plan ||
+        !Array.isArray(plan.week) ||
+        plan.week.length !== 7
+    ) {
+
+        return null;
+
+    }
+
+    return plan;
+
+}
+
+
+function formatDateKey(date) {
+
+    return (
+
+        date.getFullYear() +
+
+        "-" +
+
+        String(
+            date.getMonth() + 1
+        ).padStart(2, "0") +
+
+        "-" +
+
+        String(
+            date.getDate()
+        ).padStart(2, "0")
+
+    );
+
+}
+
+
+function getWeekdayIndex(date) {
+
+    const day =
+        date.getDay();
+
+    return (
+        day === 0
+            ? 6
+            : day - 1
+    );
+
+}
+
+
+function getPlanDayForDate(date) {
+
+    const plan =
+        getCurrentPlan();
+
+    if (!plan) {
+
+        return null;
+
+    }
+
+    return plan.week[
+        getWeekdayIndex(date)
+    ];
+
+}
+
+
+function isRestPlanDay(planDay) {
+
+    if (!planDay) {
+
+        return false;
+
+    }
+
+    return (
+
+        planDay.name === "Rest" ||
+
+        !planDay.exercises ||
+
+        planDay.exercises.length === 0
+
+    );
+
+}
+
+
+function getProgressForDate(dateKey) {
+
+    if (
+        !workoutData ||
+        !Array.isArray(
+            workoutData.workoutProgress
+        )
+    ) {
+
+        return null;
+
+    }
+
+    const matches =
+        workoutData.workoutProgress.filter(
+            function(item) {
+
+                return item.date === dateKey;
+
+            }
+        );
+
+    const activeMatch =
+        matches.find(
+            function(item) {
+
+                return item.plan === activePlan;
+
+            }
+        );
+
+    return activeMatch || matches[0] || null;
+
+}
+
+
+function getDayActivity(date) {
+
+    const dateKey =
+        formatDateKey(date);
+
+    const planDay =
+        getPlanDayForDate(date);
+
+    const rest =
+        isRestPlanDay(planDay);
+
+    const progress =
+        getProgressForDate(dateKey);
+
+    const completed =
+        progress &&
+        Array.isArray(
+            progress.completedExercises
+        )
+            ? progress.completedExercises.length
+            : 0;
+
+    const total =
+        rest || !planDay
+            ? 0
+            : planDay.exercises.length;
+
+    let percent = 0;
+
+    if (!rest && total > 0) {
+
+        percent =
+            Math.round(
+                Math.min(
+                    completed / total,
+                    1
+                ) * 100
+            );
+
+    }
+
+    let level = 0;
+
+    if (!rest) {
+
+        if (percent >= 100) {
+
+            level = 4;
+
+        }
+
+        else if (percent >= 67) {
+
+            level = 3;
+
+        }
+
+        else if (percent >= 34) {
+
+            level = 2;
+
+        }
+
+        else if (percent >= 1) {
+
+            level = 1;
+
+        }
+
+    }
+
+    return {
+
+        dateKey: dateKey,
+
+        rest: rest,
+
+        percent: percent,
+
+        completed: completed,
+
+        total: total,
+
+        level: level,
+
+        name:
+            planDay
+                ? planDay.name
+                : "Workout"
+
+    };
+
+}
+
+
+function getHeatmapTooltip() {
+
+    let tooltip =
+        document.getElementById(
+            "heatmapTooltip"
+        );
+
+    if (!tooltip) {
+
+        tooltip =
+            document.createElement(
+                "div"
+            );
+
+        tooltip.id =
+            "heatmapTooltip";
+
+        tooltip.className =
+            "heatmapTooltip";
+
+        tooltip.style.opacity =
+            "0";
+
+        document.body.appendChild(
+            tooltip
+        );
+
+    }
+
+    return tooltip;
+
+}
+
+
+const CALENDAR_MONTH_NAMES = [
+    "January", "February", "March", "April",
+    "May", "June", "July", "August",
+    "September", "October", "November", "December"
+];
+
+const CALENDAR_WEEKDAYS = [
+    "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"
+];
+
+
+function bindCalendarDay(cell, dayDate) {
+
+    const today =
+        new Date();
+
+    today.setHours(12, 0, 0, 0);
+
+    const activity =
+        getDayActivity(dayDate);
+
+    if (dayDate > today) {
+
+        cell.classList.add("future-day");
+
+    }
+
+    if (activity.rest) {
+
+        cell.classList.add("rest-day");
+
+    }
+
+    else {
+
+        cell.classList.add(
+            "level-" + activity.level
+        );
+
+    }
+
+    if (activity.dateKey === getTodayDate()) {
+
+        cell.classList.add("today-highlight");
+
+    }
+
+    cell.addEventListener(
+        "mouseenter",
+        function(event) {
+
+            const tooltip =
+                getHeatmapTooltip();
+
+            let status;
+
+            if (dayDate > today) {
+
+                status = "Upcoming";
+
+            }
+
+            else if (activity.rest) {
+
+                status = "Rest day";
+
+            }
+
+            else if (activity.percent === 100) {
+
+                status =
+                    "All exercises completed";
+
+            }
+
+            else if (activity.percent > 0) {
+
+                status =
+                    activity.percent +
+                    "% completed";
+
+            }
+
+            else {
+
+                status = "No workout logged";
+
+            }
+
+            tooltip.innerHTML =
+                "<strong>" +
+                activity.dateKey +
+                "</strong><small>" +
+                activity.name +
+                " · " +
+                status +
+                "</small>";
+
+            tooltip.style.opacity = "1";
+
+            tooltip.style.left =
+                (event.clientX + 12) + "px";
+
+            tooltip.style.top =
+                (event.clientY + 12) + "px";
+
+        }
+    );
+
+    cell.addEventListener(
+        "mousemove",
+        function(event) {
+
+            const tooltip =
+                getHeatmapTooltip();
+
+            tooltip.style.left =
+                (event.clientX + 12) + "px";
+
+            tooltip.style.top =
+                (event.clientY + 12) + "px";
+
+        }
+    );
+
+    cell.addEventListener(
+        "mouseleave",
+        function() {
+
+            getHeatmapTooltip().style.opacity =
+                "0";
+
+        }
+    );
+
+}
+
+
+function buildMonthCalendar(
+    year,
+    month,
+    options
+) {
+
+    options = options || {};
+
+    const compact =
+        options.compact === true;
+
+    const clickable =
+        options.clickable === true;
+
+    const card =
+        document.createElement("div");
+
+    card.className =
+        "monthCalendarCard";
+
+    if (!compact) {
+
+        card.classList.add(
+            "monthCalendarLarge"
+        );
+
+    }
+
+    const now = new Date();
+
+    if (
+        year === now.getFullYear() &&
+        month === now.getMonth()
+    ) {
+
+        card.classList.add("current-month");
+
+    }
+
+    const heading =
+        document.createElement(
+            clickable ? "button" : "div"
+        );
+
+    heading.className =
+        "monthCalendarHeading";
+
+    if (!clickable) {
+
+        heading.classList.add("static");
+
+    }
+
+    else {
+
+        heading.type = "button";
+
+        heading.addEventListener(
+            "click",
+            function() {
+
+                calendarView = "month";
+
+                calendarYear = year;
+
+                calendarMonth = month;
+
+                renderWorkoutHeatmap();
+
+            }
+        );
+
+    }
+
+    heading.textContent =
+        compact
+            ? CALENDAR_MONTH_NAMES[month].slice(0, 3)
+            : CALENDAR_MONTH_NAMES[month];
+
+    card.appendChild(heading);
+
+    const weekdayRow =
+        document.createElement("div");
+
+    weekdayRow.className = "weekdayRow";
+
+    CALENDAR_WEEKDAYS.forEach(
+        function(label) {
+
+            const span =
+                document.createElement("span");
+
+            span.textContent =
+                compact
+                    ? label.charAt(0)
+                    : label;
+
+            weekdayRow.appendChild(span);
+
+        }
+    );
+
+    card.appendChild(weekdayRow);
+
+    const daysGrid =
+        document.createElement("div");
+
+    daysGrid.className = "monthDaysGrid";
+
+    const firstDay =
+        new Date(year, month, 1, 12, 0, 0);
+
+    const leading =
+        getWeekdayIndex(firstDay);
+
+    const daysInMonth =
+        new Date(year, month + 1, 0).getDate();
+
+    const totalCells =
+        Math.ceil((leading + daysInMonth) / 7) * 7;
+
+    for (let i = 0; i < totalCells; i++) {
+
+        const cell =
+            document.createElement("div");
+
+        cell.className = "heatmapDay";
+
+        const dayNumber =
+            i - leading + 1;
+
+        if (
+            dayNumber < 1 ||
+            dayNumber > daysInMonth
+        ) {
+
+            cell.classList.add("outside-month");
+
+            daysGrid.appendChild(cell);
+
+            continue;
+
+        }
+
+        const dayDate =
+            new Date(year, month, dayNumber, 12, 0, 0);
+
+        const number =
+            document.createElement("span");
+
+        number.className = "calendarDayNumber";
+
+        number.textContent = String(dayNumber);
+
+        cell.appendChild(number);
+
+        bindCalendarDay(cell, dayDate);
+
+        daysGrid.appendChild(cell);
+
+    }
+
+    card.appendChild(daysGrid);
+
+    return card;
+
+}
+
+
+function renderWorkoutHeatmap() {
+
+    const heatmapGrid =
+        document.getElementById("heatmapGrid");
+
+    const titleEl =
+        document.getElementById("calendarTitle");
+
+    const yearButton =
+        document.getElementById("calendarYearButton");
+
+    const prevButton =
+        document.getElementById("calendarPrevButton");
+
+    const nextButton =
+        document.getElementById("calendarNextButton");
+
+    if (!heatmapGrid) {
+
+        return;
+
+    }
+
+    const plan = getCurrentPlan();
+
+    if (!plan) {
+
+        return;
+
+    }
+
+    heatmapGrid.innerHTML = "";
+
+    if (calendarView === "month") {
+
+        heatmapGrid.appendChild(
+            buildMonthCalendar(
+                calendarYear,
+                calendarMonth,
+                {
+                    compact: false,
+                    clickable: false
+                }
+            )
+        );
+
+        if (titleEl) {
+
+            titleEl.textContent =
+                CALENDAR_MONTH_NAMES[calendarMonth] +
+                " " +
+                calendarYear;
+
+        }
+
+        if (yearButton) {
+
+            yearButton.classList.remove("hidden");
+
+        }
+
+        if (prevButton) {
+
+            prevButton.onclick = function() {
+
+                calendarMonth -= 1;
+
+                if (calendarMonth < 0) {
+
+                    calendarMonth = 11;
+
+                    calendarYear -= 1;
+
+                }
+
+                renderWorkoutHeatmap();
+
+            };
+
+        }
+
+        if (nextButton) {
+
+            nextButton.onclick = function() {
+
+                calendarMonth += 1;
+
+                if (calendarMonth > 11) {
+
+                    calendarMonth = 0;
+
+                    calendarYear += 1;
+
+                }
+
+                renderWorkoutHeatmap();
+
+            };
+
+        }
+
+    }
+
+    else {
+
+        const yearGrid =
+            document.createElement("div");
+
+        yearGrid.className = "yearCalendarGrid";
+
+        for (let month = 0; month < 12; month++) {
+
+            yearGrid.appendChild(
+                buildMonthCalendar(
+                    calendarYear,
+                    month,
+                    {
+                        compact: true,
+                        clickable: true
+                    }
+                )
+            );
+
+        }
+
+        heatmapGrid.appendChild(yearGrid);
+
+        if (titleEl) {
+
+            titleEl.textContent =
+                String(calendarYear);
+
+        }
+
+        if (yearButton) {
+
+            yearButton.classList.add("hidden");
+
+        }
+
+        if (prevButton) {
+
+            prevButton.onclick = function() {
+
+                calendarYear -= 1;
+
+                renderWorkoutHeatmap();
+
+            };
+
+        }
+
+        if (nextButton) {
+
+            nextButton.onclick = function() {
+
+                calendarYear += 1;
+
+                renderWorkoutHeatmap();
+
+            };
+
+        }
+
+    }
+
+    if (yearButton) {
+
+        yearButton.onclick = function() {
+
+            calendarView = "year";
+
+            renderWorkoutHeatmap();
+
+        };
+
+    }
+
+    const today = new Date();
+
+    today.setHours(12, 0, 0, 0);
+
+    updateStreakStats(today);
+
+}
+
+
+function updateStreakStats(today) {
+
+    const currentEl =
+        document.getElementById(
+            "currentStreakValue"
+        );
+
+    const bestEl =
+        document.getElementById(
+            "bestStreakValue"
+        );
+
+    const totalEl =
+        document.getElementById(
+            "totalWorkoutsValue"
+        );
+
+    const noteEl =
+        document.getElementById(
+            "heatmapSummaryNote"
+        );
+
+    const start =
+        new Date(today);
+
+    start.setDate(
+        start.getDate() - (53 * 7)
+    );
+
+    const days = [];
+
+    const cursor =
+        new Date(start);
+
+    while (cursor <= today) {
+
+        days.push(
+            getDayActivity(
+                new Date(cursor)
+            )
+        );
+
+        cursor.setDate(
+            cursor.getDate() + 1
+        );
+
+    }
+
+    let totalWorkouts = 0;
+
+    days.forEach(
+        function(day) {
+
+            if (
+                !day.rest &&
+                day.percent === 100
+            ) {
+
+                totalWorkouts++;
+
+            }
+
+        }
+    );
+
+    let bestStreak = 0;
+
+    let running = 0;
+
+    days.forEach(
+        function(day) {
+
+            if (day.rest) {
+
+                return;
+
+            }
+
+            if (day.percent === 100) {
+
+                running++;
+
+                if (running > bestStreak) {
+
+                    bestStreak =
+                        running;
+
+                }
+
+            }
+
+            else {
+
+                running = 0;
+
+            }
+
+        }
+    );
+
+    let currentStreak = 0;
+
+    for (
+        let i = days.length - 1;
+        i >= 0;
+        i--
+    ) {
+
+        const day =
+            days[i];
+
+        if (day.rest) {
+
+            continue;
+
+        }
+
+        if (
+            day.dateKey === getTodayDate() &&
+            day.percent < 100
+        ) {
+
+            continue;
+
+        }
+
+        if (day.percent === 100) {
+
+            currentStreak++;
+
+        }
+
+        else {
+
+            break;
+
+        }
+
+    }
+
+    if (currentEl) {
+
+        currentEl.textContent =
+            currentStreak +
+            (
+                currentStreak === 1
+                    ? " Day"
+                    : " Days"
+            );
+
+    }
+
+    if (bestEl) {
+
+        bestEl.textContent =
+            bestStreak +
+            (
+                bestStreak === 1
+                    ? " Day"
+                    : " Days"
+            );
+
+    }
+
+    if (totalEl) {
+
+        totalEl.textContent =
+            String(totalWorkouts);
+
+    }
+
+    if (noteEl) {
+
+        if (currentStreak > 0) {
+
+            noteEl.textContent =
+                "Keep it going — rest days do not break your streak.";
+
+        }
+
+        else {
+
+            noteEl.textContent =
+                "Complete every exercise on a training day to light up dark red.";
+
+        }
+
+    }
+
+}
+
+
+// =====================================================
 // RENDER ACTIVE PLAN
 // =====================================================
 
@@ -1421,6 +2400,9 @@ function renderActivePlan() {
         dayIndex
     );
 
+
+    renderWorkoutHeatmap();
+
 }
 
 
@@ -1469,6 +2451,9 @@ function displayExercises(
 
         progressFill.style.width =
             "100%";
+
+
+        renderWorkoutHeatmap();
 
         return;
 
@@ -1707,6 +2692,9 @@ function updateProgress() {
 
     progressFill.style.width =
         percentage + "%";
+
+
+    renderWorkoutHeatmap();
 
 }
 

@@ -439,6 +439,163 @@
 
         </section>
 
+
+        <!-- =========================
+             WORKOUT ACTIVITY & STREAK (HEATMAP)
+        ========================== -->
+
+        <section class="streakSection" id="streakSection">
+
+            <div class="sectionHeader streakHeader">
+
+                <div>
+
+                    <p class="sectionLabel">
+                        ACTIVITY & CONSISTENCY
+                    </p>
+
+                    <h2>
+                        Workout Streak & Heatmap
+                    </h2>
+
+                    <p class="sectionSubtext">
+                        Track your training consistency and see your workout activity over time.
+                    </p>
+
+                </div>
+
+                <div class="streakStatsOverview">
+
+                    <div class="streakStatItem">
+
+                        <span class="streakStatIcon">🔥</span>
+
+                        <div class="streakStatDetails">
+
+                            <strong id="currentStreakValue">0 Days</strong>
+
+                            <small>Current Streak</small>
+
+                        </div>
+
+                    </div>
+
+                    <div class="streakStatItem">
+
+                        <span class="streakStatIcon">🏆</span>
+
+                        <div class="streakStatDetails">
+
+                            <strong id="bestStreakValue">0 Days</strong>
+
+                            <small>Best Streak</small>
+
+                        </div>
+
+                    </div>
+
+                    <div class="streakStatItem">
+
+                        <span class="streakStatIcon">🎯</span>
+
+                        <div class="streakStatDetails">
+
+                            <strong id="totalWorkoutsValue">0</strong>
+
+                            <small>Completed Workouts</small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="heatmapCard">
+
+                <div class="calendarToolbar">
+
+                    <button
+                        type="button"
+                        class="calendarNavButton"
+                        id="calendarPrevButton"
+                        aria-label="Previous"
+                    >
+                        ‹
+                    </button>
+
+                    <div class="calendarTitleWrap">
+
+                        <h3 id="calendarTitle">
+                            2026
+                        </h3>
+
+                        <button
+                            type="button"
+                            class="calendarYearLink hidden"
+                            id="calendarYearButton"
+                        >
+                            Year view
+                        </button>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="calendarNavButton"
+                        id="calendarNextButton"
+                        aria-label="Next"
+                    >
+                        ›
+                    </button>
+
+                </div>
+
+
+                <div
+                    class="heatmapGrid"
+                    id="heatmapGrid"
+                ></div>
+
+
+                <div class="heatmapFooter">
+
+                    <div class="heatmapLegend">
+
+                        <span class="legendLabel">Less</span>
+
+                        <span class="legendBox level-0" title="No workout recorded"></span>
+
+                        <span class="legendBox level-1" title="1% - 33% Completed"></span>
+
+                        <span class="legendBox level-2" title="34% - 66% Completed"></span>
+
+                        <span class="legendBox level-3" title="67% - 99% Completed"></span>
+
+                        <span class="legendBox level-4" title="100% Completed"></span>
+
+                        <span class="legendLabel">More</span>
+
+                        <div class="legendDivider"></div>
+
+                        <span class="legendBox rest-day" title="Scheduled Rest Day"></span>
+
+                        <span class="legendLabel">Rest Day</span>
+
+                    </div>
+
+                    <div class="heatmapSummaryNote" id="heatmapSummaryNote">
+                        Consistency builds lasting strength.
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
     </main>
 
 

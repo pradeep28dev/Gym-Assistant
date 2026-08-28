@@ -189,6 +189,122 @@
 
 
         <!-- =========================
+             TRACKING MODE & PACE
+        ========================== -->
+
+        <section class="paceSection">
+
+            <div class="sectionHeader trackingHeader">
+
+                <div>
+
+                    <p class="sectionLabel">
+                        HEALTHY PACE
+                    </p>
+
+                    <h2>
+                        Track daily or weekly
+                    </h2>
+
+                    <p class="sectionSubtext">
+                        Aim for a steady change — not a crash diet or a sudden bulk.
+                    </p>
+
+                </div>
+
+                <div
+                    class="trackingToggle"
+                    role="group"
+                    aria-label="Progress tracking mode"
+                >
+
+                    <button
+                        type="button"
+                        class="trackingOption active"
+                        id="dailyTrackingButton"
+                        data-mode="daily"
+                    >
+                        Daily
+                    </button>
+
+                    <button
+                        type="button"
+                        class="trackingOption"
+                        id="weeklyTrackingButton"
+                        data-mode="weekly"
+                    >
+                        Weekly
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="paceGrid">
+
+                <div class="paceCard">
+
+                    <p>
+                        RECOMMENDED PACE
+                    </p>
+
+                    <h2 id="recommendedPaceValue">
+                        --
+                    </h2>
+
+                    <span id="recommendedPaceHint">
+                        Based on your goal and current weight
+                    </span>
+
+                </div>
+
+                <div class="paceCard">
+
+                    <p>
+                        ESTIMATED RATE
+                    </p>
+
+                    <h2 id="estimatedRateValue">
+                        --
+                    </h2>
+
+                    <span id="estimatedRateHint">
+                        From your logged measurements
+                    </span>
+
+                </div>
+
+                <div class="paceCard">
+
+                    <p>
+                        DAILY ENERGY SHIFT
+                    </p>
+
+                    <h2 id="calorieShiftValue">
+                        --
+                    </h2>
+
+                    <span id="calorieShiftHint">
+                        About 7,700 kcal per kg of fat
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="paceAlert"
+                class="paceAlert hidden"
+                role="alert"
+            ></div>
+
+        </section>
+
+
+
+        <!-- =========================
              ADD PROGRESS
         ========================== -->
 
@@ -200,9 +316,16 @@
                     UPDATE
                 </p>
 
-                <h2>
+                <h2 id="progressFormTitle">
                     Add Today's Progress
                 </h2>
+
+                <p
+                    class="sectionSubtext"
+                    id="progressFormHint"
+                >
+                    Log weight under similar conditions each time.
+                </p>
 
             </div>
 
@@ -352,6 +475,44 @@
                     class="emptyMessage"
                 >
                     No progress records yet.
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             PROGRESS GRAPH
+        ========================== -->
+
+        <section class="chartSection">
+
+            <div class="sectionHeader">
+
+                <p class="sectionLabel">
+                    TREND
+                </p>
+
+                <h2 id="progressChartTitle">
+                    Weight over time
+                </h2>
+
+            </div>
+
+            <div class="chartCard">
+
+                <div
+                    id="progressChart"
+                    class="progressChart"
+                ></div>
+
+                <p
+                    id="chartEmptyMessage"
+                    class="emptyMessage"
+                >
+                    Add a weigh-in to see your graph.
                 </p>
 
             </div>
